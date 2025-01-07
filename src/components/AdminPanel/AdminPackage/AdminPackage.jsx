@@ -16,7 +16,7 @@ export default function AdminPackage() {
   // Filter the data based on user input
 
   const [editPackage, setEditPackage] = useState(false);
-  const baseUrl = "https://tripobazar-backend.vercel.app/api/package";
+  const baseUrl = "https://trippo-bazzar-backend.vercel.app/api/package";
   const {
     data: allStateData,
     loading: allpackage,
@@ -26,13 +26,13 @@ export default function AdminPackage() {
   } = useApiData(baseUrl);
 
   const { data, loading } = useFetch(
-    `https://tripobazar-backend.vercel.app/api/package/${selectedId}`
+    `https://trippo-bazzar-backend.vercel.app/api/package/${selectedId}`
   );
 
   const filteredData = allStateData.filter((item) =>
     item?.title?.toLowerCase().includes(searchInput.toLowerCase())
   );
-  const handleDelete = (id,name) => {
+  const handleDelete = (id, name) => {
     setModal({
       message: `Are you sure you want to delete this ${name}?`,
       onConfirm: () => {
@@ -107,7 +107,7 @@ export default function AdminPackage() {
                           className="w-10 h-5 cursor-pointer object-cover rounded ml-4"
                         />
                         <button
-                          onClick={() => handleDelete(item._id,item.title)}
+                          onClick={() => handleDelete(item._id, item.title)}
                           className="text-red-600"
                         >
                           Delete

@@ -3,7 +3,7 @@ import useFetch from "../../../../hooks/useFetch";
 
 const AddPackage = ({ addNew, setIsAddingPackage }) => {
   const { data: hotelData, loading } = useFetch(
-    `https://tripobazar-backend.vercel.app/api/hotel`
+    `https://trippo-bazzar-backend.vercel.app/api/hotel`
   );
   const [data, setData] = useState({
     title: "",

@@ -47,7 +47,7 @@ export default function CreateProfile() {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `https://tripobazar-backend.vercel.app/api/users/${id}`,
+        `https://trippo-bazzar-backend.vercel.app/api/users/${id}`,
         formData
       );
       console.log("Response from backend:", response.data);

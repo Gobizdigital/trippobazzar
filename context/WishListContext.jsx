@@ -39,7 +39,7 @@ export const WishlistProvider = ({ children }) => {
       if (decodedToken && decodedToken.id) {
         const userId = decodedToken.id;
         const response = await axios.get(
-          `https://tripobazar-backend.vercel.app/api/users/data/${userId}`,
+          `https://trippo-bazzar-backend.vercel.app/api/users/data/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${userInfo.token}`,
@@ -93,7 +93,7 @@ export const WishlistProvider = ({ children }) => {
       const userId = decodedToken.id;
 
       const response = await axios.put(
-        `https://tripobazar-backend.vercel.app/api/users/${userId}`,
+        `https://trippo-bazzar-backend.vercel.app/api/users/${userId}`,
         {
           WishListCountries: updatedCountries,
           WishListStates: updatedStates,

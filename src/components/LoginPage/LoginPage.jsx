@@ -46,7 +46,7 @@ export default function LoginPage() {
 
     try {
       const response = await axios.post(
-        "https://tripobazar-backend.vercel.app/api/users/login",
+        "https://trippo-bazzar-backend.vercel.app/api/users/login",
         userData
       );
       setLoader(false);

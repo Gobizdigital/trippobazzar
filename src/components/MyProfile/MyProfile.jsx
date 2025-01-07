@@ -84,7 +84,7 @@ function MyProfile() {
       const userId = decodedToken.id;
 
       const response = await axios.put(
-        `https://tripobazar-backend.vercel.app/api/users/${userId}`,
+        `https://trippo-bazzar-backend.vercel.app/api/users/${userId}`,
         updateData,
         {
           headers: {

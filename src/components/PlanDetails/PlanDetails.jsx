@@ -16,7 +16,7 @@ function PlanDetails() {
   const { id } = useParams();
 
   const { data, loading } = useFetch(
-    `https://tripobazar-backend.vercel.app/api/package/${id}`
+    `https://trippo-bazzar-backend.vercel.app/api/package/${id}`
   );
 
   if (loading) {

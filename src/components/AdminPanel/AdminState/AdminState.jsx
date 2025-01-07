@@ -15,10 +15,10 @@ export default function AdminState() {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const { data: packageData, loading } = useFetch(
-    "https://tripobazar-backend.vercel.app/api/package"
+    "https://trippo-bazzar-backend.vercel.app/api/package"
   );
 
-  const baseUrl = "https://tripobazar-backend.vercel.app/api/state";
+  const baseUrl = "https://trippo-bazzar-backend.vercel.app/api/state";
   const {
     data: allStateData,
     deleteById,
@@ -30,7 +30,7 @@ export default function AdminState() {
     if (selectedId) {
       const fetchStates = async () => {
         const response = await fetch(
-          `https://tripobazar-backend.vercel.app/api/state/${selectedId}`
+          `https://trippo-bazzar-backend.vercel.app/api/state/${selectedId}`
         );
         const result = await response.json();
         setStateData(result.data);
@@ -47,7 +47,7 @@ export default function AdminState() {
   const saveState = async () => {
     const updatePayload = {
       ...editedDetails,
-      Packages: editedDetails.Packages.map(pkg =>
+      Packages: editedDetails.Packages.map((pkg) =>
         typeof pkg === "object" ? pkg._id : pkg
       ),
     };
@@ -76,7 +76,7 @@ export default function AdminState() {
   console.log(packageData);
 
   if (loading) {
-    return <Loader/>;
+    return <Loader />;
   }
 
   return (

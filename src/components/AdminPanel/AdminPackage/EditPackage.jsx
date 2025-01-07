@@ -9,7 +9,7 @@ export default function EditPackage({
   setEditPackage,
 }) {
   const { data: hotelData, loading } = useFetch(
-    `https://tripobazar-backend.vercel.app/api/hotel`
+    `https://trippo-bazzar-backend.vercel.app/api/hotel`
   );
   const [data, setData] = useState(
     initialData || {

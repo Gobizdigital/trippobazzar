@@ -13,7 +13,6 @@ import AdminPackage from "./AdminPackage/AdminPackage";
 import Loader from "../Loader";
 import AdminHotel from "./AdminHotel/AdminHotel";
 
-
 function AdminPanel() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -42,11 +41,11 @@ function AdminPanel() {
   };
 
   const { data, loading, error } = useFetch(
-    "https://tripobazar-backend.vercel.app/api/users"
+    "https://trippo-bazzar-backend.vercel.app/api/users"
   );
 
   if (!isAdmin || loading === true) {
-    return <Loader/>;
+    return <Loader />;
   }
 
   return (

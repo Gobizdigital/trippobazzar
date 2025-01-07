@@ -13,7 +13,7 @@ export default function AdminHotel() {
   const [editPackage, setEditPackage] = useState(false);
   const [modal, setModal] = useState(null);
 
-  const baseUrl = "https://tripobazar-backend.vercel.app/api/hotel";
+  const baseUrl = "https://trippo-bazzar-backend.vercel.app/api/hotel";
   const {
     data: allHotelData,
     loading: allpackage,
@@ -23,14 +23,14 @@ export default function AdminHotel() {
   } = useApiData(baseUrl);
 
   const { data, loading } = useFetch(
-    `https://tripobazar-backend.vercel.app/api/hotel/${selectedId}`
+    `https://trippo-bazzar-backend.vercel.app/api/hotel/${selectedId}`
   );
 
   const filteredData = allHotelData.filter((item) =>
     item?.hotelName?.toLowerCase().includes(searchInput.toLowerCase())
   );
 
-  const handleDelete = (id,name) => {
+  const handleDelete = (id, name) => {
     setModal({
       message: `Are you sure you want to delete this ${name}?`,
       onConfirm: () => {
@@ -103,7 +103,7 @@ export default function AdminHotel() {
                           className="w-10 h-5 cursor-pointer object-cover rounded ml-4"
                         />
                         <button
-                          onClick={() => handleDelete(item._id,item.hotelName)}
+                          onClick={() => handleDelete(item._id, item.hotelName)}
                           className="text-red-600"
                         >
                           Delete

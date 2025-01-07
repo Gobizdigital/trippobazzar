@@ -10,7 +10,7 @@ const Users = ({ data }) => {
     setUsers(users.filter((user) => user._id !== id)); // Use _id to match the correct user
     try {
       await axios.delete(
-        `https://tripobazar-backend.vercel.app/api/users/${id}`
+        `https://trippo-bazzar-backend.vercel.app/api/users/${id}`
       );
     } catch (error) {
       console.log(error);
@@ -31,7 +31,7 @@ const Users = ({ data }) => {
 
     try {
       await axios.put(
-        `https://tripobazar-backend.vercel.app/api/users/${editingUserId}`,
+        `https://trippo-bazzar-backend.vercel.app/api/users/${editingUserId}`,
         editedDetails
       );
     } catch (error) {
@@ -39,7 +39,6 @@ const Users = ({ data }) => {
     }
     setEditingUserId(null); // Stop editing
   };
-
 
   return (
     <div className="mr-1 p-6">

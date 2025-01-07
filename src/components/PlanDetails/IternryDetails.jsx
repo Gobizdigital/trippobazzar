@@ -255,7 +255,7 @@ function IternryDetails({ data }) {
 
       // Make the API call to verify the amount
       const response = await axios.post(
-        "https://tripobazar-backend.vercel.app/api/package/verifyAmount",
+        "https://trippo-bazzar-backend.vercel.app/api/package/verifyAmount",
         requestData
       );
 
@@ -299,7 +299,7 @@ function IternryDetails({ data }) {
 
           try {
             const paymentResponse = await axios.post(
-              "https://tripobazar-backend.vercel.app/api/package/verifyPayment",
+              "https://trippo-bazzar-backend.vercel.app/api/package/verifyPayment",
               details
             );
 

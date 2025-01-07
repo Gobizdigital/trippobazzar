@@ -8,7 +8,7 @@ import useFetch from "../../../hooks/useFetch";
 
 export default function DestinationPage() {
   const { data, loading } = useFetch(
-    "https://tripobazar-backend.vercel.app/api/continent"
+    "https://trippo-bazzar-backend.vercel.app/api/continent"
   );
 
   return (

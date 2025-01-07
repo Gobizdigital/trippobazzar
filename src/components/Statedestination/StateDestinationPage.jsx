@@ -18,7 +18,7 @@ function StateDestinationPage() {
   const { filterProp } = useSearch();
 
   const { data, loading, error } = useFetch(
-    `https://tripobazar-backend.vercel.app/api/state/name/${state}`
+    `https://trippo-bazzar-backend.vercel.app/api/state/name/${state}`
   );
 
   if (loading) {

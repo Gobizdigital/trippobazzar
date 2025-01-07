@@ -8,7 +8,6 @@ import axios from "axios";
 import Loader from "../Loader";
 
 export default function SignUpPage() {
-
   const [showPassword, setShowPassword] = useState(false);
   const [options, setOptions] = useState("mobilenumber");
   const [loader, setLoader] = useState(false);
@@ -48,7 +47,7 @@ export default function SignUpPage() {
 
     try {
       const response = await axios.post(
-        "https://tripobazar-backend.vercel.app/api/users",
+        "https://trippo-bazzar-backend.vercel.app/api/users",
         userData
       );
       console.log("Create successful:", response.data);
@@ -66,8 +65,6 @@ export default function SignUpPage() {
       setLoader(false);
     }
   };
-
-
 
   return (
     <div className="max-w-[1980px] mx-auto h-auto">
@@ -103,7 +100,8 @@ export default function SignUpPage() {
       </div>
       {loader && (
         <div className="fixed bg-transparent backdrop-blur-sm opacity-100 w-full h-screen top-0 left-0">
-          {/* <Spinner /> */}<Loader/>
+          {/* <Spinner /> */}
+          <Loader />
         </div>
       )}
     </div>
