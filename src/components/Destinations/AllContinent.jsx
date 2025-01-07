@@ -144,7 +144,7 @@ function AllContinent({ data, loading }) {
                 </div>
 
                 {/* Carousel Section */}
-                <div >
+                <div>
                   <div
                     ref={carouselRef}
                     className="flex overflow-x-auto space-x-4 mt-10 sm:mt-16 md:mt-20 scrollbar-hide scroll-snap-x-mandatory"
