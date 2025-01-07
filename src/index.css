@@ -1,0 +1,280 @@
+@import url("https://fonts.googleapis.com/css2?family=Inspiration&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.customfradiant{
+  background: linear-gradient(225.47deg, rgba(0, 181, 138, 0.7) 0%, rgba(39, 191, 234, 0.62) 100%);
+
+}
+.custom-radio {
+  appearance: none;
+  width: 20px; /* Increased size */
+  height: 20px; /* Increased size */
+  border: 2px solid #03b58b; /* Green border */
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+  position: relative; /* Set relative position */
+}
+*{ box-sizing: border-box;}
+/* Inner circle to create space between background and border */
+.custom-radio:before {
+  content: "";
+  position: absolute;
+  top: 2px; /* Adjust to create space */
+  left: 2px; /* Adjust to create space */
+  width: 12px; /* Inner circle size */
+  height: 12px; /* Inner circle size */
+  border-radius: 50%;
+  background-color: transparent; /* Transparent by default */
+  border: 2px solid transparent; /* Transparent border */
+  transition: background-color 0.2s ease;
+}
+
+/* Styling for the checked state */
+.custom-radio:checked:before {
+  background-color: #03b58b; /* Green fill when selected */
+  border: 2px solid #03b58b; /* Green border when selected */
+}
+
+.select-with-arrow {
+  background-repeat: no-repeat;
+  background-size: 12px 12px; /* Adjust the size of the arrow */
+  background-position: calc(100%) center; /* Move the arrow to the left */
+  padding-right: 1rem;
+  appearance: none; /* Hide the default arrow */
+  font-size: 0.8rem; /* Font size for the text */
+}
+
+.custom-checkbox {
+  appearance: none; /* Remove default styling */
+  width: 20px; /* Increased size */
+  height: 20px; /* Increased size */
+  border: 1px solid black; /* Green border */
+  border-radius: 4px; /* Square corners for checkbox */
+  cursor: pointer;
+  position: relative; /* Set relative position */
+  outline: none; /* Remove outline */
+  margin-right: 8px; /* Space between checkbox and label */
+  min-width: 20px; /* Prevent shrinking */
+  min-height: 20px;
+}
+
+/* Inner square for the checkbox */
+.custom-checkbox:before {
+  content: "";
+  position: absolute;
+  top: 2px; /* Adjust to create space */
+  left: 2px; /* Adjust to create space */
+  width: 16px; /* Inner square size */
+  height: 16px; /* Inner square size */
+  background-color: transparent; /* Transparent by default */
+  transition: background-color 0.2s ease;
+}
+
+/* Optional: style for the checked state */
+.custom-checkbox:checked {
+  background-color: #03b58b;
+  border: 0; /* Set background color for the checked state */
+}
+
+.custom-checkbox:checked:after {
+  content: "✓"; /* Check mark symbol */
+  position: absolute;
+  top: 50%; /* Adjust positioning */
+  left: 50%; /* Adjust positioning */
+  transform: translate(-50%, -50%); /* Center the check mark */
+  font-size: 16px; /* Size of the check mark */
+  color: rgba(255, 255, 255, 0.8); /* Off-white color for the check mark */
+  line-height: 20px; /* Center the check mark vertically */
+}
+
+/* Responsive adjustments */
+@media (max-width: 460px) {
+  .custom-checkbox {
+    width: 20px; /* Keep size consistent */
+    height: 20px; /* Keep size consistent */
+    min-width: 20px; /* Prevent shrinking */
+    min-height: 20px; /* Prevent shrinking */
+  }
+}
+
+body {
+  transition-property: opacity, background-color, transform, filter, scale;
+  transition-timing-function: ease-in-out;
+  transition-duration: 0.5s;
+}
+
+.page-transition {
+  opacity: 0;
+  background-color: white;
+  transform: translateY(30px);
+  scale: (0.05);
+  filter: blur(12px);
+}
+
+.custom-range {
+  -webkit-appearance: none; /* Remove default styling */
+  width: 100%; /* Set width */
+  height: 8px; /* Track height */
+  background: #ddd; /* Default track color */
+  border-radius: 5px; /* Round the track corners */
+  outline: none; /* Remove outline */
+}
+
+/* Custom thumb styling */
+.custom-range::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Remove default styling */
+  appearance: none; /* Remove default styling */
+  width: 20px; /* Thumb width */
+  height: 20px; /* Thumb height */
+  background: #27bfea; /* Thumb color */
+  border-radius: 50%; /* Round the thumb */
+  cursor: pointer; /* Change cursor on hover */
+  margin-top: -6px; /* Adjust this value to center the thumb */
+}
+
+.custom-range::-moz-range-thumb {
+  width: 20px; /* Thumb width */
+  height: 20px; /* Thumb height */
+  background: #27bfea; /* Thumb color */
+  border-radius: 50%; /* Round the thumb */
+  cursor: pointer; /* Change cursor on hover */
+}
+
+.custom-range::-ms-thumb {
+  width: 20px; /* Thumb width */
+  height: 20px; /* Thumb height */
+  background: #27bfea; /* Thumb color */
+  border-radius: 50%; /* Round the thumb */
+  cursor: pointer; /* Change cursor on hover */
+}
+
+.custom-range::-webkit-slider-runnable-track {
+  height: 8px; /* Track height */
+  border-radius: 5px; /* Round the track corners */
+}
+
+.custom-range::-moz-range-track {
+  height: 8px; /* Track height */
+  border-radius: 5px; /* Round the track corners */
+}
+
+.custom-range::-ms-track {
+  height: 8px; /* Track height */
+  border: none; /* Remove border */
+  color: transparent; /* Hide the default track */
+  background: #ddd; /* Default track color */
+}
+
+.custom-range-two {
+  -webkit-appearance: none; /* Remove default styling */
+  width: 100%; /* Set width */
+  height: 8px; /* Track height */
+  background: #ddd; /* Default track color */
+  border-radius: 5px; /* Round the track corners */
+  outline: none; /* Remove outline */
+}
+
+/* Custom thumb styling */
+.custom-range-two::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Remove default styling */
+  appearance: none; /* Remove default styling */
+  width: 20px; /* Thumb width */
+  height: 20px; /* Thumb height */
+  background: #03b58b; /* Thumb color */
+  border-radius: 50%; /* Round the thumb */
+  cursor: pointer; /* Change cursor on hover */
+  margin-top: -6px; /* Adjust this value to center the thumb */
+}
+
+.custom-range-two::-moz-range-thumb {
+  width: 20px; /* Thumb width */
+  height: 20px; /* Thumb height */
+  background: #03b58b; /* Thumb color */
+  border-radius: 50%; /* Round the thumb */
+  cursor: pointer; /* Change cursor on hover */
+}
+
+.custom-range-two::-ms-thumb {
+  width: 20px; /* Thumb width */
+  height: 20px; /* Thumb height */
+  background: #03b58b; /* Thumb color */
+  border-radius: 50%; /* Round the thumb */
+  cursor: pointer; /* Change cursor on hover */
+}
+
+.custom-range-two::-webkit-slider-runnable-track {
+  height: 8px; /* Track height */
+  border-radius: 5px; /* Round the track corners */
+}
+
+.custom-range-two::-moz-range-track {
+  height: 8px; /* Track height */
+  border-radius: 5px; /* Round the track corners */
+}
+
+.custom-range-two::-ms-track {
+  height: 8px; /* Track height */
+  border: none; /* Remove border */
+  color: transparent; /* Hide the default track */
+  background: #ddd; /* Default track color */
+}
+
+.spinner {
+  width: 44.8px;
+  height: 44.8px;
+  animation: spinner-y0fdc1 2s infinite ease;
+  transform-style: preserve-3d;
+}
+
+.spinner > div {
+  background-color: rgba(127, 255, 206, 0.2);
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  border: 2.2px solid #03b58b;
+}
+
+.spinner div:nth-of-type(1) {
+  transform: translateZ(-22.4px) rotateY(180deg);
+}
+
+.spinner div:nth-of-type(2) {
+  transform: rotateY(-270deg) translateX(50%);
+  transform-origin: top right;
+}
+
+.spinner div:nth-of-type(3) {
+  transform: rotateY(270deg) translateX(-50%);
+  transform-origin: center left;
+}
+
+.spinner div:nth-of-type(4) {
+  transform: rotateX(90deg) translateY(-50%);
+  transform-origin: top center;
+}
+
+.spinner div:nth-of-type(5) {
+  transform: rotateX(-90deg) translateY(50%);
+  transform-origin: bottom center;
+}
+
+.spinner div:nth-of-type(6) {
+  transform: translateZ(22.4px);
+}
+
+@keyframes spinner-y0fdc1 {
+  0% {
+    transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
+  }
+
+  50% {
+    transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
+  }
+
+  100% {
+    transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
+  }
+}
