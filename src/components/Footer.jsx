@@ -88,7 +88,7 @@ function Footer() {
           </div>
         </div>
       </div>
-      <a className="text-sm text-gray-600" href="https://gobizdigital.in/">
+      <a className="text-[0.8rem] text-gray-700" href="https://gobizdigital.in/">
         powered by GobizDigital
       </a>
     </footer>
