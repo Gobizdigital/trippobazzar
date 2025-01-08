@@ -27,7 +27,7 @@ function Footer() {
           <CompanyLogo className="w-2 h-2 sm:w-7 sm:h-7 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain" />
         </div>
 
-        {/* Links Section */}
+
         <ul
           role="list"
           className="flex text-[.8rem] flex-wrap md:grid text-left md:grid-cols-2  md:gap-y-2 md:gap-x-12 gap-4 justify-center mb-8 md:text-base  md:text-start  md:mb-0"
