@@ -51,7 +51,7 @@ function Footer() {
           <div className="mb-8">
             <p className="text-med-green mb-3 font-semibold">Contact Us</p>
             <p className="mb-1">contact@trippobazzar.com</p>
-            <p>+9189805 27418 | +9197128 33266  </p>
+            <p>+9189805 27418 | +9197128 33266 </p>
           </div>
 
           {/* Subscribe Section */}
@@ -86,11 +86,11 @@ function Footer() {
               </div>
             ))}
           </div>
-
         </div>
       </div>
-      <a className="text-sm text-gray-600" href="https://gobizdigital.in/">powered by GobizDigital</a>
- 
+      <a className="text-sm text-gray-600" href="https://gobizdigital.in/">
+        powered by GobizDigital
+      </a>
     </footer>
   );
 }
