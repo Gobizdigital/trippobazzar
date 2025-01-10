@@ -89,7 +89,7 @@ function Footer() {
         </div>
       </div>
       <a className="text-[0.8rem] text-gray-600" href="https://gobizdigital.in/">
-        powered by GobizDigital.
+        powered by Gobiz Digital LLP
       </a>
     </footer>
   );
