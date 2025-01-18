@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import TransitionLink from "../../../utils/TransitionLink";
 import { FaArrowRightLong } from "react-icons/fa6";
 
-const MultiDesitinationDropdown = ({ Destination }) => {
+const MultiDesitinationDropdown = ({ setIsMenuOpen, Destination }) => {
   const [isDestinationOpen, setIsDestinationOpen] = useState(false); // Tracks top-level menu state
   const [activeRegionIndex, setActiveRegionIndex] = useState(null); // Tracks active region
   const dropdownRef = useRef(null);
@@ -78,14 +78,21 @@ const MultiDesitinationDropdown = ({ Destination }) => {
                 <div className="bg-white border-t w-full">
                   {region.destinations.map((destination, destIdx) => (
                     <TransitionLink
-                      to={`/destination/${region.region}/${destination.name}`}
-                      key={destIdx}
+                      to={
+                        region.region === "India"
+                          ? `/destination/asia/${region.region}/${destination.name}`
+                          : region.region === "Australia"
+                          ? `/destination/ViewAll-Australia/${region.region}/${destination.name}`
+                          : `/destination/${region.region}/${destination.name}`
+                      }
                       onClick={() => {
-                        setIsMenuOpen(false);
+                        setIsMenuOpen(null);
                       }}
+                      key={destIdx}
                       className="flex items-center group gap-4 text-start px-7 py-4 border-b uppercase border-med-green w-full hover:bg-gray-100"
                     >
-                      <FaArrowRightLong className="text-med-green group-hover:translate-x-1 transition-transform ease-in-out duration-200" />{destination.name}
+                      <FaArrowRightLong className="text-med-green group-hover:translate-x-1 transition-transform ease-in-out duration-200" />
+                      {destination.name}
                     </TransitionLink>
                   ))}
                 </div>
