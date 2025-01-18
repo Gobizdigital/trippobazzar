@@ -14,7 +14,7 @@ export default function PrivacyPolicy() {
         <div className="w-full md:w-1/2 scrollbar-hide overflow-y-scroll">
           <div className="max-w-[832px] px-10 py-28  w-full mx-auto">
             <p className="font-bold text-med-green text-base md:text-xl mb-4">
-              Our Policy :: Trippo Bazzar
+              Our Policy : Trippo Bazzar
             </p>
             {PRIVACYPOLICYDATA.map((section, index) => (
               <div

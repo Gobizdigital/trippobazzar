@@ -35,4 +35,18 @@ export const PRIVACYPOLICYDATA = [
         },
       ],
     },
+    {
+      title: "Payment Integration Guidelines",
+      content: [
+        {
+          subtitle: "RBI Compliance",
+          text: "All payment transactions through our platform are processed securely and in compliance with the Reserve Bank of India's (RBI) regulations. This ensures a safe and transparent payment experience for users.",
+        },
+        {
+          subtitle: "Authorized Payment Gateways",
+          text: "We utilize RBI-approved payment gateways, such as Razorpay, which adhere to stringent security protocols. These gateways are PCI DSS compliant to safeguard your financial data during transactions.",
+        },
+      ],
+    },
+    
   ];
