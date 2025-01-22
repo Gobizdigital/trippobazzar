@@ -21,18 +21,21 @@ export default function SubNavsDestination() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <ul className="flex flex-row em:flex-row overflow-x-scroll scrollbar-hide items-start em:items-center justify-center text-[.7rem] em:text-sm uppercase leading-6 font-normal gap-8">
             {sections.map((item, idx) => (
-              <li key={idx}>
-                <Link
-                  to={`/destination/${item.path}`}
-                  // Use the mapping to get the route
-                 
-                  className={`text-gray-500 whitespace-nowrap uppercase em:py-0 py-2 em:border-b-0 ${
-                    idx === sections.length - 1 ? "border-b-0" : "border-b-0"
-                  } em:w-auto w-full hover:text-med-green`}
-                >
-                  {item.name}
-                </Link>
-              </li>
+            <li key={idx}>
+            <Link
+              to={`/destination/${item.path}`}
+              className={`whitespace-nowrap uppercase em:py-0 py-2 em:border-b-0 ${
+                idx === sections.length - 1 ? "border-b-4" : "border-b-2"
+              } em:w-auto w-full ${
+                location.pathname === `/destination/${item.path}`
+                  ? "text-green-500"
+                  : "text-gray-500"
+              } hover:text-med-green`}
+            >
+              {item.name}
+            </Link>
+          </li>
+          
             ))}
           </ul>
         </div>

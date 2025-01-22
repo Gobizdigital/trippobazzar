@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 
 function SubNavbar({ sections }) {
-  const handleScrollTo = (sectionRef) => {
+  const [activeSection, setActiveSection] = useState(null);
+
+  const handleScrollTo = (sectionRef, label) => {
     if (sectionRef && sectionRef.current) {
       const offsetAdjustment = window.matchMedia("(min-width: 768px)").matches
         ? 90
@@ -15,6 +17,9 @@ function SubNavbar({ sections }) {
         top: offsetTop,
         behavior: "smooth",
       });
+
+      // Set the active section
+      setActiveSection(label);
     }
   };
 
@@ -24,16 +29,18 @@ function SubNavbar({ sections }) {
         <p className="pb-2 italic underline font-medium em:hidden block">
           Sub Menus
         </p>
-        <ul className="flex flex-col em:flex-row items-start  em:items-center justify-center text-[12px] sm:text-[.7rem] em:text-sm uppercase leading-6 font-normal  em:space-x-8">
+        <ul className="flex flex-col em:flex-row items-start em:items-center justify-center text-[12px] sm:text-[.7rem] em:text-sm lg:text-[.9rem] uppercase leading-6 font-normal em:space-x-8">
           {sections.map((item, idx) => (
             <li
               key={idx}
               onClick={() => {
-                handleScrollTo(item.ref);
+                handleScrollTo(item.ref, item.label);
               }}
-              className={`text-gray-500 em:py-0 py-2  em:border-b-0 ${
+              className={`cursor-pointer em:py-0 py-2 em:border-b-0 ${
                 idx === sections.length - 1 ? "border-b-0" : "border-b"
-              }  em:w-auto  w-full hover:text-black`}
+              } em:w-auto w-full ${
+                activeSection === item.label ? "text-green-500" : "text-gray-500"
+              } hover:text-black`}
             >
               {item.label}
             </li>

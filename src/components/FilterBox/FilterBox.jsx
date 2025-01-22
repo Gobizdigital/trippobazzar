@@ -149,188 +149,194 @@ export default function FilterBox({ onClose, style, showModal }) {
     <div
     style={{
       opacity: showModal ? 1 : 0,
-      visibility: isVisible ? "visible" : "hidden",
-      transition: "opacity 300ms ease-in-out",
+      visibility: showModal ? "visible" : "hidden",
+      transition: "opacity 300ms ease-in-out, visibility 300ms ease-in-out",
     }}
-    className="fixed w-full sm:pl-[10%] sm:pr-[10%] md:pl-[20%] md:pr-[20%] pt-16 pb-12 p-4 font-poppins inset-0 z-50 flex items-center justify-center bg-transpernt backdrop-blur-sm bg-opacity-50"
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-md"
   >
-      <div
-        style={style}
-        className="bg-[#f8f8f8] md:pt-9  lg:pt-10  overflow-hidden rounded-lg w-full max-w-[52rem] shadow-lg "
-      >
-        <form onSubmit={handleSubmit}>
-          <div className=" py-3 md:py-5 md:p-5">
-            <div className="flex justify-between mb-8 px-4 items-center">
-              <h2 className="text-xl uppercase font-bold ">Filters</h2>
-              <IoCloseOutline
-                onClick={onClose}
-                className="w-5 h-5 cursor-pointer"
+    <div
+      className="bg-white rounded-lg w-full max-w-[52rem] pt-14  shadow-lg overflow-hidden"
+      style={{
+        maxHeight: "90vh", // Ensure the modal doesn't overflow the screen
+        overflowY: "auto", // Enable scrolling for long content
+      }}
+    >
+      <form onSubmit={handleSubmit}>
+        {/* Modal Header */}
+        <div className="py-4 px-4 flex justify-between items-center border-b">
+          <h2 className="text-lg font-bold uppercase">Filters</h2>
+          <IoCloseOutline
+            onClick={onClose}
+            className="w-6 h-6 cursor-pointer text-gray-600 hover:text-black"
+          />
+        </div>
+  
+        {/* Modal Body */}
+        <div className="px-4 py-4 space-y-6">
+          {/* Duration Section */}
+          <div className="border-b pb-4">
+            <h3 className="font-medium mb-2">Duration</h3>
+            <input
+              type="range"
+              min="0"
+              max="10"
+              value={filterProp.range}
+              onChange={(e) => handleChange(e, "range")}
+              className="custom-range w-full"
+              style={{ background: sliderBackground }}
+            />
+            <p className="text-gray-500 mt-1">{filterProp.range} days</p>
+          </div>
+  
+          {/* Budget Section */}
+          <div className="border-b pb-4">
+            <h3 className="font-medium mb-4">Budget</h3>
+            <div className="flex flex-col gap-2">
+              {checkboxOptions.map((option, idx) => (
+                <div
+                  className="flex items-center justify-between"
+                  key={idx}
+                >
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="custom-checkbox"
+                      name={option.name}
+                      checked={filterProp.checkboxes[option.name]}
+                      onChange={(e) => handleChange(e, "checkbox")}
+                    />
+                    {option.label}
+                  </label>
+                  <p className="text-gray-500">(23)</p>
+                </div>
+              ))}
+            </div>
+          </div>
+  
+          {/* Customer Reviews Section */}
+          <div className="border-b pb-4">
+            <h3 className="font-medium mb-2">Customer Reviews</h3>
+            <input
+              type="range"
+              min="0"
+              max="5"
+              value={filterProp.reviews}
+              onChange={(e) => handleChange(e, "reviews")}
+              className="custom-range w-full"
+              style={{ background: getReviewBackground }}
+            />
+            <div className="flex items-center gap-1 mt-1">
+              <p className="text-lg">{filterProp.reviews}</p>
+              <FaStar className="text-yellow-300" />
+            </div>
+          </div>
+  
+          {/* Flight Inclusive Section */}
+          <div className="border-b pb-4">
+            <h3 className="font-medium mb-4">Flight Inclusive</h3>
+            <div className="flex flex-wrap gap-4">
+              {flightInclusive.map((option) => (
+                <div className="flex items-center" key={option.value}>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="sortBy"
+                      value={option.value}
+                      checked={filterProp.sortBy === option.value}
+                      onChange={(e) => handleChange(e, "sort")}
+                      className="custom-radio"
+                    />
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+  
+          {/* Additional Options */}
+          <div className="border-b pb-4">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                className="custom-checkbox"
+                name="visa"
+                checked={filterProp.visaIncluded}
+                onChange={(e) => handleChange(e, "visa")}
               />
-            </div>
-            <div className="flex overflow-y-auto max-h-[70vh] md:max-h-[70vh] flex-col md:flex-row pb-2 justify-between">
-              <div className="flex-1 px-4 mr-2">
-                <div className="pb-6 border-b-2">
-                  <h3 className="font-medium mb-1">Duration</h3>
-                  <input
-                    type="range"
-                    min="0"
-                    max="10"
-                    value={filterProp.range}
-                    onChange={(e) => handleChange(e, "range")}
-                    className="custom-range"
-                    style={{ background: sliderBackground }} // Inline style for dynamic background
-                  />
-                  <p className="text-gray-500">{filterProp.range} days</p>
+              Include packages with visa services
+            </label>
+          </div>
+  
+          {/* Preferences Section */}
+          <div className="border-b pb-4">
+            <h3 className="font-medium mb-4">Select Preferences To Include</h3>
+            <div className="flex flex-col gap-2">
+              {checkboxPreferences.map((option, idx) => (
+                <div
+                  className="flex items-center justify-between"
+                  key={idx}
+                >
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="custom-checkbox"
+                      name={option.name}
+                      checked={filterProp.selectPreferences[option.name]}
+                      onChange={(e) => handleChange(e, "preferences")}
+                    />
+                    {option.label}
+                  </label>
                 </div>
-                <div className="mt-6 pb-6 border-b-2">
-                  <h3 className="font-medium mb-4">Budget</h3>
-                  <div className="flex flex-col gap-2">
-                    {checkboxOptions.map((option, idx) => (
-                      <div
-                        className="flex items-center justify-between"
-                        key={idx}
-                      >
-                        <label className="flex items-center gap-1">
-                          <input
-                            type="checkbox"
-                            className="custom-checkbox"
-                            name={option.name}
-                            checked={filterProp.checkboxes[option.name]}
-                            onChange={(e) => handleChange(e, "checkbox")}
-                          />
-                          {option.label}
-                        </label>
-                        <p className="text-gray-500">(23)</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="mt-6 pb-6 border-b-2">
-                  <h3 className="font-medium mb-1">Customer Reviews</h3>
-                  <input
-                    type="range"
-                    min="0"
-                    max="5"
-                    value={filterProp.reviews}
-                    onChange={(e) => handleChange(e, "reviews")}
-                    className="custom-range-two"
-                    style={{ background: getReviewBackground }} // Inline style for dynamic background
-                  />
-                  <div className="flex items-center gap-1">
-                    <p className="m-0 text-lg">{filterProp.reviews} </p>
-                    <FaStar className="text-yellow-300 mb-[2px]" />
-                  </div>
-                </div>
-                <div className="mt-6 pb-6 border-b-2">
-                  <h3 className="font-medium mb-4">Flight Inclusive</h3>
-                  <div className="flex flex-wrap gap-4">
-                    {flightInclusive.map((option) => (
-                      <div className="flex items-center" key={option.value}>
-                        <label className="flex items-center gap-2">
-                          <input
-                            type="radio"
-                            name="sortBy" // Same name for sort radio buttons
-                            value={option.value} // Value that corresponds to the sort option
-                            checked={filterProp.sortBy === option.value} // Check if this option is selected
-                            onChange={(e) => handleChange(e, "sort")} // Handle change event
-                            className="custom-radio" // Add any custom styling you want
-                          />
-                          {option.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="mt-6 pb-6 border-b-2 md:border-b-0 md:pb-1 flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-1">
-                      <input
-                        type="checkbox"
-                        className="custom-checkbox"
-                        name="visa"
-                        checked={filterProp.visaIncluded}
-                        onChange={(e) => handleChange(e, "visa")}
-                      />
-                      Include packages with visa services
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div className="h-auto border md:block hidden"></div>{" "}
-              <div className="flex-1 px-4 mr-2 md:ml-2">
-                <div className="pb-6 mt-6 md:mt-0  border-b-2">
-                  <h3 className="font-medium mb-4">
-                    Select Preferences To Include
-                  </h3>
-                  <div className="flex flex-col gap-2">
-                    {checkboxPreferences.map((option, idx) => (
-                      <div
-                        className="flex items-center justify-between"
-                        key={idx}
-                      >
-                        <label className="flex items-center gap-1">
-                          <input
-                            type="checkbox"
-                            className="custom-checkbox"
-                            name={option.name}
-                            checked={filterProp.selectPreferences[option.name]}
-                            onChange={(e) => handleChange(e, "preferences")}
-                          />
-                          {option.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="mt-6 pb-6">
-                  <h3 className="font-medium mb-4">Themes</h3>
-                  <div className="flex flex-col gap-2">
-                    {ThemePreferences.map((option, idx) => (
-                      <div
-                        className="flex items-center justify-between"
-                        key={idx}
-                      >
-                        <label className="flex items-center gap-1">
-                          <input
-                            type="checkbox"
-                            className="custom-checkbox"
-                            name={option.name}
-                            checked={filterProp.themePreferences[option.name]}
-                            onChange={(e) => handleChange(e, "theme")}
-                          />
-                          {option.label}
-                        </label>
-                        <p className="text-gray-500">(23)</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-          <div className="px-4 py-4  rounded-b-lg bg-white">
-            <div className="md:px-4 pb-2 flex justify-between items-center">
-              <div>
-                <button
-                  type="button"
-                  onClick={resetButton}
-                  className="text-med-green hover:text-[#03b58cc4]"
+  
+          {/* Themes Section */}
+          <div className="pb-4">
+            <h3 className="font-medium mb-4">Themes</h3>
+            <div className="flex flex-col gap-2">
+              {ThemePreferences.map((option, idx) => (
+                <div
+                  className="flex items-center justify-between"
+                  key={idx}
                 >
-                  Clear All
-                </button>
-              </div>
-              <div>
-                <button
-                  type="submit"
-                  className="text-med-green px-4 py-3 border hover:text-white hover:bg-med-green transition-colors ease-in-out duration-200 rounded-lg"
-                >
-                  Apply Filter
-                </button>
-              </div>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="custom-checkbox"
+                      name={option.name}
+                      checked={filterProp.themePreferences[option.name]}
+                      onChange={(e) => handleChange(e, "theme")}
+                    />
+                    {option.label}
+                  </label>
+                  <p className="text-gray-500">(23)</p>
+                </div>
+              ))}
             </div>
           </div>
-        </form>
-      </div>
+        </div>
+  
+        {/* Modal Footer */}
+        <div className="px-4 py-4 flex justify-between items-center bg-gray-100 border-t">
+          <button
+            type="button"
+            onClick={resetButton}
+            className="text-med-green hover:underline"
+          >
+            Clear All
+          </button>
+          <button
+            type="submit"
+            className="bg-med-green text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Apply Filter
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
+  
+  
   );
 }

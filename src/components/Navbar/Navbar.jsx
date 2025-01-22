@@ -102,7 +102,7 @@ const Navbar = () => {
               <Link className="">
                 <button
                   onClick={toggleSidebar}
-                  className="border-[.1rem] flex justify-center items-center gap-2 rounded-lg tracking-wider text-med-green border-[#012831] font-poppins text-[.8rem] font-medium px-8 py-2"
+                  className="border-[.1rem] hidden emd:flex justify-center items-center gap-2 rounded-lg tracking-wider text-med-green border-[#012831] font-poppins text-[.8rem] font-medium px-8 py-2"
                 >
                   <MenuSvg />
                   Menu
