@@ -22,6 +22,7 @@ export const WishlistProvider = ({ children }) => {
     WishListCountries: [],
     WishListStates: [],
     ExtraTravellers: [],
+    BookingDetails: [],
   });
 
   const [isLoading, setIsLoading] = useState(false); // Loader state

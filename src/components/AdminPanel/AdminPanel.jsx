@@ -12,6 +12,7 @@ import AdminState from "./AdminState/AdminState";
 import AdminPackage from "./AdminPackage/AdminPackage";
 import Loader from "../Loader";
 import AdminHotel from "./AdminHotel/AdminHotel";
+import AdminContactEnquiry from "./AdminContactEnquiry/AdminContactEnquiry";
 
 function AdminPanel() {
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ function AdminPanel() {
           <Route path="state" element={<AdminState />} />
           <Route path="package" element={<AdminPackage />} />
           <Route path="hotels" element={<AdminHotel />} />
+          <Route path="contact-enquiry" element={<AdminContactEnquiry />} />
           {/* Add more routes as needed */}
         </Routes>
       </div>

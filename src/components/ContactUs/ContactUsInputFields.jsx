@@ -1,12 +1,14 @@
+import axios from "axios";
 import React, { useState } from "react";
 
 export default function ContactUsInputFields() {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    enquiryType: "Support Assistance", // default selection for enquiry type
-    message: "",
-    getupdate: false,
+    contactName: "",
+    contactEmail: "",
+    contactPhoneNumber: "",
+    contactReason: "Support Assistance", // default selection for enquiry type
+    contactDescription: "",
+    contactMePhoneNumber: false,
   });
 
   const handleChange = (e) => {
@@ -14,27 +16,52 @@ export default function ContactUsInputFields() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      await axios.post("https://trippo-bazzar-backend.vercel.app/api/contact", formData);
+
+      alert("Your contact details have been submitted successfully!");
+      setFormData({
+        contactName: "",
+        contactEmail: "",
+        contactPhoneNumber: "",
+        contactReason: "Support Assistance",
+        contactDescription: "",
+        contactMePhoneNumber: false,
+      });
+    } catch (error) {
+      console.log(error);
+      alert("Error submitting contact details. Please try again later.");
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* Name and Email Inputs */}
       <input
         type="text"
-        name="name"
+        name="contactName"
         placeholder="Name"
-        value={formData.name}
+        value={formData.contactName}
         onChange={handleChange}
         autoComplete="off"
         className="outline-2 p-3 w-full border mb-6 rounded-lg outline-med-green bg-inherit text-lg placeholder-gray-300 font-medium text-[#717A7C]"
       />
       <input
         type="email"
-        name="email"
+        name="contactEmail"
         placeholder="Email"
-        value={formData.email}
+        value={formData.contactEmail}
+        onChange={handleChange}
+        autoComplete="off"
+        className="outline-2 p-3 w-full border mb-6  rounded-lg outline-med-green bg-inherit text-lg placeholder-gray-300 font-medium text-[#717A7C]"
+      />
+
+      <input
+        type="text"
+        name="contactPhoneNumber"
+        placeholder="Phone Number"
+        value={formData.contactPhoneNumber}
         onChange={handleChange}
         autoComplete="off"
         className="outline-2 p-3 w-full border mb-6  rounded-lg outline-med-green bg-inherit text-lg placeholder-gray-300 font-medium text-[#717A7C]"
@@ -56,9 +83,9 @@ export default function ContactUsInputFields() {
             <label key={type} className="flex text-sm items-center">
               <input
                 type="radio"
-                name="enquiryType"
+                name="contactReason"
                 value={type}
-                checked={formData.enquiryType === type}
+                checked={formData.contactReason === type}
                 onChange={handleChange}
                 className="mr-2 custom-radio"
               />
@@ -70,19 +97,22 @@ export default function ContactUsInputFields() {
 
       {/* Message Textarea */}
       <textarea
-        name="message"
+        name="contactDescription"
         placeholder="Message..."
-        value={formData.message}
+        value={formData.contactDescription}
         onChange={handleChange}
         className="outline-2 mb-4 p-3 w-full h-32 border  resize-none rounded-lg outline-med-green bg-inherit text-lg placeholder-gray-300 font-medium text-[#717A7C]"
       />
-      <div className="flex mb-9 jusitfy-center items-start">
+      <div className="flex mb-9 justify-center items-start">
         <input
           type="checkbox"
-          value={formData.getupdate}
-          onChange={handleChange}
+          name="contactMePhoneNumber"
+          checked={formData.contactMePhoneNumber} // Control the checkbox with 'checked'
+          onChange={(e) =>
+            setFormData({ ...formData, contactMePhoneNumber: e.target.checked })
+          }
           className="custom-checkbox appearance-none"
-        ></input>
+        />
         <label className="text-sm">
           I want to receive an additional call back on my registered mobile
           number

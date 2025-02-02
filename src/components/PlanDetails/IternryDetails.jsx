@@ -6,13 +6,16 @@ import CouponSvg from "../../../svgs/CouponSvg";
 import Policies from "./Policies";
 import HotelsPlan from "./HotelsPlan";
 import CarosalImageModal from "../../../utils/CarosalImageModal";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { useBooking } from "../../../context/BookingContext";
+import TransitionLink from "../../../utils/TransitionLink";
 
 function IternryDetails({ data }) {
   const { id: pkdid } = useParams();
   const { searchData } = useSearch();
   const { userDetails } = useWishlist();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Plan Details");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [fadeState, setFadeState] = useState("fadeIn");
@@ -33,13 +36,7 @@ function IternryDetails({ data }) {
     discountPercentage: 0,
     maxDiscount: 0,
   });
-  const [bookData, setBookData] = useState({
-    selectedHotels: [],
-    Pack_id: pkdid,
-    guests: searchData.guests,
-    coupon: "",
-    BookingAmount: "",
-  });
+  const { setBookingDetails } = useBooking();
 
   const toggleDropdown = (id) => {
     if (selectedHotel.length > 0) {
@@ -170,11 +167,6 @@ function IternryDetails({ data }) {
       customizeHotel.childrenAgeUnder5
     );
     setIsDropdownOpen(null);
-    // setCustomizeHotel({
-    //   rooms: 1,
-    //   adults: 1,
-    //   children: 0,
-    // });
   };
 
   const handleTabChange = (tab) => {
@@ -182,22 +174,18 @@ function IternryDetails({ data }) {
     setTimeout(() => {
       setActiveTab(tab);
       setFadeState("fadeIn");
-    }, 100); // Matches the animation duration
+    }, 100);
   };
 
   const calculateDiscountedPrice = () => {
-    // Calculate the total cost for the selected hotels
     const totalHotelPrice = selectedHotel.reduce((total, hotel) => {
-      return total + (hotel.hotelPrice || 0); // Add hotelPrice of selected hotels, default to 0 if not available
+      return total + (hotel.hotelPrice || 0);
     }, 0);
 
-    // Include the main price calculation
     const mainPrice = data?.price * searchData.guests;
 
-    // Add the total of selected hotel prices to the main price
     const totalCost = mainPrice + totalHotelPrice;
 
-    // Apply coupon if available
     if (!selectedCoupon.id) return totalCost;
 
     const discount = Math.min(
@@ -219,130 +207,19 @@ function IternryDetails({ data }) {
     e.stopPropagation();
   };
 
-  const loadScript = (src) => {
-    return new Promise((resolve) => {
-      // Check if the script is already loaded
-      if (document.querySelector(`script[src="${src}"]`)) {
-        resolve(true); // Resolve immediately if script is already loaded
-        return;
-      }
-
-      // Dynamically load the script
-      const script = document.createElement("script");
-      script.src = src;
-      script.onload = () => {
-        resolve(true);
-      };
-      script.onerror = () => {
-        resolve(false);
-      };
-      document.body.appendChild(script);
-    });
-  };
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      // Prepare the data for API call
-      const requestData = {
-        selectedHotels: [...selectedHotel],
-        Pack_id: pkdid,
-        guests: searchData.guests,
-        coupon: selectedCoupon,
-      };
-      console.log("this is requestdata", requestData);
+    const requestData = {
+      selectedHotels: [...selectedHotel],
+      Pack_id: pkdid,
+      guests: searchData.guests,
+      coupon: selectedCoupon,
+    };
 
-      // Make the API call to verify the amount
-      const response = await axios.post(
-        "https://trippo-bazzar-backend.vercel.app/api/package/verifyAmount",
-        requestData
-      );
-
-      console.log(response.data);
-      // Extract total price from response
-      const { totalPrice } = response.data;
-      const { order } = response.data;
-
-      console.log("Verified Total Price:", totalPrice);
-
-      // Update the bookData state with the verified total price
-      setBookData((prev) => ({
-        ...prev,
-        selectedHotels: [...prev.selectedHotels, ...selectedHotel],
-        guests: searchData.guests,
-        coupon: selectedCoupon,
-        BookingAmount: totalPrice, // Store the verified total price in the state
-      }));
-
-      const success = await loadScript(
-        "https://checkout.razorpay.com/v1/checkout.js"
-      );
-      if (!success) {
-        console.error("Failed to load Razorpay script");
-        return;
-      }
-
-      const rzp = new window.Razorpay({
-        key: import.meta.env.RAZOR_KEY_ID,
-        amount: totalPrice * 100,
-        order_id: order.id,
-        handler: async (response) => {
-          const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-            response;
-
-          const details = {
-            order_id: razorpay_order_id,
-            payment_id: razorpay_payment_id,
-            signature: razorpay_signature,
-          };
-
-          try {
-            const paymentResponse = await axios.post(
-              "https://trippo-bazzar-backend.vercel.app/api/package/verifyPayment",
-              details
-            );
-
-            if (paymentResponse.status === 200) {
-              console.log(
-                "Payment verified successfully",
-                paymentResponse.data.message
-              );
-              // Handle success, maybe update the UI or navigate to another page
-            }
-          } catch (error) {
-            if (error.response) {
-              console.error(
-                "Payment verification failed:",
-                error.response.data.message
-              );
-            } else {
-              console.error(
-                "An error occurred during payment verification",
-                error.message
-              );
-            }
-          }
-        },
-        theme: {
-          color: "#F37254",
-        },
-      });
-
-      rzp.open();
-    } catch (error) {
-      console.error("Error verifying amount:", error.message);
-
-      // Handle error response
-      if (error.response) {
-        console.error("Server Error:", error.response.data.message);
-      } else {
-        console.error("Unexpected Error:", error.message);
-      }
-    }
+    setBookingDetails(requestData);
   };
-
-  useEffect(() => {}, [customizeHotel]);
 
   return (
     <div className="w-full md:w-[90%] mx-auto bg-white flex flex-col lg:flex-row font-poppins">
@@ -471,18 +348,20 @@ function IternryDetails({ data }) {
             Costs!!!
           </p>
           <div className="border-b mb-3 border-[#A4B6B9] w-full"></div>
-          <p className="mb-3 cursor-pointer font-semibold gap-2 flex items-start justify-between">
+          <p className="mb-4 cursor-pointer font-semibold gap-2 flex items-start justify-between">
             Total Payable: ₹ {calculateDiscountedPrice()}
             <span className="mt-[3px] text-lg">
               <IoIosArrowDown />
             </span>
           </p>
-          <button
+          <div
             onClick={handleSubmit}
-            className="bg-med-green text-lg text-white w-full  py-4 rounded-xl"
+            className="bg-med-green text-lg text-white inline-flex py-3 px-4 rounded-xl"
           >
-            Confirm and Book
-          </button>
+            <TransitionLink to={"/destination/confirmation-page"}>
+              Confirm and Book
+            </TransitionLink>
+          </div>
         </div>
 
         {/* Discount Section */}

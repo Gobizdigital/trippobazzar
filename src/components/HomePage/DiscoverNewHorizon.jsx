@@ -29,9 +29,9 @@ export default function DiscoverNewHorizon() {
     destination.name.toLowerCase().includes(formState.searchQuery.toLowerCase())
   );
 
-  const handleClose=()=>{
+  const handleClose = () => {
     setFormState({ ...formState, showModal: false });
-  }
+  };
 
   // Handle clicking on a destination from the list
   const handleDestinationClick = (destination) => {
@@ -45,6 +45,7 @@ export default function DiscoverNewHorizon() {
 
     navigate(path);
   };
+
   const handleSearch = () => {
     setSearchData({
       guests: formState.guests,
@@ -103,15 +104,15 @@ export default function DiscoverNewHorizon() {
           src={dalLek}
           alt="Background"
         /> */}
-         <img
-    className="w-full h-full object-cover"
-    srcSet={` 
+        <img
+          className="w-full h-full object-cover"
+          srcSet={` 
       ${dalLekSmall} 480w, 
       ${dalLekFull} 1980w
     `}
-    src={dalLekFull}  // Fallback if srcSet is not supported
-    alt="Background"
-  />
+          src={dalLekFull} // Fallback if srcSet is not supported
+          alt="Background"
+        />
         <div className="absolute bottom-80 md:left-10 lg:left-[4.2rem] hidden md:flex items-center">
           <img src={discoverOne} alt="Logo" className="h-5 mr-2" />
         </div>
@@ -123,7 +124,12 @@ export default function DiscoverNewHorizon() {
         <div className="absolute md:flex hidden top-20 right-4">
           <img src={discoverOne} alt="Logo" className="h-5 mr-2" />
         </div>
-        <div className="absolute bottom-9 sm:bottom-16 md:bottom-32 right-[-3rem] sm:-right-14 md:-right-9 transform -translate-x-1/2 flex justify-center items-center w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-52 lg:h-52">
+        <div
+          onClick={() => {
+            navigate("/destination");
+          }}
+          className="absolute bottom-9 sm:bottom-16 md:bottom-32 right-[-3rem] sm:-right-14 md:-right-9 transform -translate-x-1/2 flex justify-center items-center w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-52 lg:h-52"
+        >
           <ExploreSvg />
         </div>
       </div>

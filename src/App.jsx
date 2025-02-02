@@ -39,6 +39,9 @@ const DestinationPage = React.lazy(() =>
   import("./components/Destinations/DestinationPage")
 );
 
+const ConfirmationDetails = React.lazy(() =>
+  import("./components/ConfermationDetails/ConfirmationDetails")
+);
 const TravelTips = React.lazy(() =>
   import("./components/Travel-Tips/TravelTips")
 );
@@ -59,6 +62,7 @@ const PlanDetails = React.lazy(() =>
 
 const MyProfile = React.lazy(() => import("./components/MyProfile/MyProfile"));
 import Loader from "./components/Loader";
+import { BookingProvider } from "../context/BookingContext";
 
 function App() {
   const location = useLocation(); // Get the current route
@@ -90,6 +94,16 @@ function App() {
             </Suspense>
           }
         />
+
+        <Route
+          path="/destination/confirmation-page"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ConfirmationDetails />
+            </Suspense>
+          }
+        />
+
         <Route element={<ProtectedRoute />}>
           <Route path="/createprofile" element={<CreateProfile />} />
           <Route path="/aboutus" element={<AboutUs />} />
@@ -192,11 +206,13 @@ function App() {
 function AppWithRouter() {
   return (
     <WishlistProvider>
-      <SearchProvider>
-        <Router>
-          <App />
-        </Router>
-      </SearchProvider>
+      <BookingProvider>
+        <SearchProvider>
+          <Router>
+            <App />
+          </Router>
+        </SearchProvider>
+      </BookingProvider>
     </WishlistProvider>
   );
 }

@@ -21,7 +21,7 @@ export default function SideHamBurgerMenu({
     { name: "About Us", link: "/aboutus" },
     { name: "Travel Tips", link: "/traveltips" },
     { name: "Visas", link: "/" },
-    { name: "Profile", link: "/" },
+    { name: "Profile", link: "/myprofile" },
     { name: "My Bookings", link: "/" },
     { name: "Privacy Policy", link: "/aboutus/privacy-policy" },
     { name: "Careers", link: "/aboutus/careers" },
