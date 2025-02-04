@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSearch } from "../../../context/SearchContext";
 import { FlatDestinations } from "../Navbar/DestinationAccordionData";
 
-function SrchDestinationCountry() {
+function SrchDestinationCountry({ url }) {
   const [showModal, setShowModal] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false); // Initially set to false
   const toggleModal = () => setShowModal(!showModal);
@@ -81,26 +81,23 @@ function SrchDestinationCountry() {
       {item ? (
         <></>
       ) : (
-        <div className="w-[90%] relative z-10 mx-auto py-2">
+        <div className="w-[90%] relative z-20 overflow-x-auto scrollbar-hide whitespace-nowrap mx-auto py-2">
           <BreadCrumbsLink />
         </div>
       )}
-      <div className="w-full h-full relative">
+      <div className="w-full h-[30vh] ew:h-[538px] relative">
         <img
-          src={image}
+          src={url ? url : image}
           alt="main-Picture"
-          className="w-full h-auto object-contain"
+          className="w-full h-full rounded-b-3xl object-cover"
           loading="eager"
           fetchpriority="high"
-          width="1920" // Specify width
-          height="1080" // Specify height
-          style={{ objectFit: "contain" }} // Make sure the image scales to fit while maintaining aspect ratio
         />
 
         <div className="absolute w-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <div className="w-full flex items-center justify-center">
             <h2
-              className={`text-base uppercase tracking-[30px] md:tracking-[40px] text-white ew:text-xl sm:text-7xl  lg:mb-4 text-center font-bold`}
+              className={`text-lg uppercase tracking-[30px] md:tracking-[40px] text-white ew:text-3xl sm:text-7xl  lg:mb-4 text-center font-bold`}
             >
               {state ? state : item || country}
             </h2>

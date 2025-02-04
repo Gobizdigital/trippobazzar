@@ -21,6 +21,8 @@ function StateDestinationPage() {
     `https://trippo-bazzar-backend.vercel.app/api/state/name/${state}`
   );
 
+  console.log(data);
+
   if (loading) {
     return <Loader />;
   }
@@ -103,7 +105,7 @@ function StateDestinationPage() {
 
   return (
     <div className=" mx-auto max-w-[1920px] h-full ">
-      <SrchDestinationCountry />
+      <SrchDestinationCountry url={data?.StatePhotoUrl} />
       <SubNavCountry toggleModal={toggleModal} />
       <FilterBox showModal={showModal} onClose={toggleModal} />
       <CountryPakages

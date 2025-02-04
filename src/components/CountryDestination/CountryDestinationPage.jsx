@@ -19,7 +19,7 @@ function CountryDestinationPage() {
 
   return (
     <div className="max-w-[1920px]  mx-auto">
-      <SrchDestinationCountry />
+      <SrchDestinationCountry url={data?.CountryPhotoUrl} />
       <SubNavofViewall />
       <CardSection data={data} error={error} />
       <Discover data={data} />
