@@ -14,7 +14,45 @@ export default function CareersPage() {
         </div>
       </div>
       <div className="w-[90%] mx-auto">
-        <div className="flex flex-row items-end 1xl:items-center">
+        <div className="flex flex-col emd:flex-row items-end 1xl:items-center">
+        <div className="w-full emd:w-1/2  emd:hidden h-full relative">
+            <img src={image} alt="wth" className="w-full h-full object-cover" />
+            <div className="absolute p-4  rounded-lg  shadow-2xl items-center top-40 lg:top-64 left-0">
+              <div className="absolute inset-0 bg-white opacity-85 rounded-lg "></div>
+              <div className="relative z-10 flex flex-row gap-1 items-center">
+                <div className="text-yellow-300">
+                  <MdEmail className="w-14 h-14" />
+                </div>
+                <div className="text-xs">
+                  {" "}
+                  <p className="text-blue-400 mb-1 font-semibold">
+                    Congratulations
+                  </p>
+                  <p>You are joining our team</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute p-4  rounded-lg  shadow-2xl items-center top-2/3 right-0">
+              <div className="absolute inset-0 bg-white opacity-85 rounded-lg "></div>
+              <div className="relative flex flex-col items-center z-10 ">
+                <div className="text-[#994523] text-center text-3xl leading-8 font-bold">
+                  120+
+                </div>
+                <div className="text-xs text-center">
+                  {" "}
+                  <p className="mb-2">Active team members</p>
+                </div>
+                <div className="w-[80%] h-[80%] ">
+                  <img
+                    src={people}
+                    alt="wth"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="w-full emd:w-1/2">
             <p className="text-[7vw] esm:text-[7vw] ew:text-[7vw] ew:leading-[10vw]  text-med-green md:text-[50px] md:leading-[80px] mt-10 md:mt-36 mb-6 md:mb-12 text-start font-bold">
               Innovation Meets Travel<br></br>
@@ -40,7 +78,7 @@ export default function CareersPage() {
               </button>
             </div>
           </div>
-          <div className="w-1/2 emd:block hidden h-full relative">
+          <div className="w-full emd:w-1/2 hidden emd:block h-full relative">
             <img src={image} alt="wth" className="w-full h-full object-cover" />
             <div className="absolute p-4  rounded-lg  shadow-2xl items-center top-40 lg:top-64 left-0">
               <div className="absolute inset-0 bg-white opacity-85 rounded-lg "></div>

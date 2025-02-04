@@ -5,6 +5,7 @@ import discoverOne from "../../assets/home/Discover-1.svg";
 import EmpowermentSvg from "../../../svgs/EmpowermentSvg";
 import TransparencySvg from "../../../svgs/TransparancySvg";
 import ExploreSvg from "../../../svgs/ExploreSvg";
+import TransitionLink from "../../../utils/TransitionLink";
 function OurValues({ OurValuesRef }) {
   const OURVALUESDATA = [
     {
@@ -40,9 +41,9 @@ function OurValues({ OurValuesRef }) {
         <div className="absolute md:flex hidden top-20 left-2/3">
           <img src={discoverOne} alt="Logo" className="h-5  mr-2" />
         </div>
-        <div className="absolute bottom-32 -right-28 xlg:right-28 transform -translate-x-1/2 hidden md:flex justify-center items-center">
+      <TransitionLink to={'/destination/*'}>  <div className="absolute bottom-32 -right-28 xlg:right-28 transform -translate-x-1/2 hidden md:flex justify-center items-center">
           <ExploreSvg />
-        </div>
+        </div></TransitionLink>  
       </section>
       <div className="bg-white">
         <div className="w-[90%] mx-auto grid grid-cols-1 place-items-center sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-10 mmd:gap-28 px-4 sm:px-10 md:px-28 h-auto py-8 sm:py-16 md:py-28 ">
@@ -61,7 +62,7 @@ function OurValues({ OurValuesRef }) {
                   {item.title}
                 </p>
                 <br />
-                <p className="text-base sm:text-xs md:text-sm font-normal text-center">
+                <p className="text-base sm:text-xs md:text-sm font-normal text-start">
                   {item.desc}
                 </p>
               </div>

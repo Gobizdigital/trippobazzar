@@ -70,9 +70,9 @@ export default function CoursalSection() {
               key={index}
               className="w-[100%] sm:w-[60%] md:w-auto lg:w-[30%] h-auto snap-center flex-shrink-0 rounded-lg overflow-hidden shadow-md bg-opacity-50 backdrop-filter backdrop-blur-sm border-white"
             >
-              <div className="w-auto h-auto relative">
+              <div className="w-auto  h-auto relative">
                 <img
-                  className="w-full h-full object-cover"
+                  className="w-full h-full  object-cover"
                   src={destination.image}
                   alt={destination.name}
                 />

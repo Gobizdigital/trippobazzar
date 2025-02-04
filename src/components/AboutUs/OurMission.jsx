@@ -1,6 +1,6 @@
 import React from "react";
 import image from "../../assets/aboutus/advenPic.webp";
-
+import TransitionLink from "../../../utils/TransitionLink";
 function OurMission({OurMissionRef}) {
   return (
     <div ref={OurMissionRef} className="bg-white">

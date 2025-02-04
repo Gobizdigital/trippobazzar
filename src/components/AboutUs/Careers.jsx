@@ -2,6 +2,7 @@ import React from "react";
 import image1 from "../../assets/aboutus/career1.webp";
 import image2 from "../../assets/aboutus/career2.webp";
 
+import TransitionLink from "../../../utils/TransitionLink";
 function Careers({ CareersRef }) {
   return (
     <div ref={CareersRef} className="bg-white shadow-xl">
@@ -39,9 +40,9 @@ function Careers({ CareersRef }) {
                 professional heart finds a home.
               </p>
               <div className="mt-4 flex flex-wrap space-x-0 sm:space-x-4 space-y-2 sm:space-y-0">
-                <button className="border border-white text-white hover:bg-white hover hover:text-[#012831]  px-4 py-2 rounded shadow">
+           <TransitionLink to={'/aboutus/careers'}>   <button className="border border-white text-white hover:bg-white hover hover:text-[#012831]  px-4 py-2 rounded shadow">
                   Discover Careers
-                </button>
+                </button></TransitionLink>  
               </div>
             </div>
           </div>

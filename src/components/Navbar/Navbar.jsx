@@ -90,7 +90,7 @@ const Navbar = () => {
         <nav
           className={`bg-white flex items-center justify-between py-4  relative w-[90%] emd:w-[95%] xlg:w-[90%] mx-auto`}
         >
-          <div className="hidden md:flex items-center gap-8 xlg:gap-10">
+          <div className="hidden emd:flex items-center gap-8 xlg:gap-10">
             {userData === null ? (
               <Link
                 to={"/login"}
@@ -210,7 +210,7 @@ const Navbar = () => {
           <TransitionLink
             to="/"
             aria-label="Go to homepage"
-            className="flex-grow flex justify-start md:justify-end emd:justify-center"
+            className="flex-grow flex justify-start  emd:justify-center"
           >
             <HomeLogoSvg />
           </TransitionLink>
@@ -254,11 +254,12 @@ const Navbar = () => {
                 />
               )}
             </div>
-
+   
             {/* Book a Trip Button */}
-            <button className="bg-med-green text-white px-4 h-9 rounded-md">
+            <TransitionLink to="/destination" >
+            <button className="bg-med-green text-white text-[.8rem] px-4 h-9 rounded-md">
               Book a Trip
-            </button>
+            </button></TransitionLink>
           </div>
 
           {/* Mobile Menu Overlay */}

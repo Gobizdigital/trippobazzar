@@ -1,6 +1,6 @@
 import image1 from "../../assets/aboutus/image1over.webp";
 import image2 from "../../assets/aboutus/image2over.webp";
-
+import TransitionLink from "../../../utils/TransitionLink";
 import React from "react";
 
 export default function Whoweare({WhoWeAreRef}) {
@@ -24,12 +24,14 @@ export default function Whoweare({WhoWeAreRef}) {
           personalized masterpiece.
         </p>
         <div className="mt-4 flex flex-wrap gap-4">
+         <TransitionLink to={'/destination/*'}>
           <button className="bg-med-green text-white hover:text-med-green hover:bg-white px-4 py-2 rounded shadow">
             Explore Plans
-          </button>
-          <button className="border border-med-green text-med-green hover:text-white hover:bg-med-green px-4 py-2 rounded shadow">
+          </button></TransitionLink> 
+          <TransitionLink to={'/aboutus/privacy-policy'}>
+         <button className="border border-med-green text-med-green hover:text-white hover:bg-med-green px-4 py-2 rounded shadow">
             Our Policy
-          </button>
+          </button>  </TransitionLink>
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import OurMission from "./OurMission";
 import Careers from "./Careers";
 import StayConnected from "./StayConnected";
 
+import TransitionLink from "../../../utils/TransitionLink";
 export default function AboutUs() {
   const WhoWeAreRef = useRef(null);
   const OurValuesRef = useRef(null);
