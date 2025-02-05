@@ -3,8 +3,8 @@ import React from "react";
 export default function YellowCircularDisc() {
   return (
     <svg
-      width="257"
-      height="257"
+      width="180"
+      height="180"
       viewBox="0 0 257 257"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

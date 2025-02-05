@@ -1,5 +1,5 @@
 import React from "react";
-import clip from "../../assets/aboutus/clipimage.webp";
+import clip from "../../assets/aboutus/StayConnect.jpg";
 import ContactUsSocialLinks from "../ContactUs/ContactUsSocialLinks";
 import { socialMediaData } from "../../../utils/SocialMediaData";
 import TransitionLink from "../../../utils/TransitionLink";

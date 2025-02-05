@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
-import adventureImage from "../../assets/home/trekking.webp";
+import adventureImage from "../../assets/home/advanture.webp";
 
 export default function YourCustomAdventure() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -20,15 +20,15 @@ export default function YourCustomAdventure() {
   const progressWidth = ((currentIndex + 1) / carouselItems) * 100; // Use `carouselItems` instead of `carouselItems.length`
 
   return (
-    <section className="w-full max-w-[1720px] mx-auto h-auto md:min-h-[1080px] bg-white relative ">
+    <section className="w-full max-w-[1720px] mx-auto h-auto  bg-white relative ">
       <div className="flex md:flex-row flex-col h-full w-full ">
         {/* Right Side Image Div */}
 
         <div className="w-full md:w-[50%] h-full bg-white p-8 flex flex-col justify-center">
-          <h2 className="text-[40px] esm:text-[50px] em:text-[65px] md:text-[7vw] exl:text-[100px] exl:leading-[120px] font-extrabold leading-[50px] em:leading-[70px] md:leading-[8vw] md:mt-28 mb-8 em:mb-14">
+          <h2 className="text-[40px] esm:text-[50px] em:text-[65px] md:text-[5.2vw] exl:text-[6rem] exl:leading-[120px] font-extrabold leading-[50px] em:leading-[70px] md:leading-[8vw] md:mt-6 mb-8 em:mb-10">
             YOUR CUSTOM ADVENTURE.
           </h2>
-          <p className="text-gray-700 w-full md:max-w-md mb-10 md:mb-28">
+          <p className="text-gray-700 text-sm pr-3 md:pr-9 w-full md:max-w-md mb-10 md:mb-11">
             Craft your dream journey with us. Explore destinations, create
             memories, and let your adventure begin. From enchanting getaways to
             exotic adventures, our website crafts the perfect journey just for
@@ -36,17 +36,17 @@ export default function YourCustomAdventure() {
           </p>
 
           {/* Search Bar */}
-          <div className="flex flex-col md:flex-row items-center w-full md:max-w-xl mb-10 md:mb-28 gap-4 mt-4">
+          <div className="flex flex-col md:flex-row items-center w-full md:max-w-xl mb-10 md:mb-14 gap-4 mt-4">
             <input
               type="text"
               placeholder="Search destinations..."
-              className="border-2 border-med-green w-full md:w-auto rounded-l-md py-2 px-4 flex-1 outline-none"
+              className="border-[1.5px] border-med-green w-full md:w-auto text-sm rounded-l-md py-2 px-4 flex-1 outline-none"
             />
-            <button className="bg-med-green w-full ml-1 md:w-auto text-white py-2 px-6 rounded-md">
+            <button className="bg-med-green w-full ml-1 text-sm md:w-auto text-white py-2 px-6 rounded-md">
               Search
             </button>
           </div>
-          <div className="mb-20">
+          <div className="mb-12">
             <p className="text-6xl font-extrabold flex items-center space-x-1">
               <span className="relative -top-1">{currentIndex + 1}</span>
               <span className="text-3xl font-medium relative top-1">/</span>
@@ -81,13 +81,14 @@ export default function YourCustomAdventure() {
           </div>
         </div>
         {/* Left Side Text Div */}
-        <div className=" w-full md:w-[50%] bg-white h-auto md:h-[1080px]">
-          <img
-            src={adventureImage}
-            alt="Adventure"
-            className="w-full h-full object-cover  md:rounded-bl-[30%]"
-          />
-        </div>
+        <div className="w-full md:w-[49%] mx-auto bg-white h-auto md:aspect-[4/5]">
+  <img
+    src={adventureImage}
+    alt="Adventure"
+    className="w-full h-full object-cover md:rounded-bl-[30%]"
+  />
+</div>
+
       </div>
     </section>
   );

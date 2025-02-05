@@ -1,6 +1,6 @@
 import React from "react";
 import BreadCrumbsLink from "../../../utils/BreadCrumbsLink";
-import clip from "../../assets/aboutus/clipimage.webp";
+import clip from "../../assets/aboutus/ContactUs.jpg";
 import ContactUsSocialLinks from "./ContactUsSocialLinks";
 import ContactUsInputFields from "./ContactUsInputFields";
 

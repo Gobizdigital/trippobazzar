@@ -31,8 +31,8 @@ export default function CoursalSection() {
     }
   };
   return (
-    <section className="w-full h-auto relative">
-      <div className="relative h-auto min-h-[865px] em:min-h-[1080px]">
+    <section className="w-full h-auto relative bg-[#FFFFFF]">
+      <div className="relative h-auto min-h-[765px] em:min-h-[890px] xl:min-h-[1200px] ">
         <div className="absolute top-0 left-0 h-2/3 w-full bg-[#012831]"></div>
         <div className="absolute bottom-0 left-0 h-1/3 w-full bg-white"></div>
         <div className="relative z-10 pt-14 pb-14 border-b border-white text-white">
@@ -45,7 +45,7 @@ export default function CoursalSection() {
             to have a great time exploring new places and have fun.
           </p>
         </div>
-        <div className="w-full flex justify-center my-12 gap-4 relative z-10">
+        <div className="w-full flex justify-center my-9 gap-4 relative z-10">
           <button
             aria-label="Scroll left"
             onClick={() => handleScroll("left")}
@@ -68,7 +68,7 @@ export default function CoursalSection() {
           {destinations.map((destination, index) => (
             <div
               key={index}
-              className="w-[100%] sm:w-[60%] md:w-auto lg:w-[30%] h-auto snap-center flex-shrink-0 rounded-lg overflow-hidden shadow-md bg-opacity-50 backdrop-filter backdrop-blur-sm border-white"
+              className="w-[95%] sm:w-[60%] md:w-auto lg:w-[27%] h-[70vh] snap-center flex-shrink-0 rounded-lg overflow-hidden shadow-md bg-opacity-50 backdrop-filter backdrop-blur-sm border-white"
             >
               <div className="w-auto  h-auto relative">
                 <img
@@ -76,12 +76,14 @@ export default function CoursalSection() {
                   src={destination.image}
                   alt={destination.name}
                 />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <YellowCircularDisc />
-                  <div className="absolute inset-0 flex items-center justify-center text-6xl leading-10 text-white">
-                    <p>{destination.name}</p>
-                  </div>
-                </div>
+<div className="absolute top-1/2 left-[50%] -translate-x-1/2 -translate-y-1/2 max-w-[300px]">
+  <YellowCircularDisc className="w-full h-full" />
+  <div className="absolute inset-0 flex items-center justify-center">
+    <p className="text-2xl leading-10 text-white text-center">{destination.name}</p>
+  </div>
+</div>
+
+
               </div>
             </div>
           ))}
