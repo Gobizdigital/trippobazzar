@@ -133,9 +133,15 @@ export default function AdminHotel() {
                     Price: Rs. {data?.hotelPrice}/-
                   </p>
                   <p className="text-xl flex gap-1 items-center font-semibold ">
-                    <span> Rating</span>{" "}
+                    <span>Rating</span>{" "}
                     <span className="mt-[2px]">{data?.hotelRating}</span>
                     <IoIosStar className="mb-1 text-yellow-300" />
+                  </p>
+
+                  <p className="text-xl flex gap-1 items-center font-semibold ">
+                    <span className="mt-[2px]">
+                      Category: {data?.hotelType}
+                    </span>
                   </p>
 
                   <div className="absolute top-1 right-0 flex flex-col gap-2">

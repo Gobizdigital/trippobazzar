@@ -6,7 +6,9 @@ export default function AddHotel({ setIsAddingPackage, addNew }) {
     hotelPrice: null,
     hotelRating: null,
     hotelPhotoUrl: [],
+    hotelType: "",
   });
+  const packageData = ["Deluxe", "Super Deluxe", "Luxury"];
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prevData) => ({
@@ -67,6 +69,32 @@ export default function AddHotel({ setIsAddingPackage, addNew }) {
             onChange={handleChange}
             className="text-xl font-semibold text-green-600"
           />
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">What's Included</h2>
+          <ul className="flex items-center gap-3">
+            {packageData.map((packag, idx) => (
+              <li
+                key={idx}
+                className={`cursor-pointer  p-2 w-full rounded-md  ${
+                  data.hotelType === packag
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100"
+                }`}
+                onClick={() => setData({ ...data, hotelType: packag })} // Set single value
+              >
+                <span className="mr-4">{packag}</span>
+              </li>
+            ))}
+          </ul>
+
+          {/* Display the selected value */}
+          {data.hotelType && (
+            <p className="mt-2 text-lg font-semibold">
+              Selected: {data.hotelType}
+            </p>
+          )}
         </section>
 
         {/* Main Photos */}
