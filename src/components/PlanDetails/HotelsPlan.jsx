@@ -183,7 +183,7 @@ export default function HotelsPlan({
                       )}
                     </div>
                     <p className="text-xs sm:text-sm text-gray-500 mt-2">
-                      Delux
+                      {hdetail?.hotelType}
                     </p>
                     <div className="flex gap-1 mt-1">
                       {[...Array(5)].map((_, i) => {
