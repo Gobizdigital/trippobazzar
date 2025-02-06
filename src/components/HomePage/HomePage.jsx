@@ -24,10 +24,10 @@ export default function HomePage() {
       <div data-aos="fade-left">
         <CoursalSection />
       </div>
-      <div data-aos="zoom-in">
+      <div data-aos="fade-up">
         <YourCustomAdventure />
       </div>
-      <div data-aos="flip-up">
+      <div data-aos="fade-down">
         <FromOurTravellers />
       </div>
     </div>

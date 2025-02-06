@@ -51,7 +51,7 @@ export default function CoursalSection() {
             <BsArrowRight />
           </button>
         </div>
-        <div ref={containerRef} className="flex gap-4 pl-4 md:pl-7 overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10" data-aos="fade-left">
+        <div ref={containerRef} className="flex gap-4 pl-4 md:pl-7 overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10" data-aos="fade-out">
           {destinations.map((destination, index) => (
             <div key={index} className="w-64 h-80 snap-center flex-shrink-0 rounded-lg overflow-hidden shadow-md" data-aos="zoom-in">
               <img className="w-full h-full object-cover" src={destination.image} alt={destination.name} />
