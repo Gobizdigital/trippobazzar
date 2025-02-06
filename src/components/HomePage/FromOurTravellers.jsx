@@ -135,15 +135,15 @@ export default function FromOurTravellers() {
       <div className="flex justify-center mt-4 gap-6">
         <button
           onClick={scrollLeft}
-          className="p-2 rounded-full bg-gray-300 hover:bg-gray-400 transition duration-300"
+          className="p-2 rounded-full transition duration-300"
         >
-          <FaArrowLeft className="text-gray-700 hover:text-gray-500" />
+          <FaArrowLeft className="text-gray-700 hover:text-gray-400" />
         </button>
         <button
           onClick={scrollRight}
-          className="p-2 rounded-full bg-gray-300 hover:bg-gray-400 transition duration-300"
+          className="p-2 rounded-full  transition duration-300"
         >
-          <FaArrowRight className="text-gray-700 hover:text-gray-500" />
+          <FaArrowRight className="text-gray-700 hover:text-gray-400" />
         </button>
       </div>
     </section>
