@@ -77,7 +77,7 @@ function SrchDestinationCountry({ url }) {
   const handleBlur = () => setTimeout(() => setDropdownVisible(false), 200);
 
   return (
-    <div className="rounded-b-3xl font-poppins ">
+    <div className="rounded-b-3xl font-poppins relative">
       {item ? (
         <></>
       ) : (
@@ -85,7 +85,7 @@ function SrchDestinationCountry({ url }) {
           <BreadCrumbsLink />
         </div>
       )}
-      <div className="w-full h-[30vh] ew:h-[538px] relative">
+      <div className="w-full h-[30vh] ew:h-[70vh] relative">
         <img
           src={url ? url : image}
           alt="main-Picture"
@@ -93,11 +93,12 @@ function SrchDestinationCountry({ url }) {
           loading="eager"
           fetchpriority="high"
         />
-
+  {/* Blackish Overlay */}
+  <div className="absolute top-0 left-0 w-full h-full bg-black opacity-65 rounded-b-3xl"></div>
         <div className="absolute w-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <div className="w-full flex items-center justify-center">
             <h2
-              className={`text-lg uppercase tracking-[30px] md:tracking-[40px] text-white ew:text-3xl sm:text-7xl  lg:mb-4 text-center font-bold`}
+              className={`text-lg uppercase sm:tracking-[20px] md:tracking-[40px] text-white ew:text-3xl sm:text-7xl  lg:mb-4 text-center font-bold`}
             >
               {state ? state : item || country}
             </h2>
@@ -226,7 +227,7 @@ function SrchDestinationCountry({ url }) {
                 onClick={handleSearch}
                 className="flex w-full text-center text-lg h-11 items-center justify-center font-medium px-4 py-2 bg-med-green text-white rounded-md"
               >
-                <p>Search Packages</p>
+                <p className="text-sm">Search Packages</p>
               </button>
             </div>
           </div>
