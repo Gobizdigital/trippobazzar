@@ -17,11 +17,11 @@ export const TRAVELTIPSDATA = [
   {
     title: "Transport",
     icon: <FaPlaneDeparture />,
-    desc: "You’ll quickly understand why Japan does not need public transport. All accommodation properties meet flights, providing free transport for arriving and departing guests. Walking is a pleasure on the streets of Japan as you’re never far from shops, restaurants, or beaches. There are bicycles and helmets for hire and a limited number of rental cars.",
+    desc: "Japan boasts one of the most efficient and well-connected transport systems in the world. From high-speed bullet trains (Shinkansen) to extensive metro networks, getting around is seamless. However, in many areas, you may not even need public transport. Most accommodation properties offer complimentary pick-up and drop-off services for guests arriving by air or train. Walking is a delightful experience, as Japan’s streets are clean, safe, and lined with convenient amenities like shops, restaurants, and cultural attractions. Bicycles and helmets are available for hire, providing an eco-friendly way to explore, while rental cars are an option for those looking to venture into the countryside or more remote areas. Taxis are also readily available, though they can be pricier compared to public transport options. Whether you're navigating bustling cities or serene rural landscapes, Japan ensures a smooth and enjoyable travel experience.",
   },
   {
     title: "Safety",
-    icon: <MdHealthAndSafety className="w-5 h-5"/>,
+    icon: <MdHealthAndSafety className="w-5 h-5" />,
     desc: "Japan is renowned for its safety, boasting low crime rates and a culture that prioritizes order. Travelers can navigate the country confidently by adhering to some basic precautions. Respect local customs, such as bowing and removing shoes indoors. Take advantage of the efficient public transportation system but remain vigilant for pickpockets, especially in crowded areas. Carry cash, as credit cards are not universally accepted, and be aware of the limited availability of ATMs. Stay informed about natural disasters, particularly earthquakes and typhoons, and follow evacuation procedures. Familiarize yourself with traffic rules, as traffic moves on the left side of the road. Show courtesy and respect personal space, as Japanese society values politeness. Overall, Japan provides a secure environment for visitors, but basic awareness and cultural sensitivity enhance the safety and enjoyment of your experience.",
   },
   {

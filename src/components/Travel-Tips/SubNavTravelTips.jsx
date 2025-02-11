@@ -21,12 +21,19 @@ function SubNavTravelTips({ descriptionRefs, sections }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [descriptionRefs]);
 
-  const handleScrollToSection = (index) => {
-    descriptionRefs.current[index].current.scrollIntoView({
+ const handleScrollToSection = (index) => {
+  const section = descriptionRefs.current[index].current;
+  const offset = 10 * window.innerHeight / 100; // 10vh offset from the top
+
+  if (section) {
+    const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: sectionTop - offset,
       behavior: "smooth",
-      block: "start", // Scroll to the top of the section
     });
-  };
+  }
+};
+
 
   return (
     <nav className="bg-white sticky top-[80px] z-30 shadow-inner">
