@@ -76,7 +76,7 @@ export default function PopularPackages() {
         and easy-to-choose travel packages.
       </p>
       <section className=" relative text-center w-[90%] max-w-[1720px] mx-auto">
-        <div className="relative w-auto h-auto mx-auto flex items-center">
+        <div className="relative w-auto h-auto  mx-auto flex items-center">
           {/* Main Image Container */}
           <div className="w-full h-[700px] overflow-hidden rounded-lg">
             <img
@@ -97,13 +97,13 @@ export default function PopularPackages() {
 
             {/* Location and Price Info */}
             <div className=" mt-5">
-              <p className="text-3xl md:text-5xl mb-4 md:mb-8 mt-16 font-bold">
+              <p className="text-3xl md:text-5xl mb-4 md:mb-5 mt-16 font-bold">
                 {location}
                 <span className="text-gray-600 text-base md:text-xl font-medium">
                   ,{country}
                 </span>
               </p>
-              <div className="flex flex-row justify-center gap-4 mb-2 ew:mb-4 md:mb-10 max-w-lg mx-auto">
+              <div className="flex flex-row justify-center gap-4 mb-2 ew:mb-4 md:mb-6 max-w-lg mx-auto">
                 <p className="text-gray-600 text-sm md:text-lg whitespace-nowrap rounded-lg bg-[#f8f8f8] font-medium p-4 ">
                   8 Days 7 Nights
                 </p>
@@ -126,8 +126,8 @@ export default function PopularPackages() {
             </div>
 
             {/* Additional Info Section */}
-            <div className="absolute rounded-b-lg md:rounded-br-lg md:rounded-b-none bottom-0 left-0 w-full mt-4 border-t border-gray-200 bg-[#EDF7F9]">
-              <p className="mt-8 px-4 text-sm md:text-base xlg:text-lg tracking-wide">
+            <div className="absolute rounded-b-lg md:rounded-br-lg md:rounded-b-none bottom-0 left-0 w-full mt-2 border-t border-gray-200 bg-[#EDF7F9]">
+              <p className="mt-4 px-4 text-sm md:text-base xlg:text-lg tracking-wide">
                 Our travel plans include all facilities as per your custom
                 requirements.
               </p>

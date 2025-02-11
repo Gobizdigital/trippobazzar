@@ -133,7 +133,7 @@ const Navbar = () => {
                       : "opacity-0 pointer-events-none"
                   }`}
                 >
-                  <div className="flex flex-row z-20 flex-wrap gap-4 p-2">
+                  <div className="flex flex-row z-20 flex-wrap gap-4 p-2"> 
                     {Destination.description.map((region, idx) => (
                       <div key={idx} className="flex flex-col">
                         <h3 className="text-sm font-semibold text-med-green uppercase mb-1 border-b-2 border-med-green">

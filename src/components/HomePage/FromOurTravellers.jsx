@@ -60,7 +60,7 @@ export default function FromOurTravellers() {
 
   return (
     <section
-      className={`w-full md:w-[60%] lg:w-[67%] ${
+      className={`w-full md:w-[70%] lg:w-[87%] ${
         id ? "mb-0 pb-20" : "mb-20 pb-0"
       } h-auto mx-auto mt-8 p-4 bg-transparent`}
     >
