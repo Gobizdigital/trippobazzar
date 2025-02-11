@@ -54,8 +54,8 @@ function CrousalSection({ selectedDestination }) {
           View All {selectedDestination?.ContinentName} Destinations
         </button>
 
-        <div className="  overflow-hidden  pt-7 w-full ">
-          <div className="flex flex-col md:items-start items-center md:flex-row gap-10 w-full transition-transform duration-500">
+        <div className="overflow-x-auto pt-10 scrollbar-hide w-full">
+          <div className="flex flex-nowrap gap-5 w-max transition-transform duration-500">
             {selectedDestination?.Countries?.map((item, idx) => (
               <div
                 key={idx}
@@ -64,10 +64,10 @@ function CrousalSection({ selectedDestination }) {
                     `/destination/${selectedDestination.ContinentName}/${item.CountryName}`
                   );
                 }}
-                className="w-full sm:w-[350px] " // This makes sure each item takes up a responsive fraction of the width.
+                className="w-[350px] flex-shrink-0 cursor-pointer"
               >
                 <div className="bg-white shadow-lg h-auto rounded overflow-hidden">
-                  <div className="w-full h-[190px] md:h-[270px]">
+                  <div className="w-full h-[190px] md:h-[230px]">
                     <img
                       src={item?.CountryPhotoUrl}
                       alt={`photoNumber:${idx + 1}`}
@@ -99,6 +99,7 @@ function CrousalSection({ selectedDestination }) {
             ))}
           </div>
         </div>
+
         <div className="absolute  top-[25%] mt-3 gap-4 right-10 hidden md:flex items-center">
           <button
             onClick={handlePrev}

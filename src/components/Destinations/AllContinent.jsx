@@ -153,11 +153,14 @@ function AllContinent({ data, loading }) {
                     {item?.Countries?.map((card, index) => (
                       <div
                         key={`${index}-1`} // Unique key for the first instance
-                        onClick={() =>
+                        onClick={() => {
+                          if (!card?.States?.[0]?.Packages) {
+                            return; // Prevent navigation if the price is not available
+                          }
                           navigate(
                             `/destination/${item.ContinentName}/${card.CountryName}`
-                          )
-                        }
+                          );
+                        }}
                         className="relative h-[260px]  w-[350px] rounded-lg overflow-hidden shadow-lg flex-shrink-0 scroll-snap-align-start cursor-pointer"
                       >
                         {/* Image */}
@@ -168,26 +171,38 @@ function AllContinent({ data, loading }) {
                         />
 
                         {/* Top left tag */}
-                        <p className="absolute top-0 text-base left-0 bg-green-500 text-white px-3 py-2 rounded-br-md">
-                          ₹ {card?.States[0]?.Packages[0]?.price} onwards
-                        </p>
+                        {card?.States[0]?.Packages[0]?.price && (
+                          <p className="absolute top-0 text-base left-0 bg-green-500 text-white px-3 py-2 rounded-br-md">
+                            ₹ {card?.States[0]?.Packages[0]?.price} onwards
+                          </p>
+                        )}
 
                         {/* Heart icon */}
-                        <button
-                          className={`absolute top-2 right-2 text-2xl sm:text-3xl p-1 rounded-full ${
-                            liked.includes(card._id)
-                              ? "text-pink-500"
-                              : "text-white"
-                          }`}
-                          onClick={(e) => toggleHeart(e, card._id)}
-                          aria-label="Wishlist icon"
-                        >
-                          <FaHeart />
-                        </button>
+                        {card?.States?.[0]?.Packages && (
+                          <button
+                            className={`absolute top-2 right-2 text-2xl sm:text-3xl p-1 rounded-full ${
+                              liked.includes(card._id)
+                                ? "text-pink-500"
+                                : "text-white"
+                            }`}
+                            onClick={(e) => toggleHeart(e, card._id)}
+                            aria-label="Wishlist icon"
+                          >
+                            <FaHeart />
+                          </button>
+                        )}
 
                         {/* Bottom div */}
                         <div className="bg-white h-[24%] rounded-b-lg md:h-[20%] text-lg sm:text-xl md:text-2xl text-black w-full px-3 py-2 flex justify-between items-center">
-                          <p>{card.CountryName}</p>
+                          <p>
+                            {card.CountryName}{" "}
+                            {!card?.States?.[0]?.Packages && (
+                              <span className="text-base">
+                                (Coming Soon....)
+                              </span>
+                            )}
+                          </p>
+
                           <FaArrowRight className="text-md sm:text-lg" />
                         </div>
                       </div>

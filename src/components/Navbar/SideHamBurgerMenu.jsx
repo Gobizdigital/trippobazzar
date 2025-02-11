@@ -120,7 +120,11 @@ export default function SideHamBurgerMenu({
             {data.map((item, idx) => (
               <Link
                 to={item.link}
-                className="text-start px-7 py-4 border-b uppercase border-med-green w-full"
+                className={`text-start px-7 py-4 border-b uppercase border-med-green w-full transition duration-300 ${
+                  location.pathname === item.link
+                    ? "text-med-green font-bold"
+                    : ""
+                }`}
                 onClick={() => handleLinkClick(item.link)}
                 key={idx}
               >
