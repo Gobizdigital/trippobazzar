@@ -5,7 +5,7 @@ import { FaSearch } from "react-icons/fa"; // Importing icons
 import HamburgerSvg from "../../../svgs/HamburgerSvg";
 import LargeDeviceSidebar from "./LargeDeviceSidebar";
 import SideHamBurgerMenu from "./SideHamBurgerMenu";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { IoIosArrowDown } from "react-icons/io";
 import MenuSvg from "../../../svgs/MenuSvg";
@@ -16,6 +16,7 @@ import HomeLogoSvg from "../../../svgs/HomeLogo";
 
 const Navbar = () => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const location = useLocation();
   const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // New state for large device sidebar
@@ -133,7 +134,7 @@ const Navbar = () => {
                       : "opacity-0 pointer-events-none"
                   }`}
                 >
-                  <div className="flex flex-row z-20 flex-wrap gap-4 p-2"> 
+                  <div className="flex flex-row z-20 flex-wrap gap-4 p-2">
                     {Destination.description.map((region, idx) => (
                       <div key={idx} className="flex flex-col">
                         <h3 className="text-sm font-semibold text-med-green uppercase mb-1 border-b-2 border-med-green">
@@ -218,14 +219,18 @@ const Navbar = () => {
           {/* Right Side - Nav Links and Search Bar (visible on medium and larger screens) */}
           <div className="hidden whitespace-nowrap  emd:flex items-center justify-center space-x-5 xlg:space-x-9">
             <TransitionLink
-              className="font-poppins text-[.8rem] font-normal relative inline-block transition duration-300 ease-in-out hover:text-green-500 "
+              className={`font-poppins text-[.8rem] font-normal relative inline-block transition duration-300 ease-in-out  ${
+                location.pathname === "/aboutus" ? "text-med-green" : ""
+              } hover:text-green-500 `}
               to={"/aboutus"}
             >
               ABOUT US
             </TransitionLink>
             <TransitionLink
               to={"/traveltips"}
-              className="font-poppins text-[.8rem] font-normal relative inline-block transition duration-300 ease-in-out hover:text-green-500 "
+              className={`font-poppins text-[.8rem] font-normal
+                ${location.pathname === "/traveltips" ? "text-med-green" : ""}
+                relative inline-block transition duration-300 ease-in-out hover:text-green-500 `}
             >
               TRAVEL TIPS
             </TransitionLink>
@@ -254,12 +259,13 @@ const Navbar = () => {
                 />
               )}
             </div>
-   
+
             {/* Book a Trip Button */}
-            <TransitionLink to="/destination" >
-            <button className="bg-med-green text-white text-[.8rem] px-4 h-9 rounded-md">
-              Book a Trip
-            </button></TransitionLink>
+            <TransitionLink to="/destination">
+              <button className="bg-med-green text-white text-[.8rem] px-4 h-9 rounded-md">
+                Book a Trip
+              </button>
+            </TransitionLink>
           </div>
 
           {/* Mobile Menu Overlay */}

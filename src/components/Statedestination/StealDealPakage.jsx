@@ -49,7 +49,7 @@ export default function StealDealPakage() {
     SixthSvgWhatIncluded,
   ];
   const progressWidth = ((currentIndex + 1) / carouselItems.length) * 100;
-  const { image, location, country, price, description } =
+  const { image, location, price, description } =
     carouselItems[currentIndex];
 
   const OURVALUESDATA = [
@@ -87,7 +87,7 @@ export default function StealDealPakage() {
           </div>
 
           {/* Overlay Container */}
-          <div className="absolute bottom-auto right-auto md:top-12 md:left-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:-translate-x-0 md:-translate-y-0 md:bottom-0 md:right-0 w-[90%] mx-auto vem:mx-0 vem:w-[500px] lg:w-[42.8%] h-[624px] md:h-[700px] bg-white p-4 rounded-lg md:rounded-r-lg">
+          <div className="absolute bottom-auto right-auto md:top-0 md:left-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:-translate-x-0 md:-translate-y-0 md:bottom-0 md:right-0 w-[90%] mx-auto vem:mx-0 vem:w-[500px] lg:w-[42.8%] h-[624px] md:h-[700px] bg-white p-4 rounded-lg md:rounded-r-lg">
             {/* Green Small Div */}
             <div className="absolute top-0 left-0">
               <p className="text-[.7rem] bg-[#2C9C48] rounded-br-lg rounded-tl-lg md:rounded-tl-none h-10 flex items-center justify-center w-44 font-semibold text-white">
@@ -97,11 +97,8 @@ export default function StealDealPakage() {
 
             {/* Location and Price Info */}
             <div className="mt-5">
-              <p className="text-3xl md:text-5xl mb-4 md:mb-5 mt-7 font-bold">
+              <p className="leading-7 ew:leading-normal text-2xl sm:text-3xl md:text-[42px] mb-4 md:mb-4 mt-7 font-bold">
                 {location}
-                <span className="text-gray-600 text-base md:text-xl font-medium">
-                  ,{country}
-                </span>
               </p>
               <div className="flex flex-row justify-center gap-4 mb-2 ew:mb-4 md:mb-3 max-w-lg mx-auto">
                 <p className="text-gray-600 text-sm md:text-lg whitespace-nowrap rounded-lg bg-[#f8f8f8] font-medium p-4">
@@ -115,9 +112,9 @@ export default function StealDealPakage() {
               <h2 className="bg-white text-3xl ew:text-5xl font-bold text-[#00B58A] inline-block px-2 py-1 rounded-md">
                 {price}
               </h2>
-              <p className="mt-2 mb-2 font-semibold">What’s included?</p>
+              <p className="mt-2 mb-4 font-semibold">What’s included?</p>
 
-              <div className="flex flex-wrap justify-center gap-2 mb-2 mx-auto">
+              <div className="flex flex-wrap justify-center gap-2 mb-6 mx-auto">
                 {svgComponents.map((SvgComponent, index) => (
                   <div key={index} className="w-6 sm:w-8 h-6 sm:h-8">
                     <SvgComponent />

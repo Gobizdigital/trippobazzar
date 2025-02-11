@@ -72,13 +72,15 @@ export const WishlistProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Error verifying user:", error);
+      localStorage.removeItem("userInfo");
+      window.location.href = "/login";
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    verifyUser(); // Initially verify user when the app starts
+    verifyUser(); 
   }, []);
 
   const updateUserWishlist = async (updatedCountries, updatedStates) => {

@@ -24,7 +24,7 @@ function SubNavbar({ sections }) {
   };
 
   return (
-    <nav className="bg-white  shadow-inner mb-8">
+    <nav className="bg-white shadow-inner mb-8">
       <div className="max-w-7xl mx-auto px-4 py-4">
  
         <ul className="flex flex-row items-start em:items-center justify-center text-[12px] sm:text-[.7rem] em:text-sm lg:text-[.9rem] uppercase leading-6 font-normal em:space-x-8">

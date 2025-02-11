@@ -11,6 +11,7 @@ import Careers from "./Careers";
 import StayConnected from "./StayConnected";
 
 import TransitionLink from "../../../utils/TransitionLink";
+import BreadCrumbsLink from "../../../utils/BreadCrumbsLink";
 
 export default function AboutUs() {
   const WhoWeAreRef = useRef(null);
@@ -35,6 +36,9 @@ export default function AboutUs() {
 
   return (
     <div className="bg-[#F8F8F8] max-w-[1920px] mx-auto">
+      <div className="w-full sticky top-[80px] z-20 bg-white px-[5%] mx-auto  py-2">
+        <BreadCrumbsLink />
+      </div>
       <div data-aos="fade-up">
         <WeCraft />
       </div>
