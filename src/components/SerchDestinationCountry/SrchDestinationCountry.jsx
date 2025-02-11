@@ -85,7 +85,7 @@ function SrchDestinationCountry({ url }) {
           <BreadCrumbsLink />
         </div>
       )}
-      <div className="w-full h-[30vh] ew:h-[70vh] relative">
+      <div className="w-full h-[30vh] ew:h-[70vh] lg:h-[50vh] relative">
         <img
           src={url ? url : image}
           alt="main-Picture"
@@ -94,7 +94,7 @@ function SrchDestinationCountry({ url }) {
           fetchpriority="high"
         />
   {/* Blackish Overlay */}
-  <div className="absolute top-0 left-0 w-full h-full bg-black opacity-65 rounded-b-3xl"></div>
+  <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 rounded-b-3xl"></div>
         <div className="absolute w-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <div className="w-full flex items-center justify-center">
             <h2
