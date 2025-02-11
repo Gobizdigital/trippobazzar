@@ -34,7 +34,7 @@ export default function CoursalSection() {
 
   return (
     <section className="w-full h-auto relative bg-[#FFFFFF]" data-aos="fade-up">
-      <div className="relative h-auto min-h-[765px]">
+      <div className="relative h-auto min-h-[550px] md:min-h-[765px]">
         <div className="absolute top-0 left-0 h-2/3 w-full bg-[#012831]"></div>
         <div className="absolute bottom-0 left-0 h-1/3 w-full bg-white"></div>
         <div className="relative z-10 pt-14 pb-14 border-b border-white text-white text-center" data-aos="fade-down">

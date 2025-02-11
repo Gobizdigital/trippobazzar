@@ -55,7 +55,7 @@ export default function YourCustomAdventure() {
               </span>
             </p>
           </div>
-          <div className="hidden md:flex flex-row gap-10 py-4 justify-between items-center w-[56%]">
+          <div className="flex flex-row gap-10 py-4 justify-between items-center w-[56%]">
             <div className="w-auto flex gap-2 justify-start">
               <button
                 aria-label="Previous item"
