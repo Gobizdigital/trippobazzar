@@ -7,9 +7,6 @@ import FilterSvg from "../../../svgs/FilterSvg";
 function TravelTipsTitle() {
   return (
     <div className="bg-white">
-      <div className="w-[90%] mx-auto  py-2">
-        <BreadCrumbsLink />
-      </div>
       <section>
         <div className="h-[90%] relative">
           {/* Image */}

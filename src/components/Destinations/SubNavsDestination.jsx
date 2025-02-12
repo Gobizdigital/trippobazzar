@@ -17,7 +17,7 @@ export default function SubNavsDestination() {
 
   return (
     <>
-      <nav className="bg-white sticky top-[80px] z-[19] shadow-inner">
+      <nav className="bg-white  shadow-inner">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <ul className="flex flex-row em:flex-row overflow-x-scroll scrollbar-hide items-start em:items-center justify-center text-[.7rem] em:text-sm uppercase leading-6 font-normal gap-8">
             {sections.map((item, idx) => (

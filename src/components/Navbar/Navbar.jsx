@@ -234,12 +234,12 @@ const Navbar = () => {
             >
               TRAVEL TIPS
             </TransitionLink>
-            <a
-              href="/offers"
+            <TransitionLink
+              to="/"
               className="font-poppins text-[.8rem] font-normal relative inline-block transition duration-300 ease-in-out hover:text-green-500 "
             >
               OFFERS
-            </a>
+            </TransitionLink>
 
             {/* Search Icon */}
             <div className="relative">

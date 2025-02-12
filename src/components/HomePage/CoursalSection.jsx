@@ -35,7 +35,7 @@ export default function CoursalSection() {
       name: "Rajasthan",
       href: "/destination/asia/India/Rajasthan",
     },
-  
+
     {
       image:
         "https://i.pinimg.com/736x/69/ed/1a/69ed1ab7eea1b75a04105f4de8a145e9.jpg",
@@ -58,7 +58,7 @@ export default function CoursalSection() {
       name: "Himachal",
       href: "/destination/asia/India/Himachal",
     },
-   
+
     {
       image: bhutan,
       name: "Bhutan",
@@ -69,7 +69,7 @@ export default function CoursalSection() {
       name: "Egypt",
       href: "/destination/Africa/Egypt",
     },
-  
+
     {
       image: turkey,
       name: "Turkey",
@@ -86,7 +86,6 @@ export default function CoursalSection() {
       name: "Thailand",
       href: "destination/asia/Thailand",
     },
-  
   ];
 
   const containerRef = useRef(null);
@@ -120,7 +119,7 @@ export default function CoursalSection() {
           </p>
         </div>
         <div
-          className="w-full flex justify-center md:mt-10 lg:mt-20 my-6 gap-4"
+          className="w-full flex justify-center md:mt-[3.5rem] my-6 gap-4"
           data-aos="fade-right"
         >
           <button
@@ -138,30 +137,29 @@ export default function CoursalSection() {
         </div>
         <div
           ref={containerRef}
-          className="flex gap-4 pl-4 md:pl-7 overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10"
+          className="flex gap-4 pl-4 md:pl-7 md:mt-[3rem] overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10"
           data-aos="fade-out"
         >
-      {destinations.map((destination, index) => (
-  <div
-    onClick={() => handleNavigate(destination.href)}
-    key={index}
-    className="w-64 h-[20rem] snap-center  flex-shrink-0 rounded-lg overflow-hidden shadow-md relative group "
-    data-aos="zoom-in"
-  >
-    <img
-      className="w-full h-full object-cover transition-all  duration-300 filter grayscale group-hover:grayscale-0"
-      src={destination.image}
-      alt={destination.name}
-    />
-    <div className="absolute inset-0 flex items-center justify-center">
-      <YellowCircularDisc className="w-24 h-24" />
-      <p className="absolute text-white text-lg font-bold">
-        {destination.name}
-      </p>
-    </div>
-  </div>
-))}
-
+          {destinations.map((destination, index) => (
+            <div
+              onClick={() => handleNavigate(destination.href)}
+              key={index}
+              className="w-64 h-[20rem] snap-center  flex-shrink-0 rounded-lg overflow-hidden shadow-md relative group "
+              data-aos="zoom-in"
+            >
+              <img
+                className="w-full h-full object-cover transition-all  duration-300 filter grayscale group-hover:grayscale-0"
+                src={destination.image}
+                alt={destination.name}
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <YellowCircularDisc className="w-24 h-24" />
+                <p className="absolute text-white text-lg font-bold">
+                  {destination.name}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

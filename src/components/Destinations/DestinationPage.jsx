@@ -5,6 +5,7 @@ import SubNavsDestination from "./SubNavsDestination";
 import AllContinent from "./AllContinent";
 import OneContinent from "./OneContinent/OneContinent";
 import useFetch from "../../../hooks/useFetch";
+import BreadCrumbsLink from "../../../utils/BreadCrumbsLink";
 
 export default function DestinationPage() {
   const { data, loading } = useFetch(
@@ -13,6 +14,11 @@ export default function DestinationPage() {
 
   return (
     <div className="bg-[#F8F8F8] max-w-[1920px] mx-auto">
+      <div className="w-full sticky top-[80px]  z-[19] bg-white">
+        <div className="w-[90%] mx-auto py-2">
+          <BreadCrumbsLink />
+        </div>
+      </div>
       <DestinationTitle />
       <SubNavsDestination />
       <Routes>

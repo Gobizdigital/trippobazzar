@@ -36,8 +36,10 @@ export default function AboutUs() {
 
   return (
     <div className="bg-[#F8F8F8] max-w-[1920px] mx-auto">
-      <div className="w-full sticky top-[80px] z-20 bg-white px-[5%] mx-auto  py-2">
-        <BreadCrumbsLink />
+      <div className="w-full sticky top-[80px]  z-[19] bg-white">
+        <div className="w-[90%] mx-auto py-2">
+          <BreadCrumbsLink />
+        </div>
       </div>
       <div data-aos="fade-up">
         <WeCraft />

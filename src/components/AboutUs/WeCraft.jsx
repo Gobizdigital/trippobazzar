@@ -5,12 +5,8 @@ import smallImage from "../../assets/aboutus/bg-about-small.webp";
 import BreadCrumbsLink from "../../../utils/BreadCrumbsLink";
 
 function WeCraft() {
-
   return (
     <div className="bg-white">
-      <div className="w-[90%] mx-auto  py-2">
-        <BreadCrumbsLink />
-      </div>
       <section className="relative w-full h-56 md:h-96 sm:h-80 bg-top bg-cover bg-no-repeat">
         <picture className="absolute inset-0 z-0">
           <source media="(max-width: 768px)" srcSet={smallImage} />
