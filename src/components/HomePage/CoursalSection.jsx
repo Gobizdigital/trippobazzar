@@ -120,7 +120,7 @@ export default function CoursalSection() {
           </p>
         </div>
         <div
-          className="w-full flex justify-center my-6 gap-4"
+          className="w-full flex justify-center md:mt-10 lg:mt-20 my-6 gap-4"
           data-aos="fade-right"
         >
           <button
