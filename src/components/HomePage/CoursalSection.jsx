@@ -58,7 +58,8 @@ export default function CoursalSection() {
       href: "/destination/Africa/Egypt",
     },
     {
-      image: morocco,
+      image:
+        "https://i.pinimg.com/736x/8c/35/92/8c3592733aea7e1e4cd0aa91499765e2.jpg",
       name: "SaudiArabia",
       href: "/destination/MiddleEast/SaudiArabia",
     },

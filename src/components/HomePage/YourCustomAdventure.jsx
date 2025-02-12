@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import adventureImage from "../../assets/home/advanture.webp";
+import { FlatDestinations } from "../Navbar/DestinationAccordionData";
+import { useNavigate } from "react-router-dom";
 
 export default function YourCustomAdventure() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const carouselItems = 10; // This should be a number
+  const navigate = useNavigate();
+  const [formState, setFormState] = useState({
+    searchQuery: "",
+  });
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % carouselItems); // Wrap around using modulo
@@ -18,6 +24,40 @@ export default function YourCustomAdventure() {
 
   // Calculate progress width based on current index
   const progressWidth = ((currentIndex + 1) / carouselItems) * 100; // Use `carouselItems` instead of `carouselItems.length`
+  const filteredDestinations = FlatDestinations.filter((destination) =>
+    destination.name.toLowerCase().includes(formState.searchQuery.toLowerCase())
+  );
+
+  const handleDestinationClick = (destination) => {
+    const regionPath = destination.region;
+    const namePath = destination.name;
+
+    const path =
+      regionPath === "India"
+        ? `/destination/asia/India/${namePath}`
+        : `/destination/${regionPath}/${namePath}`;
+
+    navigate(path);
+  };
+
+  const handleSearch = () => {
+    const selectedDestination = FlatDestinations.find(
+      (destination) =>
+        destination.name.toLowerCase() === formState.searchQuery.toLowerCase()
+    );
+
+    if (selectedDestination) {
+      handleDestinationClick(selectedDestination);
+    } else {
+      navigate("/");
+    }
+  };
+
+  const setSearchQuery = (query) =>
+    setFormState((prevState) => ({ ...prevState, searchQuery: query }));
+
+  const setIsFocused = (focused) =>
+    setFormState((prevState) => ({ ...prevState, isFocused: focused }));
 
   return (
     <section className="w-full max-w-[1720px] mx-auto h-auto  bg-white relative ">
@@ -36,15 +76,42 @@ export default function YourCustomAdventure() {
           </p>
 
           {/* Search Bar */}
-          <div className="flex flex-col md:flex-row items-center w-full md:max-w-xl mb-10 md:mb-14 gap-4 mt-4">
+          <div className="flex flex-col relative md:flex-row items-center w-full md:max-w-xl mb-10 md:mb-14 gap-4 mt-4">
             <input
               type="text"
               placeholder="Search destinations..."
               className="border-[1.5px] border-med-green w-full md:w-auto text-sm rounded-l-md py-2 px-4 flex-1 outline-none"
+              value={formState.searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setTimeout(() => setIsFocused(false), 200)}
             />
-            <button className="bg-med-green w-full ml-1 text-sm md:w-auto text-white py-2 px-6 rounded-md">
+            <button
+              onClick={handleSearch}
+              className="bg-med-green w-full ml-1 text-sm md:w-auto text-white py-2 px-6 rounded-md"
+            >
               Search
             </button>
+
+            {formState.isFocused &&
+              formState.searchQuery &&
+              filteredDestinations.length > 0 && (
+                <ul className="mt-4 absolute top-10 bg-[#f8f8f8] rounded-md p-4 w-full z-10">
+                  {filteredDestinations.map((destination, index) => (
+                    <li
+                      onClick={() => {
+                        setSearchQuery(destination.name);
+                        setIsFocused(false);
+                        // handleDestinationClick(destination);
+                      }}
+                      key={index}
+                      className="py-2 border-b cursor-pointer"
+                    >
+                      <strong>{destination.name}</strong> - {destination.region}
+                    </li>
+                  ))}
+                </ul>
+              )}
           </div>
           <div className="mb-12">
             <p className="text-6xl font-extrabold flex items-center space-x-1">
@@ -82,13 +149,12 @@ export default function YourCustomAdventure() {
         </div>
         {/* Left Side Text Div */}
         <div className="w-full md:w-[49%] mx-auto bg-white h-auto md:aspect-[4/5]">
-  <img
-    src={adventureImage}
-    alt="Adventure"
-    className="w-full h-full object-cover md:rounded-bl-[30%]"
-  />
-</div>
-
+          <img
+            src={adventureImage}
+            alt="Adventure"
+            className="w-full h-full object-cover md:rounded-bl-[30%]"
+          />
+        </div>
       </div>
     </section>
   );

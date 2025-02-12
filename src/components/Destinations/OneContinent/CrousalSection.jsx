@@ -1,20 +1,27 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import continentimg from "../../../assets/oneContinent.png";
+
 function CrousalSection({ selectedDestination }) {
   const navigate = useNavigate();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isGridView, setIsGridView] = useState(false); // New state to toggle grid view
+  const visibleCards = 4; // Number of visible cards in the carousel
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+    if (!isGridView) {
+      setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+    }
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex < selectedDestination[0]?.Countries.length - 4
-        ? prevIndex + 1
-        : prevIndex
-    );
+    if (!isGridView) {
+      setCurrentIndex((prevIndex) =>
+        prevIndex < selectedDestination?.Countries?.length - visibleCards
+          ? prevIndex + 1
+          : prevIndex
+      );
+    }
   };
 
   if (!selectedDestination?.Countries?.length) {
@@ -30,11 +37,11 @@ function CrousalSection({ selectedDestination }) {
   }
 
   return (
-    <section className=" pt-[185%] esm:pt-[150%] ew:pt-[120%] font-poppins overflow-hidden  sm:pt-[100%] md:pt-[50%] lg:pt-72 bg-white/20 bg-opacity-10  relative">
+    <section className="pt-[185%] esm:pt-[150%] ew:pt-[120%] font-poppins overflow-hidden sm:pt-[100%] md:pt-[50%] lg:pt-72 bg-white/20 bg-opacity-10 relative">
       <div className="w-full h-full md:h-[850px] absolute -z-[10px] -top-6 opacity-25 right-0">
         <img
           src={continentimg}
-          alt="wth"
+          alt="Continent"
           className="w-full h-full object-cover"
         />
       </div>
@@ -50,13 +57,32 @@ function CrousalSection({ selectedDestination }) {
           and vibrant cultures. Embark on an unforgettable adventure filled with
           wildlife safaris, ancient wonders, and pristine beaches.
         </p>
-        <button className="mt-6 bg-med-green text-sm sm:text-base text-white py-2 px-4 rounded">
+
+        {/* Toggle between carousel and grid */}
+        <button
+          className="mt-6 bg-med-green text-sm sm:text-base text-white py-2 px-4 rounded"
+          onClick={() => setIsGridView((prev) => !prev)}
+        >
           View All {selectedDestination?.ContinentName} Destinations
         </button>
 
-        <div className="overflow-x-auto pt-10 scrollbar-hide w-full">
-          <div className="flex flex-nowrap gap-5 w-max transition-transform duration-500">
-            {selectedDestination?.Countries?.map((item, idx) => (
+        <div className="overflow-x-auto pt-10 scrollbar-hide w-full relative">
+          <div
+            className={`${
+              isGridView
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-5 w-full"
+                : "flex flex-nowrap gap-5 w-full transition-transform duration-500"
+            }`}
+            style={
+              isGridView
+                ? {}
+                : { transform: `translateX(-${currentIndex * 360}px)` }
+            }
+          >
+            {(isGridView
+              ? selectedDestination?.Countries
+              : selectedDestination?.Countries?.slice(0, 5)
+            )?.map((item, idx) => (
               <div
                 key={idx}
                 onClick={() => {
@@ -64,10 +90,16 @@ function CrousalSection({ selectedDestination }) {
                     `/destination/${selectedDestination.ContinentName}/${item.CountryName}`
                   );
                 }}
-                className="w-[350px] flex-shrink-0 cursor-pointer"
+                className={`${
+                  isGridView ? "w-[100%]" : "w-[350px]"
+                } flex-shrink-0 cursor-pointer`}
               >
                 <div className="bg-white shadow-lg h-auto rounded overflow-hidden">
-                  <div className="w-full h-[190px] md:h-[230px]">
+                  <div
+                    className={`w-full h-[190px] ${
+                      isGridView ? "md:h-[300px]" : "md:h-[230px]"
+                    } `}
+                  >
                     <img
                       src={item?.CountryPhotoUrl}
                       alt={`photoNumber:${idx + 1}`}
@@ -100,20 +132,35 @@ function CrousalSection({ selectedDestination }) {
           </div>
         </div>
 
-        <div className="absolute  top-[25%] mt-3 gap-4 right-10 hidden md:flex items-center">
-          <button
-            onClick={handlePrev}
-            className="  bg-white rounded-full p-2 shadow w-12 h-12 flex items-center justify-center"
-          >
-            &lt;
-          </button>
-          <button
-            onClick={handleNext}
-            className=" bg-white rounded-full p-2 shadow w-12 h-12 flex items-center justify-center"
-          >
-            &gt;
-          </button>
-        </div>
+        {/* Navigation Buttons - Hide when Grid View is active */}
+        {!isGridView && (
+          <div className="absolute top-[25%] mt-3 gap-4 right-10 hidden md:flex items-center">
+            <button
+              onClick={handlePrev}
+              className={`bg-white rounded-full p-2 shadow w-12 h-12 flex items-center justify-center ${
+                currentIndex === 0 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={currentIndex === 0}
+            >
+              &lt;
+            </button>
+            <button
+              onClick={handleNext}
+              className={`bg-white rounded-full p-2 shadow w-12 h-12 flex items-center justify-center ${
+                currentIndex >=
+                selectedDestination?.Countries?.length - visibleCards
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+              disabled={
+                currentIndex >=
+                selectedDestination?.Countries?.length - visibleCards
+              }
+            >
+              &gt;
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
