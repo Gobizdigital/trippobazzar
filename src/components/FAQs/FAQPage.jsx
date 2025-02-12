@@ -1,15 +1,8 @@
-import Aos from "aos";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const FAQPage = () => {
   const [openIndex, setOpenIndex] = useState(null);
-  useEffect(() => {
-    Aos.init({
-      duration: 600,
-      easing: "ease-in-out",
-      once: true, // Ensures animation runs only once
-    });
-  }, []);
+
   const faqs = [
     {
       question: "What is Trippo Bazar?",
@@ -92,13 +85,9 @@ const FAQPage = () => {
 
       <div className="space-y-4">
         {faqs.map((faq, index) => (
-          <div
-            key={index}
-            className="border rounded-lg overflow-hidden transition-all duration-300"
-          >
+          <div key={index} className="border rounded-lg overflow-hidden">
             <button
-              data-aos="fade-up" // <-- AOS animation applied here
-              className={`w-full flex justify-between items-center p-4 transition-all duration-300 ${
+              className={`w-full flex justify-between items-center p-4 ${
                 openIndex === index
                   ? "bg-green-50 text-med-green"
                   : "bg-gray-50 hover:bg-gray-100 text-gray-700"
