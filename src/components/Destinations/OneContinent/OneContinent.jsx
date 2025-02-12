@@ -38,7 +38,7 @@ function OneContinent({ data, loading }) {
   return (
     <div className="max-w-[1920px] mx-auto">
       <SrchDestinationCountry url={firstContinent?.ContinentPhotoUrl} />
-      <CrousalSection selectedDestination={firstContinent} />
+      <CrousalSection selectedDestination={firstContinent} item={item} />
       <StealDealPakage />
       <LastPart />
     </div>

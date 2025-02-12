@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import continentimg from "../../../assets/oneContinent.png";
 
@@ -14,6 +14,9 @@ function CrousalSection({ selectedDestination }) {
     }
   };
 
+  useEffect(() => {
+    setIsGridView(false);
+  }, [selectedDestination]);
   const handleNext = () => {
     if (!isGridView) {
       setCurrentIndex((prevIndex) =>
