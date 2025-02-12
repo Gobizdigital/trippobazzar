@@ -14,7 +14,7 @@ export default function DestinationPage() {
 
   return (
     <div className="bg-[#F8F8F8] max-w-[1920px] mx-auto">
-      <div className="w-full sticky top-[80px]  z-[19] bg-white">
+      <div className="w-full sticky top-[80px]  z-[21] bg-white">
         <div className="w-[90%] mx-auto py-2">
           <BreadCrumbsLink />
         </div>
