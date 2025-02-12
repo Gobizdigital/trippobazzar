@@ -31,26 +31,16 @@ export default function CoursalSection() {
     },
     {
       image:
-        "https://i.pinimg.com/736x/08/03/77/080377146330a8cd46781907fed4eaeb.jpg",
-      name: "Thailand",
-      href: "destination/asia/Thailand",
+        "https://i.pinimg.com/736x/32/f3/a6/32f3a6805354e2ba8d47330059bfe1b0.jpg",
+      name: "Rajasthan",
+      href: "/destination/asia/India/Rajasthan",
     },
+  
     {
       image:
         "https://i.pinimg.com/736x/69/ed/1a/69ed1ab7eea1b75a04105f4de8a145e9.jpg",
       name: "Vietnam",
       href: "destination/asia/Vietnam",
-    },
-    {
-      image:
-        "https://i.pinimg.com/736x/32/f3/a6/32f3a6805354e2ba8d47330059bfe1b0.jpg",
-      name: "Rajasthan",
-      href: "/destination/asia/India/Rajasthan",
-    },
-    {
-      image: bhutan,
-      name: "Bhutan",
-      href: "/destination/asia/Bhutan",
     },
     {
       image: egypt,
@@ -64,6 +54,23 @@ export default function CoursalSection() {
       href: "/destination/MiddleEast/SaudiArabia",
     },
     {
+      image: himachal,
+      name: "Himachal",
+      href: "/destination/asia/India/Himachal",
+    },
+   
+    {
+      image: bhutan,
+      name: "Bhutan",
+      href: "/destination/asia/Bhutan",
+    },
+    {
+      image: egypt,
+      name: "Egypt",
+      href: "/destination/Africa/Egypt",
+    },
+  
+    {
       image: turkey,
       name: "Turkey",
       href: "/destination/MiddleEast/Turkey",
@@ -74,10 +81,12 @@ export default function CoursalSection() {
       href: "/destination/Europe/Greece",
     },
     {
-      image: himachal,
-      name: "Himachal",
-      href: "/destination/asia/India/Himachal",
+      image:
+        "https://i.pinimg.com/736x/08/03/77/080377146330a8cd46781907fed4eaeb.jpg",
+      name: "Thailand",
+      href: "destination/asia/Thailand",
     },
+  
   ];
 
   const containerRef = useRef(null);
@@ -132,26 +141,27 @@ export default function CoursalSection() {
           className="flex gap-4 pl-4 md:pl-7 overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10"
           data-aos="fade-out"
         >
-          {destinations.map((destination, index) => (
-            <div
-              onClick={() => handleNavigate(destination.href)}
-              key={index}
-              className="w-64 h-80 snap-center flex-shrink-0 rounded-lg overflow-hidden shadow-md"
-              data-aos="zoom-in"
-            >
-              <img
-                className="w-full h-full object-cover"
-                src={destination.image}
-                alt={destination.name}
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <YellowCircularDisc className="w-24 h-24" />
-                <p className="absolute text-white text-lg font-bold">
-                  {destination.name}
-                </p>
-              </div>
-            </div>
-          ))}
+      {destinations.map((destination, index) => (
+  <div
+    onClick={() => handleNavigate(destination.href)}
+    key={index}
+    className="w-64 h-[20rem] snap-center  flex-shrink-0 rounded-lg overflow-hidden shadow-md relative group "
+    data-aos="zoom-in"
+  >
+    <img
+      className="w-full h-full object-cover transition-all  duration-300 filter grayscale group-hover:grayscale-0"
+      src={destination.image}
+      alt={destination.name}
+    />
+    <div className="absolute inset-0 flex items-center justify-center">
+      <YellowCircularDisc className="w-24 h-24" />
+      <p className="absolute text-white text-lg font-bold">
+        {destination.name}
+      </p>
+    </div>
+  </div>
+))}
+
         </div>
       </div>
     </section>
