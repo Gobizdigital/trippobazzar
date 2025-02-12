@@ -319,7 +319,7 @@ function IternryDetails({ data }) {
       {/* Right Side */}
       <div className="w-full  lg:w-1/3   p-4">
         {/* Payment Details */}
-        <div className="sticky top-[150px] space-y-4 z-20">
+        <div className="lg:sticky top-[150px] space-y-4 z-20">
           <div className="border p-6 rounded-3xl relative bg-white text-sm sm:text-base">
             <p
               className={`absolute top-0 right-0 ${
