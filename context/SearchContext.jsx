@@ -1,8 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 const SearchContext = createContext();
 
 export const SearchProvider = ({ children }) => {
+  const { id, state } = useParams();
   const [searchData, setSearchData] = useState({
     guests: 1,
     startDate: null,
@@ -37,6 +39,24 @@ export const SearchProvider = ({ children }) => {
       sports: false,
     },
   });
+
+
+  console.log(id);
+
+  useEffect(() => {
+    if (id) {
+      setSearchData((prev) => ({
+        ...prev,
+        destination: state,
+      }));
+    } else {
+      // If id is removed, reset the destination field
+      setSearchData((prev) => ({
+        ...prev,
+        destination: "",
+      }));
+    }
+  }, [state, id]);
 
   return (
     <SearchContext.Provider

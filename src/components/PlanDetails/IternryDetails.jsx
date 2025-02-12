@@ -321,7 +321,7 @@ function IternryDetails({ data }) {
         {/* Sticky Parent Container */}
         <div className="lg:sticky top-[150px] z-20">
           {/* Scrollable Inner Container */}
-          <div className=" lg:max-h-[80vh] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 space-y-4">
+          <div className="space-y-4">
             {/* Payment Details */}
             <div className="border p-6 rounded-3xl relative bg-white text-sm sm:text-base">
               <p

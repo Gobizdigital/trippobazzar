@@ -130,16 +130,6 @@ export default function DiscoverNewHorizon() {
 
       <div className="w-[90%] max-w-[1720px] h-auto p-4 md:p-16 bg-[#f8f8f8] shadow-lg rounded-lg mx-auto mt-[-2rem] md:mt-[-6rem] relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center border bg-[#f8f8f8] rounded-md py-3 px-2 w-full hover:shadow-md transition-shadow duration-300">
-            <input
-              type="text"
-              value={formState.startLocation}
-              onChange={(e) => setStartLocationQuery(e.target.value)}
-              placeholder="Where are you starting from?"
-              className="w-full bg-transparent focus:outline-none"
-            />
-          </div>
-          <p className="text-gray-500 font-medium">To</p>
           <div className="relative w-full">
             <div className="flex items-center bg-[#f8f8f8] border rounded-md py-3 px-2 w-full hover:shadow-md transition-shadow duration-300">
               <input

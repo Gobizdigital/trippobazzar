@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useSearch } from "../../../context/SearchContext.jsx";
 
@@ -7,11 +7,14 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import CalenderSvg from "../../../svgs/CalenderSvg/index.jsx";
 import EditButtonSvg from "../../../svgs/EditButton/index.jsx";
+import { useParams } from "react-router-dom";
 function SearchCompo({ data }) {
   const { searchData, setSearchData } = useSearch();
-
   const [isEditingDates, setIsEditingDates] = useState(false);
   const [isEditingGuests, setIsEditingGuests] = useState(false);
+
+  const { id, state } = useParams();
+  console.log(id);
 
   const toggleDateEdit = () => setIsEditingDates(!isEditingDates);
   const toggleGuestEdit = () => setIsEditingGuests(!isEditingGuests);
@@ -19,6 +22,21 @@ function SearchCompo({ data }) {
   const updateSearchData = (field, value) => {
     setSearchData((prev) => ({ ...prev, [field]: value }));
   };
+
+  useEffect(() => {
+    if ((state, id)) {
+      setSearchData((prev) => ({
+        ...prev,
+        destination: state,
+      }));
+    } else {
+      // If id is removed, reset the destination field
+      setSearchData((prev) => ({
+        ...prev,
+        destination: null,
+      }));
+    }
+  }, [state, id]);
 
   const numberOfDays = parseInt(data?.description.split(" ")[0], 10);
   if (isNaN(numberOfDays)) {
@@ -38,7 +56,7 @@ function SearchCompo({ data }) {
 
       <div className="flex flex-wrap flex-row items-start md:items-end justify-start sm:justify-center lg:justify-between gap-10 lg:gap-4">
         {/* From */}
-        <div className="relative w-auto">
+        {/* <div className="relative w-auto">
           <p className="text-gray-500 md:text-base text-sm font-medium tracking-wider mb-2">
             From
           </p>
@@ -46,7 +64,7 @@ function SearchCompo({ data }) {
             <FaLocationDot className="text-med-green mb-1 text-base md:text-xl" />
             <p className="text-base md:text-lg">New Delhi</p>
           </div>
-        </div>
+        </div> */}
 
         {/* Destination */}
         <div className="relative w-auto">
@@ -55,7 +73,7 @@ function SearchCompo({ data }) {
           </p>
           <div className="flex items-center gap-3">
             <FaLocationDot className="text-med-green mb-1 text-base md:text-xl" />
-            <p className="text-base md:text-lg">Leh-Ladakh</p>
+            <p className="text-base md:text-lg">{searchData.destination}</p>
           </div>
         </div>
 

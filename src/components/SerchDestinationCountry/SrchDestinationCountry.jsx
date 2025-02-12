@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FilterSvg from "../../../svgs/FilterSvg/index";
 import DatePicker from "react-datepicker";
 import image from "../../assets/africa-bg.webp";
@@ -14,7 +14,7 @@ function SrchDestinationCountry({ url }) {
   const toggleModal = () => setShowModal(!showModal);
   const navigate = useNavigate();
   const { searchData, setSearchData } = useSearch();
-  const { item, country, state } = useParams();
+  const { item, country, state, id } = useParams();
 
   const incrementGuests = () => {
     setSearchData((prev) => ({
@@ -31,9 +31,9 @@ function SrchDestinationCountry({ url }) {
   };
 
   const filteredDestinations = FlatDestinations.filter((destination) =>
-    destination.name
+    destination?.name
       .toLowerCase()
-      .includes(searchData.destination.toLowerCase())
+      .includes(searchData?.destination?.toLowerCase())
   );
 
   // Single handleChange function
@@ -57,6 +57,21 @@ function SrchDestinationCountry({ url }) {
     setDropdownVisible(false); // Hide dropdown when a destination is selected
   };
 
+  useEffect(() => {
+    if (state) {
+      setSearchData((prev) => ({
+        ...prev,
+        destination: state,
+      }));
+    } else {
+      // If id is removed, reset the destination field
+      setSearchData((prev) => ({
+        ...prev,
+        destination: null,
+      }));
+    }
+  }, [state]);
+
   const handleSearch = () => {
     const selectedDestination = FlatDestinations.find(
       (destination) =>
@@ -78,11 +93,7 @@ function SrchDestinationCountry({ url }) {
 
   return (
     <div className="rounded-b-3xl font-poppins relative">
-      {item ? (
-        <></>
-      ) : (
-<></>
-      )}
+      {item ? <></> : <></>}
       <div className="w-full h-[30vh] sm:h-[25vh] ew:h-[70vh] lg:h-[50vh] relative">
         <img
           src={url ? url : image}
@@ -91,8 +102,8 @@ function SrchDestinationCountry({ url }) {
           loading="eager"
           fetchpriority="high"
         />
-  {/* Blackish Overlay */}
-  <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 rounded-b-3xl"></div>
+        {/* Blackish Overlay */}
+        <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 rounded-b-3xl"></div>
         <div className="absolute w-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <div className="w-full flex items-center justify-center">
             <h2
@@ -106,20 +117,6 @@ function SrchDestinationCountry({ url }) {
           <div className="w-[90%] max-w-[1720px] h-auto p-4 md:p-16 bg-[#f8f8f8] shadow-lg rounded-lg mx-auto top-[43rem] sm:top-[42rem] md:top-[19rem] lg:top-[5rem] lg:mt-[-2rem] relative ">
             {/* Starting Location and Destination Inputs */}
             <div className="flex flex-col md:flex-row items-center jusitfy-between gap-4">
-              <div className="flex items-center border bg-[#f8f8f8] rounded-md py-3 px-2 w-full">
-                <input
-                  type="text"
-                  placeholder="Where are you starting from?"
-                  value={searchData.startLocation}
-                  onChange={(e) =>
-                    handleChange("startLocation", e.target.value)
-                  }
-                  className="w-full bg-transparent focus:outline-none"
-                />
-              </div>
-
-              <p className="text-gray-500 font-medium">To</p>
-
               <div className="relative w-full">
                 <div className="flex items-center bg-[#f8f8f8] border rounded-md py-3 px-2 w-full">
                   <input
