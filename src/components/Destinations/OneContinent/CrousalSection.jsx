@@ -10,22 +10,25 @@ function CrousalSection({ selectedDestination }) {
 
   const handlePrev = () => {
     if (!isGridView) {
-      setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
-    }
-  };
-
-  useEffect(() => {
-    setIsGridView(false);
-  }, [selectedDestination]);
-  const handleNext = () => {
-    if (!isGridView) {
       setCurrentIndex((prevIndex) =>
-        prevIndex < selectedDestination?.Countries?.length - visibleCards
-          ? prevIndex + 1
-          : prevIndex
+        prevIndex === 0 ? selectedDestination?.Countries?.length - 1 : prevIndex - 1
       );
     }
   };
+  
+  const handleNext = () => {
+    if (!isGridView) {
+      setCurrentIndex((prevIndex) =>
+        prevIndex === selectedDestination?.Countries?.length - 1 ? 0 : prevIndex + 1
+      );
+    }
+  };
+  
+
+  useEffect(() => {
+    setIsGridView(false);
+    setCurrentIndex(0);
+  }, [selectedDestination]);
 
   if (!selectedDestination?.Countries?.length) {
     return (
@@ -140,25 +143,13 @@ function CrousalSection({ selectedDestination }) {
           <div className="absolute top-[25%] mt-3 gap-4 right-10 hidden md:flex items-center">
             <button
               onClick={handlePrev}
-              className={`bg-white rounded-full p-2 shadow w-12 h-12 flex items-center justify-center ${
-                currentIndex === 0 ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={currentIndex === 0}
+              className={`bg-white rounded-full p-2 shadow w-12 h-12 flex items-center justify-center`}
             >
               &lt;
             </button>
             <button
               onClick={handleNext}
-              className={`bg-white rounded-full p-2 shadow w-12 h-12 flex items-center justify-center ${
-                currentIndex >=
-                selectedDestination?.Countries?.length - visibleCards
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
-              disabled={
-                currentIndex >=
-                selectedDestination?.Countries?.length - visibleCards
-              }
+              className={`bg-white rounded-full p-2 shadow w-12 h-12 flex items-center justify-center`}
             >
               &gt;
             </button>
