@@ -170,7 +170,7 @@ export default function StealDealPakage() {
           </div>
         </div>
       </section>
-      <div className="bg-white">
+      <div className="bg-white hidden">
         <div className="w-[90%] mx-auto grid grid-cols-1 place-items-center sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-10 mmd:gap-28 px-4 sm:px-10 md:px-28 h-auto py-8 sm:py-16 md:py-28 ">
           {OURVALUESDATA.map((item, idx) => {
             return (

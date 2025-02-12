@@ -18,7 +18,7 @@ function LastPart() {
         },
       ];
   return (
-    <div>
+    <div className='  '>
         <h2 className='text-center text-5xl font-bold' >Book Your Travel</h2>
         
         <h2 className='text-center text-green-400 text-5xl font-bold'>With Just 3 Easy Steps</h2>
