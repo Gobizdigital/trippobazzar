@@ -45,10 +45,10 @@ export default function HotelsPlan({
                       hdetail?.hotelPhotoUrl && openModal(hdetail.hotelPhotoUrl)
                     }
                     alt="Hotel"
-                    className="w-[30%] h-[30%] rounded-3xl sm:mr-4"
+                    className="w-[300px] h-[200px] md:w-[30%] md:h-[30%] rounded-3xl sm:mr-4"
                   />
 
-                  <div className="flex-1">
+                  <div className="flex flex-col items-center sm:items-start md:flex-1">
                     <p className="font-semibold text-sm sm:text-base">
                       {hdetail.hotelName}
                     </p>
