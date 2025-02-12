@@ -193,7 +193,7 @@ function AllContinent({ data, loading }) {
                         )}
 
                         {/* Bottom div */}
-                        <div className="bg-white h-[24%] rounded-b-lg md:h-[20%] text-lg sm:text-xl md:text-2xl text-black w-full px-3 py-2 flex justify-between items-center">
+                        <div className="bg-white h-[24%] rounded-b-lg md:h-[20%] text-lg sm:text-xl  whitespace-nowrap overflow-hidden text-black w-full px-3 py-2 flex justify-between items-center">
                           <p>
                             {card.CountryName}{" "}
                             {!card?.States?.[0]?.Packages && (

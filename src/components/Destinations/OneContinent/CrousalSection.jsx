@@ -93,7 +93,7 @@ function CrousalSection({ selectedDestination }) {
                 key={idx}
                 onClick={() => {
                   navigate(
-                    `/destination/${selectedDestination.ContinentName}/${item.CountryName}`
+                    `/destination/${selectedDestination?.ContinentName}/${item?.CountryName}`
                   );
                 }}
                 className={`${

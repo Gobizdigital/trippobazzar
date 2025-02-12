@@ -14,7 +14,6 @@ export default function SearchDestinationPage() {
   const navigate = useNavigate();
   const { searchData, setSearchData } = useSearch();
 
-
   const incrementGuests = () => {
     setSearchData((prev) => ({
       ...prev,
@@ -30,9 +29,9 @@ export default function SearchDestinationPage() {
   };
 
   const filteredDestinations = FlatDestinations.filter((destination) =>
-    destination.name
+    destination?.name
       .toLowerCase()
-      .includes(searchData.destination.toLowerCase())
+      .includes(searchData?.destination?.toLowerCase())
   );
 
   // Single handleChange function
@@ -90,18 +89,6 @@ export default function SearchDestinationPage() {
         <div className="max-w-[1720px] w-full h-auto p-4 md:p-16 bg-white shadow-lg rounded-lg relative z-10">
           {/* Starting Location and Destination Inputs */}
           <div className="flex flex-col md:flex-row items-center jusitfy-between gap-4">
-            <div className="flex items-center border bg-[#f8f8f8] rounded-md py-3 px-2 w-full">
-              <input
-                type="text"
-                placeholder="Where are you starting from?"
-                value={searchData.startLocation}
-                onChange={(e) => handleChange("startLocation", e.target.value)}
-                className="w-full bg-transparent focus:outline-none"
-              />
-            </div>
-
-            <p className="text-gray-500 font-medium">To</p>
-
             <div className="relative w-full">
               <div className="flex items-center bg-[#f8f8f8] border rounded-md py-3 px-2 w-full">
                 <input
