@@ -20,12 +20,12 @@ export default function SideHamBurgerMenu({
     // { name: "My trips", link: "/" },
     { name: "About Us", link: "/aboutus" },
     { name: "Travel Tips", link: "/traveltips" },
-    { name: "Visas", link: "/" },
+    { name: "Visas", link: "/visas" },
     { name: "My Profile", link: "/myprofile" },
-    { name: "My Bookings", link: "/" },
+    { name: "My Bookings", link: "/my-bookings" },
     { name: "Privacy Policy", link: "/aboutus/privacy-policy" },
     { name: "Careers", link: "/aboutus/careers" },
-    { name: "FAQs", link: "/" },
+    { name: "FAQs", link: "/faqs" },
   ];
 
   const [userData, setUserData] = useState(null);
