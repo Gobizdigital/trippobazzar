@@ -11,8 +11,8 @@ export default function SubNavsDestination() {
     { name: "Asia", path: "asia" },
     { name: "Africa", path: "africa" },
     { name: "Australia", path: "australia" },
-    { name: "Europe", path: "north-america" },
-    { name: "Middle East", path: "south-america" },
+    { name: "Europe", path: "Europe" },
+    { name: "Middle East", path: "Middle East" },
   ];
 
   return (
