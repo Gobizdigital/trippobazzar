@@ -85,7 +85,7 @@ function SrchDestinationCountry({ url }) {
           <BreadCrumbsLink />
         </div>
       )}
-      <div className="w-full h-[30vh] ew:h-[70vh] lg:h-[50vh] relative">
+      <div className="w-full h-[30vh] sm:h-[25vh] ew:h-[70vh] lg:h-[50vh] relative">
         <img
           src={url ? url : image}
           alt="main-Picture"
@@ -98,7 +98,7 @@ function SrchDestinationCountry({ url }) {
         <div className="absolute w-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <div className="w-full flex items-center justify-center">
             <h2
-              className={`text-lg uppercase sm:tracking-[20px] md:tracking-[40px] text-white ew:text-3xl sm:text-7xl  lg:mb-4 text-center font-bold`}
+              className={`text-lg uppercase sm:tracking-[2px] md:tracking-[2px] lg:tracking-[40px] text-white ew:text-3xl sm:text-7xl  lg:mb-4 text-center font-bold`}
             >
               {state ? state : item || country}
             </h2>
