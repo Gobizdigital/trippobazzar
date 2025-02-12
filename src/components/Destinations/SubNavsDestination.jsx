@@ -19,7 +19,7 @@ export default function SubNavsDestination() {
     <>
       <nav className="bg-white  shadow-inner">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <ul className="flex flex-row em:flex-row overflow-x-scroll scrollbar-hide items-start em:items-center justify-center text-[.7rem] em:text-sm uppercase leading-6 font-normal gap-8">
+          <ul className="flex flex-row em:flex-row z-20  relative overflow-x-scroll scrollbar-hide items-start em:items-center justify-start em:justify-center text-[.7rem] em:text-sm uppercase leading-6 font-normal gap-8">
             {sections.map((item, idx) => (
             <li key={idx}>
             <Link
