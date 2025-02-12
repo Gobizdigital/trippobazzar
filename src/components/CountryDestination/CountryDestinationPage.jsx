@@ -6,6 +6,7 @@ import Discover from "./Discover";
 import useFetch from "../../../hooks/useFetch";
 import Loader from "../Loader";
 import { useParams } from "react-router-dom";
+import BreadCrumbsLink from "../../../utils/BreadCrumbsLink";
 function CountryDestinationPage() {
   const { country } = useParams();
 
@@ -19,6 +20,11 @@ function CountryDestinationPage() {
 
   return (
     <div className="max-w-[1920px]  mx-auto">
+       <div className="w-full sticky top-[80px]  z-[58] bg-white">
+              <div className="w-[90%] mx-auto py-2">
+                <BreadCrumbsLink/>
+              </div>
+            </div>
       <SrchDestinationCountry url={data?.CountryPhotoUrl} />
       <SubNavofViewall />
       <CardSection data={data} error={error} />

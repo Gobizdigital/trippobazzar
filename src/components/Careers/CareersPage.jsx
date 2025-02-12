@@ -8,11 +8,11 @@ import people from "../../assets/peopleCareers.png";
 export default function CareersPage() {
   return (
     <div className="max-w-[1920px] bg-[#ffffff] font-poppins mx-auto">
-      <div className=" border-b py-2">
-        <div className="w-[90%] mx-auto">
-          <BreadCrumbsLink />
-        </div>
-      </div>
+     <div className="w-full sticky top-[80px]  z-[58] bg-white">
+                    <div className="w-[90%] mx-auto py-2">
+                      <BreadCrumbsLink/>
+                    </div>
+                  </div>
       <div className="w-[90%] mx-auto">
         <div className="flex flex-col emd:flex-row items-end 1xl:items-center">
         <div className="w-full emd:w-1/2  emd:hidden h-full relative">

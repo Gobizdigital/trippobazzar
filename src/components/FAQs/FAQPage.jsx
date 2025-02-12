@@ -1,4 +1,5 @@
 import { useState } from "react";
+import BreadCrumbsLink from "../../../utils/BreadCrumbsLink";
 
 const FAQPage = () => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -77,8 +78,14 @@ const FAQPage = () => {
     },
   ];
 
-  return (
+  return (<> 
+   <div className="w-full sticky top-[80px]  z-[58] bg-white">
+                <div className="w-[90%] mx-auto py-2">
+                  <BreadCrumbsLink/>
+                </div>
+              </div>
     <div className="max-w-4xl mx-auto px-4 py-8">
+      
       <h1 className="text-2xl font-bold text-start mb-8">
         Frequently Asked Questions
       </h1>
@@ -140,7 +147,7 @@ const FAQPage = () => {
           </div>
         ))}
       </div>
-    </div>
+    </div></>
   );
 };
 

@@ -25,9 +25,11 @@ function PlanDetails() {
 
   return (
     <div className="max-w-[1920px] font-poppins  mx-auto bg-white">
-      <div className="w-[90%] relative z-10 mx-auto py-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
-        <BreadCrumbsLink />
-      </div>
+   <div className="w-full sticky top-[80px]  z-[78] bg-white">
+               <div className="w-[90%] mx-auto py-2">
+                 <BreadCrumbsLink/>
+               </div>
+             </div>
       <SearchCompo data={data} />
       <Itinerary data={data} />
 

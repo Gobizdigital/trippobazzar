@@ -7,9 +7,11 @@ export default function PrivacyPolicy() {
   const alphabet = "abcdefghijklmnopqrstuvwxyz";
   return (
     <div>
-      <div className="w-[90%] mx-auto  py-2">
-        <BreadCrumbsLink />
-      </div>
+    <div className="w-full sticky top-[80px]  z-[58] bg-white">
+                <div className="w-[90%] mx-auto py-2">
+                  <BreadCrumbsLink/>
+                </div>
+              </div>
       <div className="max-w-[1920px] md:max-h-[1080px] overflow-hidden mx-auto font-poppins flex flex-col-reverse md:flex-row justify-between bg-white">
         <div className="w-full md:w-1/2 scrollbar-hide overflow-y-scroll">
           <div className="max-w-[832px] px-10 py-28  w-full mx-auto">

@@ -8,9 +8,11 @@ export default function ContactUs() {
   
   return (
     <div className="font-poppins bg-white max-w-[1920px] mx-auto">
-      <div className="w-[90%] mx-auto  py-2 bg-white">
-        <BreadCrumbsLink />
-      </div>
+    <div className="w-full sticky top-[80px]  z-[58] bg-white">
+                   <div className="w-[90%] mx-auto py-2">
+                     <BreadCrumbsLink/>
+                   </div>
+                 </div>
       <div className="bg-[#f8f8f8] py-5">
         <div className="w-[90%]  mx-auto">
           <div className="flex justify-between gap-10 mb-20 items-center">

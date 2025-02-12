@@ -81,9 +81,7 @@ function SrchDestinationCountry({ url }) {
       {item ? (
         <></>
       ) : (
-        <div className="w-[90%] relative z-20 overflow-x-auto scrollbar-hide whitespace-nowrap mx-auto py-2">
-          <BreadCrumbsLink />
-        </div>
+<></>
       )}
       <div className="w-full h-[30vh] sm:h-[25vh] ew:h-[70vh] lg:h-[50vh] relative">
         <img
