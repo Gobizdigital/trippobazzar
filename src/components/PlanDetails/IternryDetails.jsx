@@ -207,7 +207,6 @@ function IternryDetails({ data }) {
     e.stopPropagation();
   };
 
- 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -318,126 +317,130 @@ function IternryDetails({ data }) {
       </div>
 
       {/* Right Side */}
-      <div className="w-full  lg:w-1/3  p-4 space-y-4">
-        {/* Payment Details */}
-        <div className="border p-6 rounded-3xl lg:sticky top-[140px] z-20 bg-white text-sm sm:text-base">
-          <p
-            className={`absolute top-0 right-0 ${
-              selectedCoupon.id ? "opacity-100" : "opacity-0"
-            } bg-green-500 text-white px-4 py-3 rounded-bl-lg rounded-tr-lg`}
-          >
-            {userDetails?.Coupons.map((item) =>
-              item._id === selectedCoupon.id ? item.discountPercentage : ""
-            )}
-            % OFF
-          </p>
-          <p className="font-semibold text-lg mt-7">Payment Details</p>
-          <p className="line-through text-gray-400">
-            {data?.price ? data.price * searchData.guests * 1.25 : "N/A"}
-          </p>
-          <p className="text-med-green font-semibold">
-            {data?.price
-              ? searchData.guests === 1
-                ? `₹ ${calculateDiscountedPrice()} /- per person`
-                : `₹ ${calculateDiscountedPrice()} /- total pack price`
-              : "N/A"}
-          </p>
+      <div className="w-full lg:w-1/3 p-4">
+        {/* Sticky Parent Container */}
+        <div className="lg:sticky top-[150px] z-20">
+          {/* Scrollable Inner Container */}
+          <div className=" lg:max-h-[80vh] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 space-y-4">
+            {/* Payment Details */}
+            <div className="border p-6 rounded-3xl relative bg-white text-sm sm:text-base">
+              <p
+                className={`absolute top-0 right-0 ${
+                  selectedCoupon.id ? "opacity-100" : "opacity-0"
+                } bg-green-500 text-white px-4 py-3 rounded-bl-lg rounded-tr-lg`}
+              >
+                {userDetails?.Coupons.map((item) =>
+                  item._id === selectedCoupon.id ? item.discountPercentage : ""
+                )}
+                % OFF
+              </p>
+              <p className="font-semibold text-lg mt-7">Payment Details</p>
+              <p className="line-through text-gray-400">
+                {data?.price ? data.price * searchData.guests * 1.25 : "N/A"}
+              </p>
+              <p className="text-med-green font-semibold">
+                {data?.price
+                  ? searchData.guests === 1
+                    ? `₹ ${calculateDiscountedPrice()} /- per person`
+                    : `₹ ${calculateDiscountedPrice()} /- total pack price`
+                  : "N/A"}
+              </p>
 
-          <p className="border rounded-xl mb-3 text-blue-500 flex justify-center items-center gap-4 py-1 text-[.7rem] mt-2">
-            <span className="text-2xl">🎉</span> No Additional or Hidden
-            Costs!!!
-          </p>
-          <div className="border-b mb-3 border-[#A4B6B9] w-full"></div>
-          <p className="mb-4 cursor-pointer font-semibold gap-2 flex items-start justify-between">
-            Total Payable: ₹ {calculateDiscountedPrice()}
-            <span className="mt-[3px] text-lg">
-              <IoIosArrowDown />
-            </span>
-          </p>
-          <div
-            onClick={handleSubmit}
-            className="bg-med-green text-lg text-white inline-flex py-3 px-4 rounded-xl"
-          >
-            <TransitionLink to={"/destination/confirmation-page"}>
-              Confirm and Book
-            </TransitionLink>
-          </div>
-        </div>
+              <p className="border rounded-xl mb-3 text-blue-500 flex justify-center items-center gap-4 py-1 text-[.7rem] mt-2">
+                <span className="text-2xl">🎉</span> No Additional or Hidden
+                Costs!!!
+              </p>
+              <div className="border-b mb-3 border-[#A4B6B9] w-full"></div>
+              <p className="mb-4 cursor-pointer font-semibold gap-2 flex items-start justify-between">
+                Total Payable: ₹ {calculateDiscountedPrice()}
+                <span className="mt-[3px] text-lg">
+                  <IoIosArrowDown />
+                </span>
+              </p>
+              <div
+                onClick={handleSubmit}
+                className="bg-med-green text-lg text-white inline-flex py-3 px-4 rounded-xl"
+              >
+                <TransitionLink to={"/destination/confirmation-page"}>
+                  Confirm and Book
+                </TransitionLink>
+              </div>
+            </div>
 
-        {/* Discount Section */}
-        <div className="bg-[#EDF7F9] rounded-3xl border-[.5px] w-full p-6 ">
-          <div className="flex flex-col border-gray-400 rounded-xl border-[.6px] px-4 py-3 sm:flex-row items-center gap-0 sm:gap-2 mb-4">
-            <input
-              type="text"
-              placeholder="Have a Coupon?"
-              className="flex-1 w-full text-base bg-transparent rounded text-center sm:text-left"
-            />
-            <button
-              className={`text-green-500 ${
-                selectedCoupon.id ? "text-opacity-65" : "text-opacity-100"
-              } px-0 text-base py-1 rounded`}
-              disabled={selectedCoupon}
-            >
-              {selectedCoupon.id ? "Applied" : "Apply"}
-            </button>
-          </div>
+            {/* Discount Section */}
+            <div className="bg-[#EDF7F9] rounded-3xl border-[.5px] w-full p-6 ">
+              <div className="flex flex-col border-gray-400 rounded-xl border-[.6px] px-4 py-3 sm:flex-row items-center gap-0 sm:gap-2 mb-4">
+                <input
+                  type="text"
+                  placeholder="Have a Coupon?"
+                  className="flex-1 w-full text-base bg-transparent rounded text-center sm:text-left"
+                />
+                <button
+                  className={`text-green-500 ${
+                    selectedCoupon.id ? "text-opacity-65" : "text-opacity-100"
+                  } px-0 text-base py-1 rounded`}
+                  disabled={selectedCoupon}
+                >
+                  {selectedCoupon.id ? "Applied" : "Apply"}
+                </button>
+              </div>
 
-          <p className="text-center text-gray-500">OR</p>
-          <div>
-            {userDetails?.Coupons ? (
-              userDetails.Coupons.map((item) => {
-                return (
-                  <div
-                    key={item._id}
-                    onClick={() => handleCoupon(item)}
-                    className={`flex items-start cursor-pointer gap-3 bg-white mt-4 
-                      ${
-                        selectedCoupon.id === item._id
-                          ? "border-med-green"
-                          : "border-white"
-                      } 
-                      ${
-                        selectedCoupon.id !== null &&
-                        selectedCoupon.id !== item._id
-                          ? "hover:border-[#e5e7eb]"
-                          : "hover:border-med-green"
-                      } 
-                      border-[3px] p-2 rounded-xl`}
-                  >
-                    <CouponSvg />
-                    <div className="w-full">
-                      <p className="font-bold text-sm">{item.couponCode}</p>
-                      <p className="text-xs mb-3 text-gray-500">
-                        {item.couponDescription}
-                      </p>
+              <p className="text-center text-gray-500">OR</p>
+              <div className="max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+                {userDetails?.Coupons ? (
+                  userDetails.Coupons.map((item) => {
+                    return (
+                      <div
+                        key={item._id}
+                        onClick={() => handleCoupon(item)}
+                        className={`flex items-start cursor-pointer gap-3 bg-white mt-4 
+                    ${
+                      selectedCoupon.id === item._id
+                        ? "border-med-green"
+                        : "border-white"
+                    } 
+                    ${
+                      selectedCoupon.id !== null &&
+                      selectedCoupon.id !== item._id
+                        ? "hover:border-[#e5e7eb]"
+                        : "hover:border-med-green"
+                    } 
+                    border-[3px] p-2 rounded-xl`}
+                      >
+                        <CouponSvg />
+                        <div className="w-full">
+                          <p className="font-bold text-sm">{item.couponCode}</p>
+                          <p className="text-xs mb-3 text-gray-500">
+                            {item.couponDescription}
+                          </p>
 
-                      <div className="flex justify-between">
-                        <p className={`text-green-500  text-sm  rounded `}>
-                          {selectedCoupon.id === item._id
-                            ? "Applied!"
-                            : "Apply"}
-                        </p>
-                        {selectedCoupon.id === item._id && (
-                          <button
-                            className="text-red-500  text-sm  rounded"
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent parent onClick
-                              handleCoupon(item._id);
-                            }}
-                          >
-                            Remove
-                          </button>
-                        )}
+                          <div className="flex justify-between">
+                            <p className={`text-green-500 text-sm rounded`}>
+                              {selectedCoupon.id === item._id
+                                ? "Applied!"
+                                : "Apply"}
+                            </p>
+                            {selectedCoupon.id === item._id && (
+                              <button
+                                className="text-red-500 text-sm rounded"
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent parent onClick
+                                  handleCoupon(item._id);
+                                }}
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p>No Coupons Available</p>
-            )}
-
-            <div className="flex gap-2 mt-4"></div>
+                    );
+                  })
+                ) : (
+                  <p>No Coupons Available</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
