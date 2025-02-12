@@ -255,7 +255,7 @@ function IternryDetails({ data }) {
                   className="border-[.5px] px-4 py-4 rounded-lg"
                   key={dayIdx} // Use a unique field or fallback to the index
                 >
-                  <h3 className="text-base md:text-lg leading-6 md:leading-3 font-bold">
+                  <h3 className="text-base md:text-lg leading-6 md:leading-7 font-bold">
                     {day.dayTitle}
                   </h3>
                   <div className="border-t mt-3 mb-4"></div>
@@ -320,7 +320,7 @@ function IternryDetails({ data }) {
       {/* Right Side */}
       <div className="w-full  lg:w-1/3  p-4 space-y-4">
         {/* Payment Details */}
-        <div className="border p-6 rounded-3xl relative text-sm sm:text-base">
+        <div className="border p-6 rounded-3xl lg:sticky top-[140px] z-20 bg-white text-sm sm:text-base">
           <p
             className={`absolute top-0 right-0 ${
               selectedCoupon.id ? "opacity-100" : "opacity-0"
