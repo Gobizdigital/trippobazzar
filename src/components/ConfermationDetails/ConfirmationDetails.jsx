@@ -4,15 +4,15 @@ import { useBooking } from "../../../context/BookingContext";
 import { useSearch } from "../../../context/SearchContext";
 import axios from "axios";
 import { useWishlist } from "../../../context/WishListContext";
+import { useNavigate } from "react-router-dom";
 
 const GuestForm = () => {
   const { bookingDetails, setBookingDetails } = useBooking();
   const { searchData } = useSearch();
   const { userDetails } = useWishlist();
-  const [isReadyForPayment, setIsReadyForPayment] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     PackageBooked: "",
-
     TotalGuests: 1,
     BookedHotels: [],
     PackageBookedPrice: 0,
@@ -179,10 +179,14 @@ const GuestForm = () => {
               };
 
               axios
-                .post("https://trippo-bazzar-backend.vercel.app/api/booking", updatedData)
+                .post(
+                  "https://trippo-bazzar-backend.vercel.app/api/booking",
+                  updatedData
+                )
                 .then((res) => {
                   if (res.data.data) {
                     alert("Booking Successful");
+                    navigate("/");
                   }
                 })
                 .catch((error) => console.error("Booking API Error:", error));
@@ -218,7 +222,6 @@ const GuestForm = () => {
 
       console.log("Verified Total Price:", totalPrice);
 
-      // Update state before proceeding with Razorpay
       const updatedFormData = {
         GuestDetails: guestDetails.guests.map((guest) => ({
           GuestName: guest.fullName || "",

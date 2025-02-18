@@ -16,7 +16,7 @@ const LargeDeviceSidebar = ({ isSidebarOpen, closeSidebar }) => {
     },
     {
       title: "My Bookings",
-      link: "",
+      link: "/my-bookings",
       subItems: ["Modify Bookings", "Cancel Bookings", "New Bookings"],
     },
     {

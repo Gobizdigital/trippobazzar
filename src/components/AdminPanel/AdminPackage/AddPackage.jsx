@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useFetch from "../../../../hooks/useFetch";
 
 const AddPackage = ({ addNew, setIsAddingPackage }) => {
@@ -9,6 +9,16 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     title: "",
     description: "",
     price: 0,
+    pricing: [
+      {
+        guestCount: "",
+        packageType: "",
+        basePrice: "",
+        extraPersonCharge: "",
+        extraBedCharge: "",
+        CNB: "",
+      },
+    ],
     whatsIncluded: [],
     coupon: [],
     MainPhotos: [],
@@ -43,6 +53,35 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handlePricingChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedPricing = [...data.pricing];
+    updatedPricing[index][name] = value;
+    setData({ ...data, pricing: updatedPricing });
+  };
+
+  const addPricing = () => {
+    setData({
+      ...data,
+      pricing: [
+        ...data.pricing,
+        {
+          guestCount: "",
+          packageType: "",
+          basePrice: "",
+          extraPersonCharge: "",
+          extraBedCharge: "",
+          CNB: "",
+        },
+      ],
+    });
+  };
+
+  const removePricing = (index) => {
+    const updatedPricing = data.pricing.filter((_, i) => i !== index);
+    setData({ ...data, pricing: updatedPricing });
   };
 
   const addNewHotel = () => {
@@ -221,6 +260,10 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     });
   };
 
+  useEffect(() => {
+    handleAutoResize();
+  }, [data]);
+
   return (
     <div>
       <div className="bg-gray-50 text-gray-900">
@@ -250,6 +293,84 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
               onChange={handleChange}
               className="text-xl font-semibold text-green-600"
             />
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold">Package Pricing</h2>
+
+            {data.pricing.map((priceItem, index) => (
+              <div key={index} className="pricing-entry border p-4 mb-2">
+                <input
+                  type="number"
+                  name="guestCount"
+                  placeholder="Guest Count"
+                  value={priceItem.guestCount}
+                  onChange={(e) => handlePricingChange(index, e)}
+                  className="mr-2 p-2 border rounded"
+                />
+
+                <select
+                  name="packageType"
+                  value={priceItem.packageType}
+                  onChange={(e) => handlePricingChange(index, e)}
+                  className="mr-2 p-2 border rounded"
+                >
+                  <option value="">Select Package Type</option>
+                  <option value="Standard">Standard</option>
+                  <option value="Deluxe">Deluxe</option>
+                  <option value="Super Deluxe">Super Deluxe</option>
+                  <option value="Luxury">Luxury</option>
+                </select>
+
+                <input
+                  type="number"
+                  name="basePrice"
+                  placeholder="Base Price"
+                  value={priceItem.basePrice}
+                  onChange={(e) => handlePricingChange(index, e)}
+                  className="mr-2 p-2 border rounded"
+                />
+
+                <input
+                  type="number"
+                  name="extraPersonCharge"
+                  placeholder="Extra Person Charge"
+                  value={priceItem.extraPersonCharge}
+                  onChange={(e) => handlePricingChange(index, e)}
+                  className="mr-2 p-2 border rounded"
+                />
+                 <input
+                  type="number"
+                  name="extraBedCharge"
+                  placeholder="Extra Bed Charge"
+                  value={priceItem.extraBedCharge}
+                  onChange={(e) => handlePricingChange(index, e)}
+                  className="mr-2 p-2 border rounded"
+                />
+                 <input
+                  type="number"
+                  name="CNB"
+                  placeholder="Extra CNB Charge"
+                  value={priceItem.CNB}
+                  onChange={(e) => handlePricingChange(index, e)}
+                  className="mr-2 p-2 border rounded"
+                />
+
+                <button
+                  onClick={() => removePricing(index)}
+                  className="bg-red-500 text-white px-3 py-1 rounded ml-2"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+
+            <button
+              onClick={addPricing}
+              className="bg-blue-500 text-white px-4 py-2 mt-3 rounded"
+            >
+              Add Pricing
+            </button>
           </section>
 
           {/* Main Photos */}

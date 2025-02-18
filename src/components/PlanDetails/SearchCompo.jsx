@@ -8,14 +8,13 @@ import { FaUser } from "react-icons/fa";
 import CalenderSvg from "../../../svgs/CalenderSvg/index.jsx";
 import EditButtonSvg from "../../../svgs/EditButton/index.jsx";
 import { useParams } from "react-router-dom";
+import { useBooking } from "../../../context/BookingContext.jsx";
 function SearchCompo({ data }) {
-  const { searchData, setSearchData } = useSearch();
+  const { searchData, setSearchData, selectedPricing } = useSearch();
   const [isEditingDates, setIsEditingDates] = useState(false);
   const [isEditingGuests, setIsEditingGuests] = useState(false);
 
   const { id, state } = useParams();
-  console.log(id);
-
   const toggleDateEdit = () => setIsEditingDates(!isEditingDates);
   const toggleGuestEdit = () => setIsEditingGuests(!isEditingGuests);
 
@@ -167,6 +166,7 @@ function SearchCompo({ data }) {
                 min="1"
                 className="w-20 text-base md:text-lg border rounded px-2"
                 value={searchData.guests || 1}
+                disabled={!!selectedPricing} // Disable input if selectedPricing is set
                 onChange={(e) =>
                   updateSearchData("guests", parseInt(e.target.value, 10))
                 }

@@ -16,6 +16,7 @@ export default function EditPackage({
       title: "",
       description: "",
       price: 0,
+      pricing: [], // Ensure it's always an array
       whatsIncluded: [],
       coupon: [],
       photos: [],
@@ -75,6 +76,41 @@ export default function EditPackage({
 
     // Reset input fields
     setNewLocation("");
+  };
+
+  const handlePricingChange = (index, e) => {
+    const { name, value } = e.target;
+
+    if (!Array.isArray(data.pricing)) return; // Ensure pricing is an array
+
+    const updatedPricing = [...data.pricing];
+    updatedPricing[index] = { ...updatedPricing[index], [name]: value };
+
+    setData({ ...data, pricing: updatedPricing });
+  };
+
+  const addPricing = () => {
+    setData({
+      ...data,
+      pricing: [
+        ...(Array.isArray(data.pricing) ? data.pricing : []), // Ensure pricing is an array
+        {
+          guestCount: "",
+          packageType: "",
+          basePrice: "",
+          extraPersonCharge: "",
+          extraBedCharge: "",
+          CNB: "",
+        },
+      ],
+    });
+  };
+
+  const removePricing = (index) => {
+    if (!Array.isArray(data.pricing)) return; // Ensure pricing is an array
+
+    const updatedPricing = data.pricing.filter((_, i) => i !== index);
+    setData({ ...data, pricing: updatedPricing });
   };
 
   const removeHotel = (hotelId) => {
@@ -261,7 +297,85 @@ export default function EditPackage({
             className="text-xl font-semibold text-green-600"
           />
         </section>
+        {/* Dynamic Pricing */}
+        <section className="mb-8">
+          <h2 className="text-xl font-bold">Package Pricing</h2>
 
+          {data?.pricing?.map((priceItem, index) => (
+            <div key={index} className="pricing-entry border p-4 mb-2">
+              <input
+                type="number"
+                name="guestCount"
+                placeholder="Guest Count"
+                value={priceItem.guestCount}
+                onChange={(e) => handlePricingChange(index, e)}
+                className="mr-2 p-2 border rounded"
+              />
+
+              <select
+                name="packageType"
+                value={priceItem.packageType}
+                onChange={(e) => handlePricingChange(index, e)}
+                className="mr-2 p-2 border rounded"
+              >
+                <option value="">Select Package Type</option>
+                <option value="Standard">Standard</option>
+                <option value="Deluxe">Deluxe</option>
+                <option value="Super Deluxe">Super Deluxe</option>
+                <option value="Luxury">Luxury</option>
+              </select>
+
+              <input
+                type="number"
+                name="basePrice"
+                placeholder="Base Price"
+                value={priceItem.basePrice}
+                onChange={(e) => handlePricingChange(index, e)}
+                className="mr-2 p-2 border rounded"
+              />
+
+              <input
+                type="number"
+                name="extraBedCharge"
+                placeholder="Extra Bed Charge"
+                value={priceItem.extraBedCharge}
+                onChange={(e) => handlePricingChange(index, e)}
+                className="mr-2 p-2 border rounded"
+              />
+              <input
+                type="number"
+                name="CNB"
+                placeholder="Extra CNB Charge"
+                value={priceItem.CNB}
+                onChange={(e) => handlePricingChange(index, e)}
+                className="mr-2 p-2 border rounded"
+              />
+
+              <input
+                type="number"
+                name="extraPersonCharge"
+                placeholder="Extra Person Charge"
+                value={priceItem.extraPersonCharge}
+                onChange={(e) => handlePricingChange(index, e)}
+                className="mr-2 p-2 border rounded"
+              />
+
+              <button
+                onClick={() => removePricing(index)}
+                className="bg-red-500 text-white px-3 py-1 rounded ml-2"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+
+          <button
+            onClick={addPricing}
+            className="bg-blue-500 text-white px-4 py-2 mt-3 rounded"
+          >
+            Add Pricing
+          </button>
+        </section>
         {/* Main Photos */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Main Photos</h2>
@@ -303,7 +417,6 @@ export default function EditPackage({
             Add Main Photo
           </button>
         </section>
-
         {/* Day Description*/}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Day Description</h2>
@@ -408,7 +521,6 @@ export default function EditPackage({
             Add Another Day
           </button>
         </section>
-
         {/* What's Included */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">What's Included</h2>
@@ -458,7 +570,6 @@ export default function EditPackage({
             </ul>
           </div>
         </section>
-
         {/* Special Instructions */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Special Instructions</h2>
@@ -473,7 +584,6 @@ export default function EditPackage({
             className="text-gray-700 whitespace-pre-line w-full resize-none overflow-hidden"
           />
         </section>
-
         {/* Conditions of Travel */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Conditions of Travel</h2>
@@ -485,7 +595,6 @@ export default function EditPackage({
             className="text-gray-700 whitespace-pre-line w-full"
           />
         </section>
-
         {/*Things to maintain*/}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Things to maintain</h2>
@@ -500,7 +609,6 @@ export default function EditPackage({
             className="text-gray-700 whitespace-pre-line w-full resize-none overflow-hidden"
           />
         </section>
-
         {/* Policies */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Policies</h2>
@@ -513,7 +621,6 @@ export default function EditPackage({
             className="text-gray-700 whitespace-pre-line w-full"
           />
         </section>
-
         {/* Hotel */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Hotels</h2>
@@ -671,7 +778,6 @@ export default function EditPackage({
             </button>
           </div>
         </section>
-
         {/* Terms and Conditions */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Terms and Conditions</h2>
@@ -683,7 +789,6 @@ export default function EditPackage({
             className="text-gray-700 whitespace-pre-line w-full"
           />
         </section>
-
         {/* Save or Submit button */}
         <button
           onClick={saveState}
@@ -691,7 +796,6 @@ export default function EditPackage({
         >
           Save
         </button>
-
         <button
           onClick={() => {
             setEditPackage(false);

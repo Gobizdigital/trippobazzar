@@ -5,6 +5,7 @@ const SearchContext = createContext();
 
 export const SearchProvider = ({ children }) => {
   const { id, state } = useParams();
+  const [selectedPricing, setSelectedPricing] = useState(null);
   const [searchData, setSearchData] = useState({
     guests: 1,
     startDate: null,
@@ -40,9 +41,6 @@ export const SearchProvider = ({ children }) => {
     },
   });
 
-
-  console.log(id);
-
   useEffect(() => {
     if (id) {
       setSearchData((prev) => ({
@@ -60,7 +58,14 @@ export const SearchProvider = ({ children }) => {
 
   return (
     <SearchContext.Provider
-      value={{ searchData, setSearchData, filterProp, setFilterProp }}
+      value={{
+        searchData,
+        setSearchData,
+        filterProp,
+        selectedPricing,
+        setSelectedPricing,
+        setFilterProp,
+      }}
     >
       {children}
     </SearchContext.Provider>

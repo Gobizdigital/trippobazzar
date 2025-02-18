@@ -36,7 +36,7 @@ export default function AdminPackage() {
     setModal({
       message: `Are you sure you want to delete this ${name}?`,
       onConfirm: () => {
-        deleteState(id); // Perform delete operation
+        deleteById(id); // Perform delete operation
         setModal(null); // Close modal
       },
       onCancel: () => setModal(null), // Close modal
@@ -134,6 +134,51 @@ export default function AdminPackage() {
                   <p className="text-xl font-semibold text-green-600">
                     Price: Rs. {data?.price}/-
                   </p>
+                  {data?.pricing?.length > 0 && (
+                    <section className="mb-8">
+                      <h2 className="text-2xl font-bold mb-4">
+                        Package Pricing
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {data.pricing.map((priceItem, index) => (
+                          <div
+                            key={index}
+                            className="border p-4 rounded-lg shadow-md bg-white"
+                          >
+                            <p className="text-lg font-semibold">
+                              Guest Count: {priceItem.guestCount}
+                            </p>
+                            <p className="text-gray-700">
+                              Package Type: {priceItem.packageType}
+                            </p>
+                            <p className="text-green-600 font-semibold">
+                              Base Price: Rs. {priceItem.basePrice}
+                            </p>
+
+                            {priceItem.extraPersonCharge && (
+                              <p className="text-gray-700">
+                                Extra Person Charge: Rs.{" "}
+                                {priceItem.extraPersonCharge}
+                              </p>
+                            )}
+
+                            {priceItem.extraBedCharge && (
+                              <p className="text-gray-700">
+                                Extra Bed Charge: Rs. {priceItem.extraBedCharge}
+                              </p>
+                            )}
+
+                            {priceItem.CNB && (
+                              <p className="text-gray-700">
+                                Child Without Bed Charge (CNB): Rs.{" "}
+                                {priceItem.CNB}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
 
                   <div className="absolute top-1 right-0 flex flex-col gap-2">
                     <button

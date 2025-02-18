@@ -64,6 +64,7 @@ const MyProfile = React.lazy(() => import("./components/MyProfile/MyProfile"));
 import Loader from "./components/Loader";
 import { BookingProvider } from "../context/BookingContext";
 import FAQPage from "./components/FAQs/FAQPage";
+import MyBookings from "./components/MyBookings/MyBookings";
 
 function App() {
   const location = useLocation(); // Get the current route
@@ -196,11 +197,20 @@ function App() {
               </Suspense>
             }
           />
-           <Route
+
+          <Route
+            path="/my-bookings"
+            element={
+              <Suspense fallback={<Loader />}>
+                <MyBookings />
+              </Suspense>
+            }
+          />
+          <Route
             path="/FAQS"
             element={
               <Suspense fallback={<Loader />}>
-                <FAQPage/>
+                <FAQPage />
               </Suspense>
             }
           />
