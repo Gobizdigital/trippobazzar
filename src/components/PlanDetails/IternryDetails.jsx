@@ -303,14 +303,18 @@ function IternryDetails({ data }) {
                   <div className="border-t mt-3 mb-4"></div>
                   <div>
                     {/* Grid for sm and above */}
-                    <div className="grid grid-cols-2 sm:grid-cols-6 mb-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-6 mb-4  gap-2">
                       {day?.photos?.map((img, photoidx) => (
-                        <img
-                          key={`${img}-${photoidx}`} // Combine img and index for uniqueness
-                          src="/src/assets/oneContinent.png"
-                          alt={`Day ${dayIdx + 1} img ${photoidx + 1}`}
-                          className="rounded-md w-full"
-                        />
+                        <div
+                          key={`${img}-${photoidx}`}
+                          className="h-[120px] w-[180px]"
+                        >
+                          <img
+                            src={img}
+                            alt={`Day ${dayIdx + 1} img ${photoidx + 1}`}
+                            className="rounded-md w-full h-full"
+                          />
+                        </div>
                       ))}
                     </div>
                   </div>
