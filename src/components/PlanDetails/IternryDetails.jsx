@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { useSearch } from "../../../context/SearchContext";
 import { useWishlist } from "../../../context/WishListContext";
-import { IoIosArrowDown } from "react-icons/io";
 import CouponSvg from "../../../svgs/CouponSvg";
 import Policies from "./Policies";
 import HotelsPlan from "./HotelsPlan";
 import CarosalImageModal from "../../../utils/CarosalImageModal";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { useBooking } from "../../../context/BookingContext";
-import TransitionLink from "../../../utils/TransitionLink";
 import { IoCheckmarkCircle } from "react-icons/io5";
 
 function IternryDetails({ data }) {
