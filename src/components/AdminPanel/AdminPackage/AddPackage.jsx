@@ -9,16 +9,7 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     title: "",
     description: "",
     price: 0,
-    pricing: [
-      {
-        guestCount: "",
-        packageType: "",
-        basePrice: "",
-        extraPersonCharge: "",
-        extraBedCharge: "",
-        CNB: "",
-      },
-    ],
+    pricing: [],
     whatsIncluded: [],
     coupon: [],
     MainPhotos: [],
@@ -339,7 +330,7 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
                   onChange={(e) => handlePricingChange(index, e)}
                   className="mr-2 p-2 border rounded"
                 />
-                 <input
+                <input
                   type="number"
                   name="extraBedCharge"
                   placeholder="Extra Bed Charge"
@@ -347,7 +338,7 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
                   onChange={(e) => handlePricingChange(index, e)}
                   className="mr-2 p-2 border rounded"
                 />
-                 <input
+                <input
                   type="number"
                   name="CNB"
                   placeholder="Extra CNB Charge"
