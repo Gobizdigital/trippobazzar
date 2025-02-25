@@ -13,7 +13,8 @@ import { useWishlist } from "../../../context/WishListContext";
 function AllContinent({ data, loading }) {
   const [liked, setLiked] = useState(Array(data?.length || 0).fill([])); // Initial state for heart toggle
   const scrollContainerRef = useRef([]);
-  const carouselRef = useRef(null); // Reference for the carousel container
+  const carouselRefs = useRef([]);
+
   const navigate = useNavigate();
   const { addCountryToWishlist, userDetails, verifyUser } = useWishlist();
 
@@ -50,17 +51,21 @@ function AllContinent({ data, loading }) {
     verifyUser();
   };
 
-  const scrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollLeft -= 250; // Scroll left by 250px
+  const scrollLeft = (index) => {
+    if (carouselRefs.current[index]) {
+      const cardWidth = carouselRefs.current[index].querySelector("div")?.offsetWidth || 350; // Get the width of the first card
+      carouselRefs.current[index].scrollLeft -= cardWidth + 16; // Add margin (16px gap)
     }
   };
-
-  const scrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollLeft += 250; // Scroll right by 250px
+  
+  const scrollRight = (index) => {
+    if (carouselRefs.current[index]) {
+      const cardWidth = carouselRefs.current[index].querySelector("div")?.offsetWidth || 350; // Get the width of the first card
+      carouselRefs.current[index].scrollLeft += cardWidth + 16; // Add margin (16px gap)
     }
   };
+  
+  
 
   const handleScrollTo = (index) => {
     if (scrollContainerRef.current[index]) {
@@ -128,14 +133,14 @@ function AllContinent({ data, loading }) {
                 {/* Carousel Navigation */}
                 <div className="flex items-center mb-3 mt-6 sm:mt-1 space-x-2 z-20 relative">
                   <button
-                    onClick={scrollLeft}
+                    onClick={() => scrollLeft(idx)}
                     aria-label="Scroll left in featured Continent carousel"
                     className="p-2 text-white bg-black bg-opacity-50 rounded hover:bg-opacity-70"
                   >
                     <FaChevronLeft />
                   </button>
                   <button
-                    onClick={scrollRight}
+                 onClick={() => scrollRight(idx)}
                     aria-label="Scroll right in featured Continent carousel"
                     className="p-2 text-white bg-black bg-opacity-50 rounded hover:bg-opacity-70"
                   >
@@ -146,8 +151,8 @@ function AllContinent({ data, loading }) {
                 {/* Carousel Section */}
                 <div>
                   <div
-                    ref={carouselRef}
-                    className="flex overflow-x-auto space-x-4 mt-10 sm:mt-16 md:mt-20 scrollbar-hide scroll-snap-x-mandatory"
+                    ref={(el) => (carouselRefs.current[idx] = el)}
+                    className="flex overflow-x-auto space-x-4 mt-10 sm:mt-16 md:mt-20 scrollbar-hide scroll-snap-x-mandatory scroll-smooth"
                     style={{ scrollSnapType: "x mandatory", width: "100%" }}
                   >
                     {item?.Countries?.map((card, index) => (
@@ -161,7 +166,7 @@ function AllContinent({ data, loading }) {
                             `/destination/${item.ContinentName}/${card.CountryName}`
                           );
                         }}
-                        className="relative h-[260px]  w-[350px] rounded-lg overflow-hidden shadow-lg flex-shrink-0 scroll-snap-align-start cursor-pointer"
+                        className="relative h-[260px] w-[310px] sm:w-[350px] rounded-lg overflow-hidden shadow-lg flex-shrink-0 scroll-snap-align-start cursor-pointer"
                       >
                         {/* Image */}
                         <img
