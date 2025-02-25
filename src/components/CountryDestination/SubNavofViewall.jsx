@@ -9,7 +9,7 @@ const sections = [
 ];
 function SubNavofViewall() {
   return (
-    <nav className="bg-white mt-[45rem] sm:mt-[40rem] md:mt-[26rem] lg:mt-60 sticky top-[80px] z-30 shadow-inner ">
+    <nav className="bg-white mt-[45rem] sm:mt-[40rem] md:mt-[26rem] lg:mt-60  shadow-inner ">
       <div className="max-w-7xl mx-auto px-0 em:px-4 py-4">
         <ul className="flex  flex-row items-start overflow-x-scroll md:items-center scrollbar-hide px-4 sm:justify-center text-[.7rem] em:text-sm uppercase leading-6 font-normal  gap-8">
           {sections.map((item, idx) => (
