@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { useSearch } from "../../../context/SearchContext";
 import { useWishlist } from "../../../context/WishListContext";
 import CouponSvg from "../../../svgs/CouponSvg";
@@ -11,8 +11,13 @@ import { IoCheckmarkCircle } from "react-icons/io5";
 
 function IternryDetails({ data }) {
   const { id: pkdid } = useParams();
-  const { searchData, setSearchData, selectedPricing, setSelectedPricing } =
-    useSearch();
+  const {
+    searchData,
+    setSearchData,
+    selectedPricing,
+    setSelectedPricing,
+    setSelectedPricePerPerson,
+  } = useSearch();
   const { userDetails } = useWishlist();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Plan Details");
@@ -47,6 +52,7 @@ function IternryDetails({ data }) {
       label: `${item.packageType} (${item.guestCount} Guests)`,
       value: item.basePrice,
       guestCount: item.guestCount,
+      perPerson:item.perPerson
     })) || [];
 
   const toggleDropdown = (id) => {
@@ -381,6 +387,7 @@ function IternryDetails({ data }) {
                         : null;
 
                       if (selectedValue === null) {
+                        setSelectedPricePerPerson(false);
                         setSelectedPricing(null);
                         setAdditionalServices(null);
                         setSearchData((prev) => ({
@@ -392,7 +399,12 @@ function IternryDetails({ data }) {
                           (option) => option.value === selectedValue
                         );
 
+                        console.log(selectedOption);
+
                         if (selectedOption) {
+                          setSelectedPricePerPerson(
+                            selectedOption.perPerson ? true : false
+                          );
                           setSelectedPricing(selectedOption.value);
                           setSearchData((prev) => ({
                             ...prev,

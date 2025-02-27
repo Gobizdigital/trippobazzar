@@ -47,9 +47,17 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
   };
 
   const handlePricingChange = (index, e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
+
+    if (!Array.isArray(data.pricing)) return; // Ensure pricing is an array
+
     const updatedPricing = [...data.pricing];
-    updatedPricing[index][name] = value;
+
+    updatedPricing[index] = {
+      ...updatedPricing[index],
+      [name]: type === "checkbox" ? checked : value, // Handle checkbox separately
+    };
+
     setData({ ...data, pricing: updatedPricing });
   };
 
@@ -65,6 +73,7 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
           extraPersonCharge: "",
           extraBedCharge: "",
           CNB: "",
+          perPerson: "",
         },
       ],
     });
@@ -346,6 +355,16 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
                   onChange={(e) => handlePricingChange(index, e)}
                   className="mr-2 p-2 border rounded"
                 />
+                <label>
+                <input
+                  type="checkbox"
+                  name="perPerson"
+                  checked={priceItem.perPerson || ""} // Ensure checkbox reflects state
+                  onChange={(e) => handlePricingChange(index, e)}
+                  className="mr-1"
+                />
+                Per Person
+              </label>
 
                 <button
                   onClick={() => removePricing(index)}

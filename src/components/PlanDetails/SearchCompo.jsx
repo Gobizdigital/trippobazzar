@@ -10,7 +10,10 @@ import EditButtonSvg from "../../../svgs/EditButton/index.jsx";
 import { useParams } from "react-router-dom";
 import { useBooking } from "../../../context/BookingContext.jsx";
 function SearchCompo({ data }) {
-  const { searchData, setSearchData, selectedPricing } = useSearch();
+  const { searchData, setSearchData, selectedPricing, selectedPricePerPerson } =
+    useSearch();
+
+  console.log(selectedPricePerPerson);
   const [isEditingDates, setIsEditingDates] = useState(false);
   const [isEditingGuests, setIsEditingGuests] = useState(false);
 
@@ -21,6 +24,7 @@ function SearchCompo({ data }) {
   const updateSearchData = (field, value) => {
     setSearchData((prev) => ({ ...prev, [field]: value }));
   };
+  console.log(selectedPricing);
 
   useEffect(() => {
     if ((state, id)) {
@@ -166,7 +170,7 @@ function SearchCompo({ data }) {
                 min="1"
                 className="w-20 text-base md:text-lg border rounded px-2"
                 value={searchData.guests || 1}
-                disabled={!!selectedPricing} // Disable input if selectedPricing is set
+                disabled={!!selectedPricing && selectedPricePerPerson === false} // Disable input if selectedPricing is set
                 onChange={(e) =>
                   updateSearchData("guests", parseInt(e.target.value, 10))
                 }

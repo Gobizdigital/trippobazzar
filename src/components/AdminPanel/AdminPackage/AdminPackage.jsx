@@ -174,6 +174,12 @@ export default function AdminPackage() {
                                 {priceItem.CNB}
                               </p>
                             )}
+                             {priceItem.perPerson && (
+                              <p className="text-gray-700">
+                                Per Person Rate:{" "}
+                                <b>{priceItem.perPerson?"True":"False"}</b>
+                              </p>
+                            )}
                           </div>
                         ))}
                       </div>
