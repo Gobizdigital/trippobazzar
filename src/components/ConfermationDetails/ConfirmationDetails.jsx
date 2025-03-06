@@ -5,37 +5,14 @@ import { useSearch } from "../../../context/SearchContext";
 import axios from "axios";
 import { useWishlist } from "../../../context/WishListContext";
 import { useNavigate } from "react-router-dom";
+import Loader from "../Loader";
 
 const GuestForm = () => {
-  const { bookingDetails, setBookingDetails } = useBooking();
+  const { bookingDetails } = useBooking();
   const { searchData } = useSearch();
+  const [loading, setLoading] = useState(false);
   const { userDetails } = useWishlist();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    PackageBooked: "",
-    TotalGuests: 1,
-    BookedHotels: [],
-    PackageBookedPrice: 0,
-    GuestDetails: [
-      {
-        GuestName: "",
-        DOB: "",
-        Gender: "",
-        PassportNumber: "",
-        PassportIssuedCountry: "",
-        PassportIssuedDate: "",
-        PassportDateOfExpiry: "",
-      },
-    ],
-    PackageBookedStatus: "Booked", // Default status
-    PackageBookedPaymentStatus: "Unpaid", // Default payment status
-    RazorPayPaymentId: "",
-    ContactNumber: "",
-    ContactEmail: "",
-    GSTNumber: "",
-    GSTAddress: "",
-    GSTCity: "",
-  });
 
   const [guestDetails, setGuestDetails] = useState({
     guests: Array.from({ length: searchData.guests }, () => ({
@@ -135,92 +112,18 @@ const GuestForm = () => {
     });
   };
 
-  const initializeRazorpay = async (totalPrice, order) => {
-    const success = await loadScript(
-      "https://checkout.razorpay.com/v1/checkout.js"
-    );
-    if (!success) {
-      console.error("Failed to load Razorpay script");
-      return;
-    }
-
-    const rzp = new window.Razorpay({
-      key: import.meta.env.RAZOR_KEY_ID, // Ensure .env variable is correctly loaded
-      amount: totalPrice * 100,
-      order_id: order.id,
-      handler: async (response) => {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-          response;
-
-        const details = {
-          order_id: razorpay_order_id,
-          payment_id: razorpay_payment_id,
-          signature: razorpay_signature,
-        };
-
-        try {
-          const paymentResponse = await axios.post(
-            "https://trippo-bazzar-backend.vercel.app/api/package/verifyPayment",
-            details
-          );
-
-          if (paymentResponse.status === 200) {
-            console.log(
-              "Payment verified successfully",
-              paymentResponse.data.message
-            );
-            setFormData((prev) => {
-              const updatedData = {
-                ...prev,
-                PackageBookedStatus: "Booked",
-                PackageBookedPaymentStatus: "Paid",
-                RazorPayPaymentId: razorpay_payment_id,
-                userId: userDetails._id,
-              };
-
-              axios
-                .post(
-                  "https://trippo-bazzar-backend.vercel.app/api/booking",
-                  updatedData
-                )
-                .then((res) => {
-                  if (res.data.data) {
-                    alert("Booking Successful");
-                    navigate("/");
-                  }
-                })
-                .catch((error) => console.error("Booking API Error:", error));
-
-              return updatedData;
-            });
-          }
-        } catch (error) {
-          console.error("Payment verification error:", error.message);
-        }
-      },
-      theme: {
-        color: "#F37254",
-      },
-    });
-
-    rzp.open();
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("this is requestdata", bookingDetails);
+      setLoading(true); // Start loading
 
-      // Make API call to verify the amount
+      // ✅ Secure API request (DOES NOT return totalPrice)
       const response = await axios.post(
         "https://trippo-bazzar-backend.vercel.app/api/package/verifyAmount",
-        bookingDetails
+        { ...bookingDetails, userId: userDetails._id }
       );
 
-      console.log(response.data);
-      const { totalPrice, order } = response.data;
-
-      console.log("Verified Total Price:", totalPrice);
+      const { order } = response.data; // ✅ Only get order ID, not totalPrice
 
       const updatedFormData = {
         GuestDetails: guestDetails.guests.map((guest) => ({
@@ -244,24 +147,24 @@ const GuestForm = () => {
           hotelLocation: hotel.hotelLocation || "",
         })),
         PackageBooked: bookingDetails.Pack_id,
+        PackageStartDate: searchData.startDate,
+        PackageEndDate: searchData.endDate,
         TotalGuests: searchData.guests,
         ContactNumber: guestDetails.phone,
         ContactEmail: guestDetails.email,
         GSTNumber: guestDetails.gst.gstNumber,
         GSTAddress: guestDetails.gst.address,
         GSTCity: guestDetails.gst.state,
-        PackageBookedPrice: Number(totalPrice),
         PackageBookedStatus: "Booked",
         PackageBookedPaymentStatus: "Unpaid",
         RazorPayPaymentId: "",
       };
 
-      setFormData(updatedFormData);
-
-      // Call the Razorpay function
-      await initializeRazorpay(totalPrice, order);
+      // ✅ Call Razorpay without passing totalPrice
+      await initializeRazorpay(order, updatedFormData);
     } catch (error) {
       console.error("Error verifying amount:", error.message);
+      setLoading(false); // Stop loading if error occurs
 
       if (error.response) {
         console.error("Server Error:", error.response.data.message);
@@ -270,6 +173,70 @@ const GuestForm = () => {
       }
     }
   };
+
+  const initializeRazorpay = async (order, updatedFormData) => {
+    window.scrollTo(0, 0);
+    setLoading(true); // Start loading
+
+    const success = await loadScript(
+      "https://checkout.razorpay.com/v1/checkout.js"
+    );
+    if (!success) {
+      console.error("Failed to load Razorpay script");
+      setLoading(false);
+      return;
+    }
+
+    const rzp = new window.Razorpay({
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      order_id: order.id, // ✅ Only send order ID
+      handler: async (response) => {
+        try {
+          // ✅ Send payment verification request (DOES NOT send totalPrice)
+          const verifyResponse = await axios.post(
+            "https://trippo-bazzar-backend.vercel.app/api/package/verifyPayment",
+            {
+              order_id: response.razorpay_order_id,
+              payment_id: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+              userId: userDetails._id,
+              bookingData: updatedFormData, // ✅ Send backend-verified data
+            }
+          );
+
+          if (verifyResponse.status === 201) {
+            console.log("Payment verified & booking created");
+
+            setTimeout(() => {
+              setLoading(false);
+              navigate("/paymentconfirm");
+            }, 3000);
+          }
+        } catch (error) {
+          console.error("Payment verification failed:", error.message);
+          setLoading(false);
+          navigate("/paymentfailed");
+        }
+      },
+      theme: { color: "#F37254" },
+      modal: {
+        ondismiss: () => {
+          console.warn("Payment popup closed by user.");
+          setLoading(true);
+          setTimeout(() => {
+            setLoading(false);
+            navigate("/paymentfailed");
+          }, 3000);
+        },
+      },
+    });
+
+    rzp.open();
+  };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="flex flex-col md:flex-row h-full p-0 font-poppins">

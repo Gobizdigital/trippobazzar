@@ -3,9 +3,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.customfradiant{
-  background: linear-gradient(225.47deg, rgba(0, 181, 138, 0.7) 0%, rgba(39, 191, 234, 0.62) 100%);
-
+.customfradiant {
+  background: linear-gradient(
+    225.47deg,
+    rgba(0, 181, 138, 0.7) 0%,
+    rgba(39, 191, 234, 0.62) 100%
+  );
 }
 .custom-radio {
   appearance: none;
@@ -17,7 +20,9 @@
   cursor: pointer;
   position: relative; /* Set relative position */
 }
-*{ box-sizing: border-box;}
+* {
+  box-sizing: border-box;
+}
 /* Inner circle to create space between background and border */
 .custom-radio:before {
   content: "";
@@ -277,4 +282,172 @@ body {
   100% {
     transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
   }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-10px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes crack {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes text-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes button-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-shake {
+  animation: shake 4s ease-in-out infinite;
+}
+
+.animate-crack {
+  animation: crack 3s ease-in-out infinite;
+}
+
+.animate-text-flicker {
+  animation: text-flicker 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-button-pulse {
+  animation: button-pulse 2s ease-in-out infinite;
+}
+
+
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+@keyframes text-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-confetti {
+  animation: confetti linear infinite;
+}
+
+.animate-text-glow {
+  animation: text-glow 3s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-in-out;
+}
+
+
+@keyframes float-up {
+  0% {
+    transform: translateY(100vh);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes text-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-float-up {
+  animation: float-up linear infinite;
+}
+
+.animate-text-glow {
+  animation: text-glow 3s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-in-out;
 }

@@ -10,8 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 function CountryPakages({ data, error, state, country, continent }) {
   const navigate = useNavigate();
-
-
+  console.log(data);
 
   const svgComponents = [
     FirstSvgWhatIncluded,
@@ -47,53 +46,59 @@ function CountryPakages({ data, error, state, country, continent }) {
       <div className="w-[85%]sm:w-[90%] lg:w-[95%]   grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
         {/* Card template */}
         {data?.map((item, index) => (
-          <div
-            key={index}
-            onClick={() => handleClick(item._id)}
-            className="bg-white  border text-center cursor-pointer rounded-lg shadow-lg  hover:shadow-lime-500"
-          >
-            {/* Card Image */}
-            <div className="relative w-full h-28 sm:h-48 mb-2">
-              <img
-                src={item?.MainPhotos[0]}
-                alt="Card Image"
-                className="w-full h-full object-cover rounded-t-lg"
-              />
-              <p className="absolute text-xs sm:text-base top-0 left-0 bg-[#2C9C48] text-white px-5 py-3 rounded">
-                Seasonal Offer
-              </p>
-            </div>
-            {/* Card Content */}
-            <h4 className="text-base px-5 sm:text-lg font-semibold mb-1">
-              {item?.title}
-            </h4>
-            <p className="text-xs px-6 sm:text-sm text-[#002831C2] mb-2">
-              {item?.description}
-            </p>
-            <h3 className="text-lg sm:text-xl font-bold mb-2 text-[#00B58A]">
-              Rs.{item?.price}
-            </h3>
-            <p className="text-xs sm:text-sm text-black font-semibold mb-2">
-              What’s included?
-            </p>
-            {/* Small Logo Images */}
-            <div className="flex flex-wrap justify-center gap-2 mb-2 mx-auto">
-              {svgComponents.map((SvgComponent, index) => (
-                <div key={index} className="w-6 sm:w-8 h-6 sm:h-8">
-                  <SvgComponent />
-                </div>
-              ))}
-            </div>
-            {/* Book Now Button */}
-            <Link
-              to={`/destination/${continent}/${country}/${state}/${item._id}`}
-            >
-              {" "}
-              <button className="w-[80%] sm:w-[70%] mb-4 sm:mb-[9%] bg-med-green text-white py-2 rounded-md ">
-                Book Now
-              </button>
-            </Link>
-          </div>
+         <div
+         key={index}
+         onClick={() => handleClick(item._id)}
+         className="bg-white border text-center cursor-pointer rounded-lg shadow-lg hover:shadow-lime-500 flex flex-col min-h-[380px]"
+       >
+         {/* Card Image */}
+         <div className="relative w-full h-28 sm:h-48 mb-2">
+           <img
+             src={item?.MainPhotos[0]}
+             alt="Card Image"
+             className="w-full h-full object-cover rounded-t-lg"
+           />
+           <p className="absolute text-xs sm:text-base top-0 left-0 bg-[#2C9C48] text-white px-5 py-3 rounded">
+             Seasonal Offer
+           </p>
+         </div>
+       
+         {/* Card Content */}
+         <div className="flex flex-col flex-grow px-5">
+           <h4 className="text-base sm:text-lg font-semibold mb-1">{item?.title}</h4>
+           <p className="text-xs sm:text-sm text-[#002831C2] mb-2">{item?.description}</p>
+       
+           <h3 className="text-lg sm:text-xl font-bold mb-2 text-[#00B58A]">
+             Rs. {item?.price || item?.pricing?.[0]?.basePrice || "N/A"}
+             {!item?.price && item?.pricing?.[0]?.basePrice && (
+               <div className="text-[10px] leading-3 text-gray-500">(Custom Price)</div>
+             )}
+           </h3>
+       
+           <p className="text-xs sm:text-sm text-black font-semibold mb-2">
+             What’s included?
+           </p>
+       
+           {/* Small Logo Images */}
+           <div className="flex flex-wrap justify-center gap-2 mb-2 mx-auto">
+             {svgComponents.map((SvgComponent, index) => (
+               <div key={index} className="w-6 sm:w-8 h-6 sm:h-8">
+                 <SvgComponent />
+               </div>
+             ))}
+           </div>
+         </div>
+       
+         {/* Book Now Button - Anchored at Bottom */}
+         <div className="mt-auto pb-4">
+           <Link to={`/destination/${continent}/${country}/${state}/${item._id}`}>
+             <button className="w-[80%] sm:w-[70%] bg-med-green text-white py-2 mb-8 rounded-md">
+               Book Now
+             </button>
+           </Link>
+         </div>
+       </div>
+       
         ))}
       </div>
     </div>

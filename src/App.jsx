@@ -5,7 +5,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import "./App.css";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { SearchProvider } from "../context/SearchContext";
 import { WishlistProvider } from "../context/WishListContext";
 
@@ -29,6 +29,14 @@ import HomePage from "./components/HomePage/HomePage";
 
 const SearchDestinationPage = React.lazy(() =>
   import("./components/SearchDestination/SearchDestinationPage")
+);
+
+const PaymentErrorPage = React.lazy(() =>
+  import("./components/PaymentsPage/PaymentErrorPage")
+);
+
+const PaymentConfirmPage = React.lazy(() =>
+  import("./components/PaymentsPage/PaymentConfirmPage")
 );
 
 const CareersPage = React.lazy(() =>
@@ -68,6 +76,10 @@ import MyBookings from "./components/MyBookings/MyBookings";
 
 function App() {
   const location = useLocation(); // Get the current route
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
 
   // Conditionally hide Footer on specific routes
   const hideFooterOnRoutes = ["/signup", "/createprofile", "/login"];
@@ -133,6 +145,25 @@ function App() {
               </Suspense>
             }
           />
+
+          <Route
+            path="/paymentfailed"
+            element={
+              <Suspense fallback={<Loader />}>
+                <PaymentErrorPage />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="/paymentconfirm"
+            element={
+              <Suspense fallback={<Loader />}>
+                <PaymentConfirmPage />
+              </Suspense>
+            }
+          />
+
           <Route
             path="/aboutus/careers"
             element={

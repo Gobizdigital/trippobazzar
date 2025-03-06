@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearch } from "../../../context/SearchContext";
 import { useWishlist } from "../../../context/WishListContext";
 import CouponSvg from "../../../svgs/CouponSvg";
@@ -52,7 +52,7 @@ function IternryDetails({ data }) {
       label: `${item.packageType} (${item.guestCount} Guests)`,
       value: item.basePrice,
       guestCount: item.guestCount,
-      perPerson:item.perPerson
+      perPerson: item.perPerson,
     })) || [];
 
   const toggleDropdown = (id) => {
@@ -266,6 +266,21 @@ function IternryDetails({ data }) {
     navigate("/destination/confirmation-page");
   };
 
+  useEffect(() => {
+    if (!data?.price && !selectedPricing && data?.pricing?.length > 0) {
+      const defaultPricing = data.pricing[0]; // Select the first available pricing
+  
+      if (defaultPricing) {
+        setSelectedPricing(defaultPricing.basePrice);
+        setSelectedPricePerPerson(defaultPricing.perPerson ? true : false);
+        setSearchData((prev) => ({
+          ...prev,
+          guests: defaultPricing.guestCount,
+        }));
+      }
+    }
+  }, [data?.price, data?.pricing, selectedPricing]);
+
   return (
     <div className="w-full md:w-[90%] mx-auto bg-white flex flex-col lg:flex-row font-poppins">
       {/* Left Side */}
@@ -306,7 +321,7 @@ function IternryDetails({ data }) {
                   <div className="border-t mt-3 mb-4"></div>
                   <div>
                     {/* Grid for sm and above */}
-                    <div className="grid grid-cols-2 sm:grid-cols-6 mb-4  gap-2">
+                    <div className="flex flex-wrap mb-4  gap-2">
                       {day?.photos?.map((img, photoidx) => (
                         <div
                           key={`${img}-${photoidx}`}
@@ -398,8 +413,6 @@ function IternryDetails({ data }) {
                         const selectedOption = pricingOptions.find(
                           (option) => option.value === selectedValue
                         );
-
-                        console.log(selectedOption);
 
                         if (selectedOption) {
                           setSelectedPricePerPerson(

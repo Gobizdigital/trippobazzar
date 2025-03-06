@@ -21,8 +21,6 @@ function StateDestinationPage() {
     `https://trippo-bazzar-backend.vercel.app/api/state/name/${state}`
   );
 
-  console.log(data);
-
   if (loading) {
     return <Loader />;
   }
@@ -48,11 +46,29 @@ function StateDestinationPage() {
   const filterPackages = () => {
     if (!data || !data.Packages) return [];
 
-    // If no filters are active, return all packages
     if (!isFilterActive()) return data.Packages;
 
     return data.Packages.filter((pkg) => {
-      const price = pkg.price || 0;
+      // Determine the correct price to use
+      let price = pkg.price || null;
+
+      // If price is missing, calculate from pricing array
+      if (!price && pkg.pricing?.length > 0) {
+        const validPrices = pkg.pricing
+          .map((p) => {
+            const basePrice = p.basePrice || 0;
+            const guestCount = p.guestCount || 1;
+            return basePrice * guestCount;
+          })
+          .filter((p) => p > 0); // Remove invalid values
+
+        console.log(validPrices);
+
+        // Get the lowest valid price available
+        price = validPrices.length > 0 ? Math.min(...validPrices) : null;
+      }
+
+      if (!price) return false; // If there's no valid price, exclude this package
 
       // Price Range Filter
       const selectedPriceRanges = [];
@@ -71,13 +87,13 @@ function StateDestinationPage() {
 
       if (selectedPriceRanges.length > 0 && !priceMatches) return false;
 
+      // Days Filter
       const range = parseInt(filterProp.range, 10);
       const daysMatch = pkg.description
         ? pkg.description.match(/(\d+)\s*Days/i)
         : null;
       const packageDays = daysMatch ? parseInt(daysMatch[1], 10) : null;
 
-      // Filter for exact match with the selected range
       if (range && packageDays !== range) return false;
 
       // Reviews Filter

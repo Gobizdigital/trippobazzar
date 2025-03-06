@@ -65,7 +65,7 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     setData({
       ...data,
       pricing: [
-        ...data.pricing,
+        ...(Array.isArray(data.pricing) ? data.pricing : []),
         {
           guestCount: "",
           packageType: "",
@@ -73,7 +73,8 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
           extraPersonCharge: "",
           extraBedCharge: "",
           CNB: "",
-          perPerson: "",
+          CWB: "",
+          perPerson: false,
         },
       ],
     });
@@ -181,7 +182,6 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     try {
       await addNew(data);
       setIsAddingPackage(false);
-      console.log(data);
       setData({
         title: "",
         description: "",
@@ -189,6 +189,7 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
         whatsIncluded: [],
         coupon: [],
         photos: [],
+        pricing: [],
         dayDescription: [],
         specialInstruction: "",
         conditionOfTravel: "",
@@ -355,16 +356,26 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
                   onChange={(e) => handlePricingChange(index, e)}
                   className="mr-2 p-2 border rounded"
                 />
-                <label>
+
                 <input
-                  type="checkbox"
-                  name="perPerson"
-                  checked={priceItem.perPerson || ""} // Ensure checkbox reflects state
+                  type="number"
+                  name="CWB"
+                  placeholder="Extra CWB Charge"
+                  value={priceItem.CWB}
                   onChange={(e) => handlePricingChange(index, e)}
-                  className="mr-1"
+                  className="mr-2 p-2 border rounded"
                 />
-                Per Person
-              </label>
+
+                <label>
+                  <input
+                    type="checkbox"
+                    name="perPerson"
+                    checked={priceItem.perPerson || false} // Ensure checkbox reflects state
+                    onChange={(e) => handlePricingChange(index, e)}
+                    className="mr-1"
+                  />
+                  Per Person
+                </label>
 
                 <button
                   onClick={() => removePricing(index)}

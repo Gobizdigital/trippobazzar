@@ -104,8 +104,9 @@ export default function EditPackage({
           basePrice: "",
           extraPersonCharge: "",
           extraBedCharge: "",
+          CWB: "",
           CNB: "",
-          perPerson: "",
+          perPerson: false,
         },
       ],
     });
@@ -328,6 +329,7 @@ export default function EditPackage({
                 <option value="Deluxe">Deluxe</option>
                 <option value="Super Deluxe">Super Deluxe</option>
                 <option value="Luxury">Luxury</option>
+                <option value="Royal">Royal</option>
               </select>
 
               <input
@@ -358,6 +360,15 @@ export default function EditPackage({
 
               <input
                 type="number"
+                name="CWB"
+                placeholder="Extra CWB Charge"
+                value={priceItem.CWB}
+                onChange={(e) => handlePricingChange(index, e)}
+                className="mr-2 p-2 border rounded"
+              />
+
+              <input
+                type="number"
                 name="extraPersonCharge"
                 placeholder="Extra Person Charge"
                 value={priceItem.extraPersonCharge}
@@ -365,11 +376,11 @@ export default function EditPackage({
                 className="mr-2 p-2 border rounded"
               />
 
-              <label >
+              <label>
                 <input
                   type="checkbox"
                   name="perPerson"
-                  checked={priceItem.perPerson || ""} // Ensure checkbox reflects state
+                  checked={priceItem.perPerson || false} // Ensure checkbox reflects state
                   onChange={(e) => handlePricingChange(index, e)}
                   className="mr-1"
                 />

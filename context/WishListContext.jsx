@@ -67,6 +67,7 @@ export const WishlistProvider = ({ children }) => {
             WishListCountries: userData.WishListCountries || [],
             WishListStates: userData.WishListStates || [],
             ExtraTravellers: userData.ExtraTravellers || [],
+            BookingDetails: userData.BookingDetails || [],
           });
         }
       }
@@ -80,7 +81,7 @@ export const WishlistProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    verifyUser(); 
+    verifyUser();
   }, []);
 
   const updateUserWishlist = async (updatedCountries, updatedStates) => {

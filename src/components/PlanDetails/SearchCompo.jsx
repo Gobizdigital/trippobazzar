@@ -41,17 +41,26 @@ function SearchCompo({ data }) {
     }
   }, [state, id]);
 
-  const numberOfDays = parseInt(data?.description.split(" ")[0], 10);
-  if (isNaN(numberOfDays)) {
-    return;
-  }
+  const numberOfDays = parseInt(data?.description?.split(" ")[0], 10);
+  useEffect(() => {
+    if (!isNaN(numberOfDays) && numberOfDays > 0) {
+      setSearchData((prev) => {
+        const newStartDate = prev.startDate
+          ? new Date(prev.startDate)
+          : new Date();
+        const newEndDate = new Date(newStartDate);
+        newEndDate.setDate(newStartDate.getDate() + numberOfDays);
 
-  const startDate = searchData.startDate
-    ? new Date(searchData.startDate)
-    : new Date();
+        return {
+          ...prev,
+          startDate: newStartDate.toISOString(), // Ensure startDate is set
+          endDate: newEndDate.toISOString(), // Auto-update endDate
+        };
+      });
+    }
+  }, [searchData.startDate, numberOfDays]);
 
-  const endDate = new Date(startDate);
-  endDate.setDate(startDate.getDate() + numberOfDays);
+  // ✅ Dependency array ensures it runs when `numberOfDays` changes
 
   return (
     <div className="max-w-[1720px] font-poppins w-full em:w-[90%] mx-auto h-auto p-4 py-10 bg-white   relative z-10">
@@ -127,30 +136,21 @@ function SearchCompo({ data }) {
               isEditingDates ? "gap-0" : "gap-3"
             }`}
           >
-            {isEditingDates ? (
-              <DatePicker
-                selected={new Date(searchData.endDate)}
-                className="w-36 text-base md:text-lg outline-1"
-                onChange={(date) =>
-                  updateSearchData("endDate", date.toISOString())
-                }
-                dateFormat="EEE, dd MMM yyyy"
-              />
-            ) : (
-              <>
-                <div className="mb-1 text-base md:text-xl">
-                  <CalenderSvg />
-                </div>
-                <p className="text-base md:text-lg">
-                  {new Intl.DateTimeFormat("en-US", {
-                    weekday: "short",
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  }).format(new Date(searchData.endDate || new Date(endDate)))}
-                </p>
-              </>
-            )}
+            <div
+              className={`mb-1 ${
+                isEditingDates ? "hidden" : "block"
+              } text-base md:text-xl`}
+            >
+              <CalenderSvg />
+            </div>
+            <p className="text-base md:text-lg">
+              {new Intl.DateTimeFormat("en-US", {
+                weekday: "short",
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              }).format(new Date(searchData?.endDate))}
+            </p>
           </div>
         </div>
 
