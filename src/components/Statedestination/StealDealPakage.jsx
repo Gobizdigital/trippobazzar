@@ -9,36 +9,52 @@ import FourthSvgWhatIncluded from "../../../svgs/WhatsIncluded/FourthSvgWhatIncl
 import FifthSvgWhatIncluded from "../../../svgs/WhatsIncluded/FifthSvgWhatIncluded/index";
 import SixthSvgWhatIncluded from "../../../svgs/WhatsIncluded/SixthSvgWhatIncluded/index";
 import YutubeSvg from "../../../svgs/Yutubelogo/index";
+import useFetch from "../../../hooks/useFetch";
 
 export default function StealDealPakage() {
+  const { data } = useFetch(
+    "https://trippo-bazzar-backend.vercel.app/api/package/query?limit=5"
+  );
+  const carouselItems = Array.isArray(data) ? data : [];
+
   const [currentIndex, setCurrentIndex] = useState(0);
+
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % carouselItems.length);
+    if (carouselItems.length > 0) {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % carouselItems.length);
+    }
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? carouselItems.length - 1 : prevIndex - 1
-    );
+    if (carouselItems.length > 0) {
+      setCurrentIndex((prevIndex) =>
+        prevIndex === 0 ? carouselItems.length - 1 : prevIndex - 1
+      );
+    }
   };
 
-  const carouselItems = [
-    {
-      image: eygpt,
-      location: "Egypt All Inclusive Deal",
-      country: "",
-      price: "₹ 48,999",
-      description: "Get EXTRA 10% OFF USING CODE TRIPPO10",
-    },
+  const progressWidth = carouselItems.length
+    ? ((currentIndex + 1) / carouselItems.length) * 100
+    : 0;
 
-    {
-      image: newyork,
-      location: "NEW YORK",
-      country: "USA",
-      price: "$ 2,199",
-      description: "Get EXTRA 10% OFF USING CODE TRIPPO10",
-    },
-  ];
+  const currentItem = carouselItems[currentIndex] || {};
+
+  const {
+    MainPhotos = [], // Array of images
+    title, // Package title (use instead of 'location')
+    price, // Main price
+    pricing = [], // Pricing array (for extra options)
+    description, // Package description
+    whatsIncluded = [], // List of included features
+  } = currentItem;
+
+  console.log(currentItem);
+
+  // Extract the first image safely
+  const image = MainPhotos.length > 0 ? MainPhotos[0] : "/default-image.jpg"; // Use default if empty
+
+  // Extract the base price if 'price' is undefined
+  const finalPrice = price || pricing[0]?.basePrice || "N/A";
 
   const svgComponents = [
     FirstSvgWhatIncluded,
@@ -48,9 +64,6 @@ export default function StealDealPakage() {
     FifthSvgWhatIncluded,
     SixthSvgWhatIncluded,
   ];
-  const progressWidth = ((currentIndex + 1) / carouselItems.length) * 100;
-  const { image, location, price, description } =
-    carouselItems[currentIndex];
 
   const OURVALUESDATA = [
     {
@@ -97,20 +110,17 @@ export default function StealDealPakage() {
 
             {/* Location and Price Info */}
             <div className="mt-5">
-              <p className="leading-7 ew:leading-normal text-2xl sm:text-3xl md:text-[42px] mb-4 md:mb-4 mt-7 font-bold">
-                {location}
+              <p className="leading-7 ew:leading-normal text-2xl sm:text-3xl md:text-[35px] mb-4 md:mb-4 mt-10 font-bold">
+                {title}
               </p>
               <div className="flex flex-row justify-center gap-4 mb-2 ew:mb-4 md:mb-3 max-w-lg mx-auto">
                 <p className="text-gray-600 text-sm md:text-lg whitespace-nowrap rounded-lg bg-[#f8f8f8] font-medium p-4">
-                  8 Days 7 Nights
-                </p>
-                <p className="text-gray-600 text-sm md:text-lg whitespace-nowrap rounded-lg bg-[#f8f8f8] font-medium p-4">
-                  2 Guests
+                  {description}
                 </p>
               </div>
 
               <h2 className="bg-white text-3xl ew:text-5xl font-bold text-[#00B58A] inline-block px-2 py-1 rounded-md">
-                {price}
+                Rs.{finalPrice}
               </h2>
               <p className="mt-2 mb-4 font-semibold">What’s included?</p>
 
