@@ -267,24 +267,27 @@ function IternryDetails({ data }) {
   };
 
   useEffect(() => {
-    if (!data?.price && !selectedPricing && data?.pricing?.length > 0) {
-      const defaultPricing = data.pricing[0]; // Select the first available pricing
-
-      if (defaultPricing) {
-        setSelectedPricing(defaultPricing.basePrice);
-        setSelectedPricePerPerson(defaultPricing.perPerson ? true : false);
-        setSearchData((prev) => ({
-          ...prev,
-          guests: defaultPricing.guestCount,
-        }));
-      }
-    }
-  }, [data?.price, data?.pricing, selectedPricing]);
-
-  useEffect(() => {
     setSelectedPricing(null);
   }, [pkdid]);
 
+  // Set pricing when `data` is available
+  useEffect(() => {
+    if (
+      data &&
+      data.pricing &&
+      data.pricing.length > 0 &&
+      selectedPricing === null
+    ) {
+      const defaultPricing = data.pricing[0]; // Select the first available pricing
+
+      setSelectedPricing(defaultPricing.basePrice || 0);
+      setSelectedPricePerPerson(!!defaultPricing.perPerson);
+      setSearchData((prev) => ({
+        ...prev,
+        guests: defaultPricing.guestCount || 1,
+      }));
+    }
+  }, [data]);
   return (
     <div className="w-full md:w-[90%] mx-auto bg-white flex flex-col lg:flex-row font-poppins">
       {/* Left Side */}
