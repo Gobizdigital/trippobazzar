@@ -10,14 +10,18 @@ import FifthSvgWhatIncluded from "../../../svgs/WhatsIncluded/FifthSvgWhatInclud
 import SixthSvgWhatIncluded from "../../../svgs/WhatsIncluded/SixthSvgWhatIncluded/index";
 import YutubeSvg from "../../../svgs/Yutubelogo/index";
 import useFetch from "../../../hooks/useFetch";
+import { useNavigate } from "react-router-dom";
 
 export default function StealDealPakage() {
   const { data } = useFetch(
     "https://trippo-bazzar-backend.vercel.app/api/package/query?limit=5"
   );
+
+  console.log(data);
   const carouselItems = Array.isArray(data) ? data : [];
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
 
   const handleNext = () => {
     if (carouselItems.length > 0) {
@@ -40,15 +44,16 @@ export default function StealDealPakage() {
   const currentItem = carouselItems[currentIndex] || {};
 
   const {
+    _id,
     MainPhotos = [], // Array of images
-    title, // Package title (use instead of 'location')
+    ContinentName,
+    CountryName,
+    StateName,
     price, // Main price
     pricing = [], // Pricing array (for extra options)
     description, // Package description
     whatsIncluded = [], // List of included features
   } = currentItem;
-
-  console.log(currentItem);
 
   // Extract the first image safely
   const image = MainPhotos.length > 0 ? MainPhotos[0] : "/default-image.jpg"; // Use default if empty
@@ -111,11 +116,11 @@ export default function StealDealPakage() {
             {/* Location and Price Info */}
             <div className="mt-5">
               <p className="leading-7 ew:leading-normal text-2xl sm:text-3xl md:text-[35px] mb-4 md:mb-4 mt-10 font-bold">
-                {title}
+                Trip to {CountryName}
               </p>
               <div className="flex flex-row justify-center gap-4 mb-2 ew:mb-4 md:mb-3 max-w-lg mx-auto">
                 <p className="text-gray-600 text-sm md:text-lg whitespace-nowrap rounded-lg bg-[#f8f8f8] font-medium p-4">
-                  {description}
+                  {StateName}
                 </p>
               </div>
 
@@ -133,7 +138,14 @@ export default function StealDealPakage() {
               </div>
 
               {/* Book Now Button */}
-              <button className="w-[80%] sm:w-[70%] mb-4 sm:mb-[5%] bg-med-green text-white py-2 rounded-md hover:bg-green-600">
+              <button
+                onClick={() =>
+                  navigate(
+                    `/destination/${ContinentName}/${CountryName}/${StateName}/${_id}`
+                  )
+                }
+                className="w-[80%] sm:w-[70%] mb-4 sm:mb-[5%] bg-med-green text-white py-2 rounded-md hover:bg-green-600"
+              >
                 Book Now
               </button>
             </div>

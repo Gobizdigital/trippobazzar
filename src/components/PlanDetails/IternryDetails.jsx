@@ -269,7 +269,7 @@ function IternryDetails({ data }) {
   useEffect(() => {
     if (!data?.price && !selectedPricing && data?.pricing?.length > 0) {
       const defaultPricing = data.pricing[0]; // Select the first available pricing
-  
+
       if (defaultPricing) {
         setSelectedPricing(defaultPricing.basePrice);
         setSelectedPricePerPerson(defaultPricing.perPerson ? true : false);
@@ -280,6 +280,10 @@ function IternryDetails({ data }) {
       }
     }
   }, [data?.price, data?.pricing, selectedPricing]);
+
+  useEffect(() => {
+    setSelectedPricing(null);
+  }, [pkdid]);
 
   return (
     <div className="w-full md:w-[90%] mx-auto bg-white flex flex-col lg:flex-row font-poppins">
