@@ -328,16 +328,16 @@ function IternryDetails({ data }) {
                   <div className="border-t mt-3 mb-4"></div>
                   <div>
                     {/* Grid for sm and above */}
-                    <div className="flex flex-wrap mb-4  gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 mb-4 gap-2">
                       {day?.photos?.map((img, photoidx) => (
-                        <div
-                          key={`${img}-${photoidx}`}
-                          className="h-[120px] w-[180px]"
-                        >
+                        <div key={`${img}-${photoidx}`} className="aspect-video w-full overflow-hidden rounded-md">
                           <img
-                            src={img}
+                            src={img || "/placeholder.svg"}
                             alt={`Day ${dayIdx + 1} img ${photoidx + 1}`}
-                            className="rounded-md w-full h-full"
+                            className="w-full h-full object-cover rounded-md"
+                            onError={(e) => {
+                              e.target.src = "/placeholder.svg?height=120&width=200"
+                            }}
                           />
                         </div>
                       ))}

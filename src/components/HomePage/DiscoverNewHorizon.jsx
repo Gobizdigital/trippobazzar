@@ -129,7 +129,7 @@ export default function DiscoverNewHorizon() {
       </div>
 
       <div className="w-[90%] max-w-[1720px] h-auto p-4 md:p-16 bg-[#f8f8f8] shadow-lg rounded-lg mx-auto mt-[-2rem] md:mt-[-6rem] relative z-10">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col ew:flex-row items-center justify-between gap-4">
           <div className="relative w-full">
             <div className="flex items-center bg-[#f8f8f8] border rounded-md py-3 px-2 w-full hover:shadow-md transition-shadow duration-300">
               <input
@@ -162,7 +162,7 @@ export default function DiscoverNewHorizon() {
                 </ul>
               )}
           </div>
-          <div className="md:w-auto w-full flex justify-end">
+          <div className=" ew:w-auto flex justify-end">
             <div
               className="cursor-pointer hover:scale-110 transition-transform duration-300"
               onClick={toggleModal}
@@ -172,7 +172,7 @@ export default function DiscoverNewHorizon() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-4 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4 items-end">
           <div className="flex flex-col">
             <p className="text-gray-500 font-medium mb-1">Start Date</p>
             <div className="flex items-center bg-gray-100 rounded-md p-2 h-12 hover:shadow-md transition-shadow duration-300">
@@ -186,7 +186,7 @@ export default function DiscoverNewHorizon() {
               />
             </div>
           </div>
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <p className="text-gray-500 font-medium mb-1">End Date</p>
             <div className="flex items-center bg-gray-100 rounded-md p-2 h-12 hover:shadow-md transition-shadow duration-300">
               <DatePicker
@@ -198,8 +198,8 @@ export default function DiscoverNewHorizon() {
                 required
               />
             </div>
-          </div>
-          <div className="flex flex-col">
+          </div> */}
+          <div className="flex flex-col lg:col-span-1 col-span-2">
             <p className="text-gray-500 mb-1 font-medium">Guests</p>
             <div className="flex items-center justify-around bg-gray-100 rounded-md p-2 h-12 hover:shadow-md transition-shadow duration-300">
               <button
@@ -219,7 +219,7 @@ export default function DiscoverNewHorizon() {
               </button>
             </div>
           </div>
-          <div className="flex justify-center items-center md:col-span-1">
+          <div className="flex justify-center items-center col-span-2 lg:col-span-1">
             <button
               onClick={handleSearch}
               className="w-full bg-med-green py-2 rounded-md text-white font-medium text-xl hover:scale-95 hover:shadow-md transition-colors duration-300"

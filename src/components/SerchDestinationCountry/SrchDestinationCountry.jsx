@@ -114,7 +114,13 @@ function SrchDestinationCountry({ url }) {
           </div>
         </div>
         <div className="flex absolute z-10 -bottom-[420px] left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col py-20 w-[90%] mx-auto justify-center items-center">
-          <div className="w-[90%] max-w-[1720px] h-auto p-4 md:p-16 bg-[#f8f8f8] shadow-lg rounded-lg mx-auto top-[43rem] sm:top-[42rem] md:top-[19rem] lg:top-[5rem] lg:mt-[-2rem] relative ">
+          <div
+            className={`w-[90%] max-w-[1720px] h-auto p-4 md:p-16 bg-[#f8f8f8] shadow-lg rounded-lg mx-auto ${
+              state || country
+                ? "top-[26rem] sm:top-[26rem] md:top-[19rem]"
+                : "top-[43rem] sm:top-[42rem] md:top-[19rem]"
+            }  lg:top-[5rem] lg:mt-[-2rem] relative `}
+          >
             {/* Starting Location and Destination Inputs */}
             <div className="flex flex-col md:flex-row items-center jusitfy-between gap-4">
               <div className="relative w-full">
