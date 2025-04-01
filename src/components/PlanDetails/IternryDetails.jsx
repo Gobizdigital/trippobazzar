@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { useSearch } from "../../../context/SearchContext";
 import { useWishlist } from "../../../context/WishListContext";
 import CouponSvg from "../../../svgs/CouponSvg";
@@ -45,6 +47,7 @@ function IternryDetails({ data }) {
   const [additionalServices, setAdditionalServices] = useState({
     extraBed: false,
     cnb: false,
+    cwb: false,
   });
 
   const pricingOptions =
@@ -216,7 +219,9 @@ function IternryDetails({ data }) {
 
       const cnbCharge = additionalServices?.cnb ? selectedPackage?.CNB || 0 : 0;
 
-      mainPrice += extraBedCharge + cnbCharge;
+      const cwbCharge = additionalServices?.cwb ? selectedPackage?.CWB || 0 : 0; // Add this line
+
+      mainPrice += extraBedCharge + cnbCharge + cwbCharge; // Update this line
     }
 
     const totalCost = mainPrice + totalHotelPrice;
@@ -330,13 +335,17 @@ function IternryDetails({ data }) {
                     {/* Grid for sm and above */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 mb-4 gap-2">
                       {day?.photos?.map((img, photoidx) => (
-                        <div key={`${img}-${photoidx}`} className="aspect-video w-full overflow-hidden rounded-md">
+                        <div
+                          key={`${img}-${photoidx}`}
+                          className="aspect-video w-full overflow-hidden rounded-md"
+                        >
                           <img
                             src={img || "/placeholder.svg"}
                             alt={`Day ${dayIdx + 1} img ${photoidx + 1}`}
                             className="w-full h-full object-cover rounded-md"
                             onError={(e) => {
-                              e.target.src = "/placeholder.svg?height=120&width=200"
+                              e.target.src =
+                                "/placeholder.svg?height=120&width=200";
                             }}
                           />
                         </div>
@@ -448,37 +457,65 @@ function IternryDetails({ data }) {
 
               {selectedPricing && (
                 <div className="mt-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={additionalServices?.extraBed}
-                      onChange={() => handleToggle("extraBed")}
-                      className="w-4 h-4"
-                    />
-                    Extra Bed (+ ₹
-                    {data?.pricing?.find((p) => p.basePrice === selectedPricing)
-                      ?.extraBedCharge || 0}
-                    )
-                    {additionalServices?.extraBed && (
-                      <IoCheckmarkCircle className="text-green-500 text-lg" />
-                    )}
-                  </label>
+                  {data?.pricing?.find((p) => p.basePrice === selectedPricing)
+                    ?.extraBedCharge > 0 && (
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={additionalServices?.extraBed}
+                        onChange={() => handleToggle("extraBed")}
+                        className="w-4 h-4"
+                      />
+                      Extra Bed (+ ₹
+                      {data?.pricing?.find(
+                        (p) => p.basePrice === selectedPricing
+                      )?.extraBedCharge || 0}
+                      )
+                      {additionalServices?.extraBed && (
+                        <IoCheckmarkCircle className="text-green-500 text-lg" />
+                      )}
+                    </label>
+                  )}
 
-                  <label className="flex items-center gap-2 cursor-pointer mt-2">
-                    <input
-                      type="checkbox"
-                      checked={additionalServices?.cnb}
-                      onChange={() => handleToggle("cnb")}
-                      className="w-4 h-4"
-                    />
-                    Child Without Bed (CNB) (+ ₹
-                    {data?.pricing?.find((p) => p.basePrice === selectedPricing)
-                      ?.CNB || 0}
-                    )
-                    {additionalServices?.cnb && (
-                      <IoCheckmarkCircle className="text-green-500 text-lg" />
-                    )}
-                  </label>
+                  {data?.pricing?.find((p) => p.basePrice === selectedPricing)
+                    ?.CNB > 0 && (
+                    <label className="flex items-center gap-2 cursor-pointer mt-2">
+                      <input
+                        type="checkbox"
+                        checked={additionalServices?.cnb}
+                        onChange={() => handleToggle("cnb")}
+                        className="w-4 h-4"
+                      />
+                      Child Without Bed (CNB) (+ ₹
+                      {data?.pricing?.find(
+                        (p) => p.basePrice === selectedPricing
+                      )?.CNB || 0}
+                      )
+                      {additionalServices?.cnb && (
+                        <IoCheckmarkCircle className="text-green-500 text-lg" />
+                      )}
+                    </label>
+                  )}
+
+                  {data?.pricing?.find((p) => p.basePrice === selectedPricing)
+                    ?.CWB > 0 && (
+                    <label className="flex items-center gap-2 cursor-pointer mt-2">
+                      <input
+                        type="checkbox"
+                        checked={additionalServices?.cwb}
+                        onChange={() => handleToggle("cwb")}
+                        className="w-4 h-4"
+                      />
+                      Child With Bed (CWB) (+ ₹
+                      {data?.pricing?.find(
+                        (p) => p.basePrice === selectedPricing
+                      )?.CWB || 0}
+                      )
+                      {additionalServices?.cwb && (
+                        <IoCheckmarkCircle className="text-green-500 text-lg" />
+                      )}
+                    </label>
+                  )}
                 </div>
               )}
 
@@ -540,7 +577,7 @@ function IternryDetails({ data }) {
 
             <p className="text-center text-gray-500">OR</p>
             <div className="max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-              {userDetails?.Coupons ? (
+              {userDetails?.Coupons.length > 0 ? (
                 userDetails.Coupons.map((item) => {
                   return (
                     <div
@@ -590,7 +627,7 @@ function IternryDetails({ data }) {
                   );
                 })
               ) : (
-                <p>No Coupons Available</p>
+                <p className="text-center">No Coupons Available</p>
               )}
             </div>
           </div>
