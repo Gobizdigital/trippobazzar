@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function useFetch(url) {
+export default function useFetch(url, auth) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -10,14 +10,19 @@ export default function useFetch(url) {
 
   async function getData() {
     setLoading(true);
-    setError(null); 
+    setError(null);
     try {
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`, // Sending the token in the Authorization header
-        },
-      });
-      setData(response.data.data);
+      if (!auth) {
+        const response = await axios.get(url);
+        setData(response.data.data);
+      } else {
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`, // Sending the token in the Authorization header
+          },
+        });
+        setData(response.data.data);
+      }
     } catch (error) {
       setError(error);
     } finally {

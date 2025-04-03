@@ -1,10 +1,5 @@
 import React, { useState } from "react";
 import useFetch from "../../../hooks/useFetch";
-import dubai from "../../assets/home/dubai.webp";
-import newyork from "../../assets/home/newyorkk.webp";
-import vietnam from "../../assets/home/vietnam.webp";
-import singapore from "../../assets/home/Singapore.webp";
-import Australia from "../../assets/home/australia.webp";
 import FirstSvgWhatIncluded from "../../../svgs/WhatsIncluded/FirstSvgWhatIncluded/index";
 import SecondSvgWhatIncluded from "../../../svgs/WhatsIncluded/SecondSvgWhatIncluded/index";
 import ThirdSvgWhatIncluded from "../../../svgs/WhatsIncluded/ThirdSvgWhatIncluded/index";
@@ -15,8 +10,10 @@ import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 
 export default function PopularPackages() {
   const { data } = useFetch(
-    "https://trippo-bazzar-backend.vercel.app/api/package/query?limit=5"
+    "https://trippo-bazzar-backend.vercel.app/api/package/query?limit=5",
+    false
   );
+
   const carouselItems = Array.isArray(data) ? data : [];
 
   const [currentIndex, setCurrentIndex] = useState(0);
