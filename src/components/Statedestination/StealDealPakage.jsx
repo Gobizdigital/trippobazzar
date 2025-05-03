@@ -17,7 +17,6 @@ export default function StealDealPakage() {
     "https://trippo-bazzar-backend.vercel.app/api/package/query?limit=5"
   );
 
-  console.log(data);
   const carouselItems = Array.isArray(data) ? data : [];
 
   const [currentIndex, setCurrentIndex] = useState(0);

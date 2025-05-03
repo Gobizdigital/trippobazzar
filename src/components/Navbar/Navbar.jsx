@@ -24,7 +24,6 @@ const Navbar = () => {
   const downRef = useRef([]);
   const navigate = useNavigate();
   const toggleDestinations = (index) => {
-    console.log("this is called");
     setOpenDropdownIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 

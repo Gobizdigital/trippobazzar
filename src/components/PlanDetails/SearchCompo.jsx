@@ -8,12 +8,9 @@ import { FaUser } from "react-icons/fa";
 import CalenderSvg from "../../../svgs/CalenderSvg/index.jsx";
 import EditButtonSvg from "../../../svgs/EditButton/index.jsx";
 import { useParams } from "react-router-dom";
-import { useBooking } from "../../../context/BookingContext.jsx";
 function SearchCompo({ data }) {
   const { searchData, setSearchData, selectedPricing, selectedPricePerPerson } =
     useSearch();
-
-  console.log(selectedPricePerPerson);
   const [isEditingDates, setIsEditingDates] = useState(false);
   const [isEditingGuests, setIsEditingGuests] = useState(false);
 
@@ -24,7 +21,6 @@ function SearchCompo({ data }) {
   const updateSearchData = (field, value) => {
     setSearchData((prev) => ({ ...prev, [field]: value }));
   };
-  console.log(selectedPricing);
 
   useEffect(() => {
     if ((state, id)) {

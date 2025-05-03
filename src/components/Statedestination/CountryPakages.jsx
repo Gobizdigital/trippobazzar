@@ -10,7 +10,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 function CountryPakages({ data, error, state, country, continent }) {
   const navigate = useNavigate();
-  console.log(data);
 
   const svgComponents = [
     FirstSvgWhatIncluded,

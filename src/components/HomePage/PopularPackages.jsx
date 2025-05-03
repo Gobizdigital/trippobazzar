@@ -7,6 +7,7 @@ import FourthSvgWhatIncluded from "../../../svgs/WhatsIncluded/FourthSvgWhatIncl
 import FifthSvgWhatIncluded from "../../../svgs/WhatsIncluded/FifthSvgWhatIncluded/index";
 import SixthSvgWhatIncluded from "../../../svgs/WhatsIncluded/SixthSvgWhatIncluded/index";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function PopularPackages() {
   const { data } = useFetch(
@@ -14,6 +15,7 @@ export default function PopularPackages() {
     false
   );
 
+  const navigate = useNavigate();
   const carouselItems = Array.isArray(data) ? data : [];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -46,8 +48,6 @@ export default function PopularPackages() {
     description, // Package description
     whatsIncluded = [], // List of included features
   } = currentItem;
-
-  console.log(currentItem);
 
   // Extract the first image safely
   const image = MainPhotos.length > 0 ? MainPhotos[0] : "/default-image.jpg"; // Use default if empty
@@ -119,7 +119,14 @@ export default function PopularPackages() {
               </div>
 
               {/* Book Now Button */}
-              <button className="w-[80%] sm:w-[70%] mb-4 sm:mb-[5%] bg-med-green text-white py-2 rounded-md hover:bg-green-600">
+              <button
+                onClick={() =>
+                  navigate(
+                    `destination/${data[currentIndex]?.ContinentName}/${data[currentIndex]?.CountryName}/${data[currentIndex]?.StateName}/${data[currentIndex]?._id}`
+                  )
+                }
+                className="w-[80%] sm:w-[70%] mb-4 sm:mb-[5%] bg-med-green text-white py-2 rounded-md hover:bg-green-600"
+              >
                 Book Now
               </button>
             </div>
@@ -133,9 +140,12 @@ export default function PopularPackages() {
               <p className="font-semibold text-base xlg:text-lg tracking-wide mt-2">
                 {description}
               </p>
-              <button className="border-[.1rem] mt-7 mb-8 rounded-lg text-med-green border-[#012831] w-2/5 font-poppins text-[.8rem] font-medium px-2 py-2">
+              <Link
+                to={"/destination"}
+                className="border-[.1rem] mt-7 mb-8 rounded-lg text-med-green border-[#012831] w-2/5 font-poppins text-[.8rem] font-medium px-2 py-2"
+              >
                 View All Plans
-              </button>
+              </Link>
             </div>
           </div>
         </div>
