@@ -12,7 +12,6 @@ import Loader from "../Loader"
 const GuestForm = () => {
   const { bookingDetails } = useBooking()
   const RAZOR_KEY=import.meta.env.VITE_RAZOR_KEY_ID
-  console.log(RAZOR_KEY)
   const { searchData } = useSearch()
   const [loading, setLoading] = useState(false)
   const { userDetails } = useWishlist()
