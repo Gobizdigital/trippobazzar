@@ -10,6 +10,7 @@ import CarosalImageModal from "../../../utils/CarosalImageModal";
 import { useNavigate, useParams } from "react-router-dom";
 import { useBooking } from "../../../context/BookingContext";
 import { IoCheckmarkCircle } from "react-icons/io5";
+import { AlertCircle } from "lucide-react";
 
 function IternryDetails({ data }) {
   const { id: pkdid } = useParams();
@@ -43,6 +44,7 @@ function IternryDetails({ data }) {
     discountPercentage: 0,
     maxDiscount: 0,
   });
+  const [validationError, setValidationError] = useState("");
 
   const [additionalServices, setAdditionalServices] = useState({
     extraBed: false,
@@ -109,6 +111,9 @@ function IternryDetails({ data }) {
         alert(`You can only select one hotel per location!`);
       }
     }
+
+    // Clear validation error when user selects a hotel
+    setValidationError("");
   };
 
   const handleHotelChangeInput = (e) => {
@@ -255,8 +260,46 @@ function IternryDetails({ data }) {
     }));
   };
 
+  const validateHotelSelection = () => {
+    // Check if there are hotels in the data
+    if (!data?.hotels || data.hotels.length === 0) {
+      return true; // No hotels to select, so validation passes
+    }
+
+    // Get all unique locations from the data
+    const allLocations = data.hotels.map((hotel) => hotel.location);
+
+    // Get all selected locations
+    const selectedLocations = selectedHotel.map((hotel) => hotel.location);
+
+    // Check if a hotel is selected for each location
+    const missingLocations = allLocations.filter(
+      (location) => !selectedLocations.includes(location)
+    );
+
+    if (missingLocations.length > 0) {
+      setValidationError(
+        `Please select a hotel for ${missingLocations.join(", ")}`
+      );
+
+      // Switch to Hotel tab to show the error
+      if (activeTab !== "Hotel") {
+        handleTabChange("Hotel");
+      }
+
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate hotel selection before proceeding
+    if (!validateHotelSelection()) {
+      return;
+    }
 
     const requestData = {
       selectedHotels: [...selectedHotel],
@@ -293,6 +336,7 @@ function IternryDetails({ data }) {
       }));
     }
   }, [data]);
+
   return (
     <div className="w-full md:w-[90%] mx-auto bg-white flex flex-col lg:flex-row font-poppins">
       {/* Left Side */}
@@ -303,7 +347,7 @@ function IternryDetails({ data }) {
             (tab, tabIdx) => (
               <li
                 key={tabIdx}
-                className={`cursor-pointer  list-none  ${
+                className={`cursor-pointer list-none ${
                   activeTab === tab ? "text-green-500 font-semibold" : ""
                 }`}
                 onClick={() => handleTabChange(tab)}
@@ -321,11 +365,11 @@ function IternryDetails({ data }) {
           }
         >
           {activeTab === "Plan Details" && (
-            <div className="space-y-6   ">
+            <div className="space-y-6">
               {data?.dayDescription?.map((day, dayIdx) => (
                 <div
                   className="border-[.5px] px-4 py-4 rounded-lg"
-                  key={dayIdx} // Use a unique field or fallback to the index
+                  key={dayIdx}
                 >
                   <h3 className="text-base md:text-lg leading-6 md:leading-7 font-bold">
                     {day.dayTitle}
@@ -365,19 +409,27 @@ function IternryDetails({ data }) {
           )}
 
           {activeTab === "Hotel" && (
-            <HotelsPlan
-              customizeHotel={customizeHotel}
-              handleDropdownClick={handleDropdownClick}
-              toggleDropdown={toggleDropdown}
-              openModal={openModal}
-              handleHotelArray={handleHotelArray}
-              selectedHotel={selectedHotel}
-              data={data}
-              setCustomizeHotel={setCustomizeHotel}
-              isDropdownOpen={isDropdownOpen}
-              handleApplyClick={handleApplyClick}
-              handleHotelChangeInput={handleHotelChangeInput}
-            />
+            <>
+              {validationError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center">
+                  <AlertCircle className="h-5 w-5 mr-2" />
+                  <span>{validationError}</span>
+                </div>
+              )}
+              <HotelsPlan
+                customizeHotel={customizeHotel}
+                handleDropdownClick={handleDropdownClick}
+                toggleDropdown={toggleDropdown}
+                openModal={openModal}
+                handleHotelArray={handleHotelArray}
+                selectedHotel={selectedHotel}
+                data={data}
+                setCustomizeHotel={setCustomizeHotel}
+                isDropdownOpen={isDropdownOpen}
+                handleApplyClick={handleApplyClick}
+                handleHotelChangeInput={handleHotelChangeInput}
+              />
+            </>
           )}
 
           {activeTab === "SightSeeing" && (
@@ -437,7 +489,7 @@ function IternryDetails({ data }) {
                           setSelectedPricing(selectedOption.value);
                           setSearchData((prev) => ({
                             ...prev,
-                            guests: selectedOption.guestCount,
+                            guests: selectedOption.guestCount || 1,
                           }));
                         }
                       }
@@ -552,10 +604,19 @@ function IternryDetails({ data }) {
 
               <button
                 onClick={handleSubmit}
-                className="bg-med-green text-lg cursor-pointer text-white inline-flex py-3 px-4 rounded-xl"
+                className="bg-med-green text-lg cursor-pointer text-white inline-flex py-3 px-4 rounded-xl w-full justify-center"
               >
                 Confirm and Book
               </button>
+
+              {/* Hotel selection reminder */}
+              {data?.hotels &&
+                data.hotels.length > 0 &&
+                selectedHotel.length < data.hotels.length && (
+                  <p className="text-amber-600 text-sm mt-2 text-center">
+                    Please select a hotel for each location before proceeding
+                  </p>
+                )}
             </div>
           </div>
           <div className="bg-[#EDF7F9] rounded-3xl border-[.5px] w-full p-6 ">
