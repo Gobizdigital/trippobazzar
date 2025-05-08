@@ -1,25 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
-import useFetch from "../../../../hooks/useFetch";
+"use client"
 
-export default function EditPackage({
-  initialData,
-  updateById,
-  id,
-  setSelectedId,
-  setEditPackage,
-}) {
-  const { data: hotelData, loading } = useFetch(
-    `https://trippo-bazzar-backend.vercel.app/api/hotel`
-  );
+import { useEffect, useRef, useState } from "react"
+import useFetch from "../../../../hooks/useFetch"
+
+export default function EditPackage({ initialData, updateById, id, setSelectedId, setEditPackage }) {
+  const { data: hotelData, loading } = useFetch(`https://trippo-bazzar-backend.vercel.app/api/hotel`)
+
   const [data, setData] = useState(
     initialData || {
       title: "",
       description: "",
       price: 0,
-      pricing: [], // Ensure it's always an array
+      pricing: [],
       whatsIncluded: [],
       coupon: [],
-      photos: [],
+      MainPhotos: [],
       dayDescription: [],
       specialInstruction: "",
       conditionOfTravel: "",
@@ -27,810 +22,1113 @@ export default function EditPackage({
       hotels: [],
       policies: "",
       termsAndConditions: "",
+    },
+  )
+
+  // Validation state
+  const [errors, setErrors] = useState({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Hotel search states
+  const [newLocation, setNewLocation] = useState("")
+  const [selectedHotelIdForDetails, setSelectedHotelIdForDetails] = useState("")
+  const [selectedHotelIdForNewHotel, setSelectedHotelIdForNewHotel] = useState("")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [dropdownVisible, setDropdownVisible] = useState(false)
+
+  // Active tab state for mobile view
+  const [activeSection, setActiveSection] = useState("basic")
+
+  const filteredHotels = hotelData?.filter((hotel) => hotel.hotelName.toLowerCase().includes(searchQuery.toLowerCase()))
+  const packageData = ["Food", "Hotel", "Car", "Explore", "Travel", "Visa"]
+  const textareasRef = useRef([])
+
+  // Validate form fields
+  const validateForm = () => {
+    const newErrors = {}
+
+    if (!data.title.trim()) {
+      newErrors.title = "Title is required"
     }
-  );
 
-  const [newLocation, setNewLocation] = useState("");
-  const [selectedHotelIdForDetails, setSelectedHotelIdForDetails] =
-    useState("");
-  const [selectedHotelIdForNewHotel, setSelectedHotelIdForNewHotel] =
-    useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+    if (!data.description.trim()) {
+      newErrors.description = "Description is required"
+    }
 
-  const filteredHotels = hotelData?.filter((hotel) =>
-    hotel.hotelName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  const packageData = ["Food", "Hotel", "Car", "Explore", "Travel", "Visa"];
-  const textareasRef = useRef([]);
+    // Only validate pricing if both price and pricing array are empty
+    if (
+      data.price <= 0 &&
+      (!Array.isArray(data.pricing) ||
+        data.pricing.length === 0 ||
+        data.pricing.every((item) => !item.basePrice || item.basePrice <= 0))
+    ) {
+      newErrors.pricing = "Either base price or at least one pricing option with base price is required"
+    }
 
-  const isLoading = !hotelData || hotelData.length === 0;
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
+
     setData((prevData) => ({
       ...prevData,
       [name]: value,
-    }));
-  };
+    }))
 
-  const addNewHotel = () => {
-    if (!newLocation || !selectedHotelIdForNewHotel) return;
-
-    // Find the hotel in hotelData using selectedHotelId
-    const selectedHotel = hotelData.find(
-      (hotel) => hotel._id === selectedHotelIdForNewHotel
-    );
-
-    const newHotel = {
-      location: newLocation,
-      hotelDetails: [selectedHotel._id],
-    };
-
-    // Update data state to include the new hotel
-    setData((prevData) => ({
-      ...prevData,
-      hotels: [...prevData.hotels, newHotel],
-    }));
-
-    // Reset input fields
-    setNewLocation("");
-  };
+    // Clear error when field is edited
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null,
+      })
+    }
+  }
 
   const handlePricingChange = (index, e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target
 
-    if (!Array.isArray(data.pricing)) return; // Ensure pricing is an array
+    if (!Array.isArray(data.pricing)) return
 
-    const updatedPricing = [...data.pricing];
+    const updatedPricing = [...data.pricing]
 
     updatedPricing[index] = {
       ...updatedPricing[index],
-      [name]: type === "checkbox" ? checked : value, // Handle checkbox separately
-    };
+      [name]: type === "checkbox" ? checked : value,
+    }
 
-    setData({ ...data, pricing: updatedPricing });
-  };
+    setData({ ...data, pricing: updatedPricing })
+
+    // Clear pricing error if basePrice is added
+    if (name === "basePrice" && value > 0 && errors.pricing) {
+      setErrors({
+        ...errors,
+        pricing: null,
+      })
+    }
+  }
 
   const addPricing = () => {
     setData({
       ...data,
       pricing: [
-        ...(Array.isArray(data.pricing) ? data.pricing : []), // Ensure pricing is an array
+        ...(Array.isArray(data.pricing) ? data.pricing : []),
         {
           guestCount: "",
           packageType: "",
           basePrice: "",
           extraPersonCharge: "",
           extraBedCharge: "",
-          CWB: "",
           CNB: "",
+          CWB: "",
           perPerson: false,
         },
       ],
-    });
-  };
+    })
+  }
 
   const removePricing = (index) => {
-    if (!Array.isArray(data.pricing)) return; // Ensure pricing is an array
+    const updatedPricing = data.pricing.filter((_, i) => i !== index)
+    setData({ ...data, pricing: updatedPricing })
+  }
 
-    const updatedPricing = data.pricing.filter((_, i) => i !== index);
-    setData({ ...data, pricing: updatedPricing });
-  };
+  const addNewHotel = () => {
+    if (!newLocation || !selectedHotelIdForNewHotel) return
 
-  const removeHotel = (hotelId) => {
-    const updatedHotels = data.hotels.filter(
-      (details) => details._id !== hotelId
-    );
+    const selectedHotel = hotelData.find((hotel) => hotel._id === selectedHotelIdForNewHotel)
 
-    // Update the state to reflect the removal
-    setData((prevData) => ({
-      ...prevData,
-      hotels: updatedHotels,
-    }));
-  };
-
-  const removeHotelDetail = (hotelIndex, hotelDetailIndex) => {
-    // Safeguard: Check if the hotel and hotelDetails exist
-    if (!data?.hotels || !data.hotels[hotelIndex]?.hotelDetails) {
-      return;
+    const newHotel = {
+      location: newLocation,
+      hotelDetails: [selectedHotel._id],
     }
 
-    // Create a copy of the hotels array
-    const updatedHotels = [...data.hotels];
+    setData((prevData) => ({
+      ...prevData,
+      hotels: [...prevData.hotels, newHotel],
+    }))
 
-    // Remove the specific hotel detail from the hotelDetails array
-    updatedHotels[hotelIndex].hotelDetails.splice(hotelDetailIndex, 1);
+    setNewLocation("")
+    setSearchQuery("")
+    setSelectedHotelIdForNewHotel("")
+  }
 
-    // Update the state with the new hotels array
+  const removeHotel = (hotelId) => {
+    const updatedHotels = data.hotels.filter((details) => details._id !== hotelId)
+
     setData((prevData) => ({
       ...prevData,
       hotels: updatedHotels,
-    }));
-  };
+    }))
+  }
+
+  const removeHotelDetail = (hotelIndex, hotelDetailIndex) => {
+    if (!data?.hotels || !data.hotels[hotelIndex]?.hotelDetails) {
+      return
+    }
+
+    const updatedHotels = [...data.hotels]
+    updatedHotels[hotelIndex].hotelDetails.splice(hotelDetailIndex, 1)
+
+    setData((prevData) => ({
+      ...prevData,
+      hotels: updatedHotels,
+    }))
+  }
 
   const addHotelDetail = (hotelId) => {
-    // Find the selected hotel from hotelData by its ID
-    const selectedHotel = hotelData?.find(
-      (hotel) => hotel._id === selectedHotelIdForDetails
-    );
+    const selectedHotel = hotelData?.find((hotel) => hotel._id === selectedHotelIdForDetails)
 
     if (selectedHotel) {
-      // Find the hotel that corresponds to the hotelId passed as a parameter
-      const hotelIndex = data.hotels.findIndex(
-        (hotel) => hotel._id === hotelId
-      );
+      const hotelIndex = data.hotels.findIndex((hotel) => hotel._id === hotelId)
 
       if (hotelIndex !== -1) {
-        // Check if the hotel is already in the hotelDetails array
-        const hotelAlreadyAdded = data.hotels[hotelIndex].hotelDetails.some(
-          (detail) => detail === selectedHotel._id // Compare the hotel IDs
-        );
+        const hotelAlreadyAdded = data.hotels[hotelIndex].hotelDetails.some((detail) => detail === selectedHotel._id)
 
         if (!hotelAlreadyAdded) {
-          // Add the hotel ID to the hotelDetails array
-          const updatedHotels = [...data.hotels];
+          const updatedHotels = [...data.hotels]
           updatedHotels[hotelIndex] = {
             ...data.hotels[hotelIndex],
-            hotelDetails: [
-              ...data.hotels[hotelIndex].hotelDetails,
-              selectedHotel._id, // Only add the ID, not the whole object
-            ],
-          };
+            hotelDetails: [...data.hotels[hotelIndex].hotelDetails, selectedHotel._id],
+          }
 
-          // Update the state to reflect the change
           setData((prevData) => ({
             ...prevData,
             hotels: updatedHotels,
-          }));
+          }))
         }
       }
     }
-  };
+
+    setSearchTerm("")
+  }
 
   const saveState = async () => {
-    try {
-      await updateById(id, data);
-      setSelectedId(null);
-      setEditPackage(false);
+    setIsSubmitting(true)
 
-      setData({
-        title: "",
-        description: "",
-        price: 0,
-        whatsIncluded: [],
-        coupon: [],
-        photos: [],
-        dayDescription: [],
-        specialInstruction: "",
-        conditionOfTravel: "",
-        thingsToMaintain: "",
-        hotels: [],
-        policies: "",
-        termsAndConditions: "",
-      });
-    } catch (error) {
-      console.log(error);
+    if (!validateForm()) {
+      // Scroll to the first error
+      const firstErrorField = Object.keys(errors)[0]
+      const element = document.querySelector(`[name="${firstErrorField}"]`)
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" })
+      }
+      setIsSubmitting(false)
+      return
     }
-  };
+
+    try {
+      await updateById(id, data)
+      setSelectedId(null)
+      setEditPackage(false)
+    } catch (error) {
+      console.log(error)
+      alert("Error updating package. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   const handleArrayChange = (field, index, subField, value) => {
     setData((prevData) => {
-      const updatedArray = [...prevData[field]];
-      updatedArray[index][subField] = value;
-      return { ...prevData, [field]: updatedArray };
-    });
-  };
+      const updatedArray = [...prevData[field]]
+      updatedArray[index][subField] = value
+      return { ...prevData, [field]: updatedArray }
+    })
+  }
 
   const handlePhotoChange = (dayIndex, photoIndex, value) => {
     setData((prevData) => {
-      const updatedArray = [...prevData.dayDescription];
-      console.log(value);
+      const updatedArray = [...prevData.dayDescription]
       if (value === "") {
-        updatedArray[dayIndex].photos = updatedArray[dayIndex].photos.filter(
-          (photo, index) => index !== photoIndex
-        );
+        updatedArray[dayIndex].photos = updatedArray[dayIndex].photos.filter((photo, index) => index !== photoIndex)
       } else {
-        updatedArray[dayIndex].photos[photoIndex] = value;
+        updatedArray[dayIndex].photos[photoIndex] = value
       }
 
-      return { ...prevData, dayDescription: updatedArray };
-    });
-  };
+      return { ...prevData, dayDescription: updatedArray }
+    })
+  }
 
   const handleMainPhotoChange = (index, value) => {
     setData((prevData) => {
-      const updatedPhotos = [...prevData.MainPhotos];
-      updatedPhotos[index] = value;
-      return { ...prevData, MainPhotos: updatedPhotos };
-    });
-  };
+      const updatedPhotos = [...prevData.MainPhotos]
+      updatedPhotos[index] = value
+      return { ...prevData, MainPhotos: updatedPhotos }
+    })
+  }
 
   const handleLocationChange = (index, value) => {
     setData((prevData) => {
-      const updatedHotels = [...prevData.hotels];
+      const updatedHotels = [...prevData.hotels]
 
       if (value === "") {
-        // Remove the hotel if the value is an empty string
-        updatedHotels.splice(index, 1);
+        updatedHotels.splice(index, 1)
       } else {
-        // Otherwise, update the hotel's location
-        updatedHotels[index] = { ...updatedHotels[index], location: value };
+        updatedHotels[index] = { ...updatedHotels[index], location: value }
       }
 
-      return { ...prevData, hotels: updatedHotels };
-    });
-  };
+      return { ...prevData, hotels: updatedHotels }
+    })
+  }
+
+  // Toggle all "What's Included" items
+  const toggleAllWhatsIncluded = () => {
+    if (data.whatsIncluded.length === packageData.length) {
+      // If all are selected, deselect all
+      setData({ ...data, whatsIncluded: [] })
+    } else {
+      // Otherwise, select all
+      setData({ ...data, whatsIncluded: [...packageData] })
+    }
+  }
+
+  // Toggle a single "What's Included" item
+  const toggleWhatsIncluded = (item) => {
+    if (data.whatsIncluded.includes(item)) {
+      // Remove item if already selected
+      setData({
+        ...data,
+        whatsIncluded: data.whatsIncluded.filter((i) => i !== item),
+      })
+    } else {
+      // Add item if not selected
+      setData({
+        ...data,
+        whatsIncluded: [...data.whatsIncluded, item],
+      })
+    }
+  }
 
   const handleAutoResize = () => {
-    // Iterate over all textareas and adjust their heights
     textareasRef.current.forEach((textarea) => {
       if (textarea) {
-        textarea.style.height = "auto"; // Reset height to auto
-        textarea.style.height = `${textarea.scrollHeight}px`; // Set height to scrollHeight
+        textarea.style.height = "auto"
+        textarea.style.height = `${textarea.scrollHeight}px`
       }
-    });
-  };
+    })
+  }
 
   useEffect(() => {
-    handleAutoResize();
-  }, [data]);
+    handleAutoResize()
+  }, [data])
+
+  // Navigation tabs for mobile
+  const navigationTabs = [
+    { id: "basic", label: "Basic Info" },
+    { id: "pricing", label: "Pricing" },
+    { id: "photos", label: "Photos" },
+    { id: "days", label: "Itinerary" },
+    { id: "included", label: "Included" },
+    { id: "hotels", label: "Hotels" },
+    { id: "details", label: "Details" },
+  ]
 
   return (
-    <div className="bg-gray-50 text-gray-900">
-      <div className="container mx-auto p-6">
-        {/* Title and Description */}
-        <section className="mb-8 flex flex-col">
-          <input
-            type="text"
-            name="title"
-            value={data.title}
-            onChange={handleChange}
-            className="text-4xl font-bold mb-2"
-          />
-          <textarea
-            name="description"
-            value={data.description}
-            onChange={handleChange}
-            className="text-lg mb-4"
-          />
-          <input
-            type="number"
-            name="price"
-            value={data.price}
-            onChange={handleChange}
-            className="text-xl font-semibold text-green-600"
-          />
-        </section>
-        {/* Dynamic Pricing */}
-        <section className="mb-8">
-          <h2 className="text-xl font-bold">Package Pricing</h2>
-
-          {data?.pricing?.map((priceItem, index) => (
-            <div key={index} className="pricing-entry border p-4 mb-2">
-              <input
-                type="number"
-                name="guestCount"
-                placeholder="Guest Count"
-                value={priceItem.guestCount}
-                onChange={(e) => handlePricingChange(index, e)}
-                className="mr-2 p-2 border rounded"
-              />
-
-              <select
-                name="packageType"
-                value={priceItem.packageType}
-                onChange={(e) => handlePricingChange(index, e)}
-                className="mr-2 p-2 border rounded"
-              >
-                <option value="">Select Package Type</option>
-                <option value="Standard">Standard</option>
-                <option value="Deluxe">Deluxe</option>
-                <option value="Super Deluxe">Super Deluxe</option>
-                <option value="Luxury">Luxury</option>
-                <option value="Royal">Royal</option>
-              </select>
-
-              <input
-                type="number"
-                name="basePrice"
-                placeholder="Base Price"
-                value={priceItem.basePrice}
-                onChange={(e) => handlePricingChange(index, e)}
-                className="mr-2 p-2 border rounded"
-              />
-
-              <input
-                type="number"
-                name="extraBedCharge"
-                placeholder="Extra Bed Charge"
-                value={priceItem.extraBedCharge}
-                onChange={(e) => handlePricingChange(index, e)}
-                className="mr-2 p-2 border rounded"
-              />
-              <input
-                type="number"
-                name="CNB"
-                placeholder="Extra CNB Charge"
-                value={priceItem.CNB}
-                onChange={(e) => handlePricingChange(index, e)}
-                className="mr-2 p-2 border rounded"
-              />
-
-              <input
-                type="number"
-                name="CWB"
-                placeholder="Extra CWB Charge"
-                value={priceItem.CWB}
-                onChange={(e) => handlePricingChange(index, e)}
-                className="mr-2 p-2 border rounded"
-              />
-
-              <input
-                type="number"
-                name="extraPersonCharge"
-                placeholder="Extra Person Charge"
-                value={priceItem.extraPersonCharge}
-                onChange={(e) => handlePricingChange(index, e)}
-                className="mr-2 p-2 border rounded"
-              />
-
-              <label>
-                <input
-                  type="checkbox"
-                  name="perPerson"
-                  checked={priceItem.perPerson || false} // Ensure checkbox reflects state
-                  onChange={(e) => handlePricingChange(index, e)}
-                  className="mr-1"
-                />
-                Per Person
-              </label>
-              <button
-                onClick={() => removePricing(index)}
-                className="bg-red-500 text-white px-3 py-1 rounded ml-2"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-
+    <div className="bg-white text-gray-900 min-h-screen">
+      <div className="container mx-auto p-4 md:p-6 max-w-6xl">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Edit Package</h1>
           <button
-            onClick={addPricing}
-            className="bg-blue-500 text-white px-4 py-2 mt-3 rounded"
+            onClick={() => setEditPackage(false)}
+            className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
           >
-            Add Pricing
+            Cancel
           </button>
-        </section>
-        {/* Main Photos */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Main Photos</h2>
-          {data?.MainPhotos?.map((photo, index) => (
-            <div key={index} className="flex items-center mb-4">
-              <input
-                type="text"
-                value={photo}
-                onChange={(e) => handleMainPhotoChange(index, e.target.value)}
-                className="w-full"
-                placeholder={`Main Photo URL ${index + 1}`}
-              />
+        </div>
+
+        {/* Mobile Navigation */}
+        <div className="md:hidden overflow-x-auto whitespace-nowrap mb-6 pb-2 border-b">
+          <div className="flex space-x-2">
+            {navigationTabs.map((tab) => (
               <button
-                type="button"
-                onClick={() => {
-                  const updatedPhotos = [...data.MainPhotos];
-                  updatedPhotos.splice(index, 1);
-                  setData((prevData) => ({
-                    ...prevData,
-                    MainPhotos: updatedPhotos,
-                  }));
-                }}
-                className="text-red-500 ml-2"
+                key={tab.id}
+                onClick={() => setActiveSection(tab.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                  activeSection === tab.id ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               >
-                Remove
+                {tab.label}
               </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() => {
-              setData((prevData) => ({
-                ...prevData,
-                MainPhotos: [...prevData.MainPhotos, ""], // Add a new empty photo input
-              }));
-            }}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2"
-          >
-            Add Main Photo
-          </button>
-        </section>
-        {/* Day Description*/}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Day Description</h2>
-          {data?.dayDescription?.map((day, dayIndex) => (
-            <div key={dayIndex} className="mb-6">
-              <input
-                type="text"
-                name={`dayTitle-${dayIndex}`}
-                value={day.dayTitle}
-                onChange={(e) =>
-                  handleArrayChange(
-                    "dayDescription",
-                    dayIndex,
-                    "dayTitle",
-                    e.target.value
-                  )
-                }
-                className="text-xl font-semibold mb-2 w-full"
-                placeholder={`Day ${dayIndex + 1} Title`}
-              />
-              <textarea
-                name={`dayDetails-${dayIndex}`}
-                value={day.dayDetails}
-                onChange={(e) =>
-                  handleArrayChange(
-                    "dayDescription",
-                    dayIndex,
-                    "dayDetails",
-                    e.target.value
-                  )
-                }
-                ref={(el) => (textareasRef.current[dayIndex] = el)}
-                className="text-gray-700 mb-4 w-full resize-none overflow-hidden"
-                style={{ minHeight: "3rem" }}
-                placeholder={`Details for Day ${dayIndex + 1}`}
-              />
-              {/* Photo Inputs */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                {day?.photos?.map((photo, photoIndex) => (
-                  <div key={photoIndex} className="flex items-center">
-                    <input
-                      type="text"
-                      value={photo}
-                      onChange={(e) =>
-                        handlePhotoChange(dayIndex, photoIndex, e.target.value)
-                      }
-                      className="w-full"
-                      placeholder={`Photo URL for Day ${dayIndex + 1} - Photo ${
-                        photoIndex + 1
-                      }`}
-                    />
-                  </div>
-                ))}
-              </div>
-              {/* Add new photo input if needed */}
-              <button
-                type="button"
-                onClick={() => {
-                  const updatedData = [...data.dayDescription];
-                  updatedData[dayIndex].photos.push(""); // Add a new empty photo input
-                  setData((prevData) => ({
-                    ...prevData,
-                    dayDescription: updatedData,
-                  }));
-                }}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2"
-              >
-                Add Photo
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const updatedDayDescription = data.dayDescription.filter(
-                    (item) => item._id !== day._id
-                  );
-                  setData((prevData) => ({
-                    ...prevData,
-                    dayDescription: updatedDayDescription,
-                  }));
-                }}
-                className="bg-red-500 ml-2 text-white px-4 py-2 rounded-lg mt-2"
-              >
-                Remove this Day-{dayIndex + 1}
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() => {
-              const newDay = {
-                dayTitle: "",
-                dayDetails: "",
-                photos: [""], // Initialize with one empty photo input
-              };
-              setData((prevData) => ({
-                ...prevData,
-                dayDescription: [...prevData.dayDescription, newDay],
-              }));
-            }}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg mt-4"
-          >
-            Add Another Day
-          </button>
-        </section>
-        {/* What's Included */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">What's Included</h2>
-          <ul className=" flex items-center gap-3">
-            {data?.whatsIncluded?.map((item, index) => (
-              <li
-                key={index}
-                className="bg-blue-200 relative text-blue-800 px-3 py-1 rounded-lg"
-              >
-                {item}
-                <button
-                  className="text-red-500 absolute -top-1 -right-1 bg-red-300 rounded-full w-4 h-4 flex justify-center items-center"
-                  onClick={() => {
-                    const updatedWhatsIncluded = data.whatsIncluded.filter(
-                      (packid) => packid !== item // Filter by state ID
-                    );
-                    setData({
-                      ...data,
-                      whatsIncluded: updatedWhatsIncluded,
-                    });
-                  }}
-                >
-                  x
-                </button>
-              </li>
             ))}
-          </ul>
-          <div className="mb-2 w-full">
-            <ul className="w-full">
-              {packageData?.map((packag, idx) => (
-                <li
-                  key={idx}
-                  className="cursor-pointer list-decimal p-2 w-full bg-gray-100 rounded-md hover:bg-gray-200"
-                  onClick={() => {
-                    // Check if the package is already added
-                    if (!data.whatsIncluded.some((pkg) => pkg === packag)) {
-                      setData({
-                        ...data,
-                        whatsIncluded: [...data.whatsIncluded, packag],
-                      });
-                    }
-                  }}
-                >
-                  <span className="mr-4">{packag}</span>
-                </li>
-              ))}
-            </ul>
           </div>
-        </section>
-        {/* Special Instructions */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Special Instructions</h2>
-          <textarea
-            name="specialInstruction"
-            value={data.specialInstruction}
-            onChange={(e) => {
-              handleChange(e);
-              handleAutoResize(); // Adjust height as user types
-            }}
-            ref={(el) => textareasRef.current.push(el)}
-            className="text-gray-700 whitespace-pre-line w-full resize-none overflow-hidden"
-          />
-        </section>
-        {/* Conditions of Travel */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Conditions of Travel</h2>
-          <textarea
-            name="conditionOfTravel"
-            value={data.conditionOfTravel}
-            onChange={handleChange}
-            ref={(el) => textareasRef.current.push(el)}
-            className="text-gray-700 whitespace-pre-line w-full"
-          />
-        </section>
-        {/*Things to maintain*/}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Things to maintain</h2>
-          <textarea
-            name="thingsToMaintain"
-            value={data.thingsToMaintain}
-            onChange={(e) => {
-              handleChange(e);
-              handleAutoResize(); // Adjust height as user types
-            }}
-            ref={(el) => textareasRef.current.push(el)}
-            className="text-gray-700 whitespace-pre-line w-full resize-none overflow-hidden"
-          />
-        </section>
-        {/* Policies */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Policies</h2>
+        </div>
 
-          <textarea
-            name="policies"
-            value={data.policies}
-            ref={(el) => textareasRef.current.push(el)}
-            onChange={handleChange}
-            className="text-gray-700 whitespace-pre-line w-full"
-          />
-        </section>
-        {/* Hotel */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Hotels</h2>
-          {data?.hotels?.map((hotel, hotelIndex) => (
-            <div key={hotelIndex} className="flex flex-col mb-4 gap-2">
-              <div className="flex items-center justify-between">
+        {/* Basic Information Card */}
+        <div className={`bg-white rounded-xl shadow-md p-6 mb-8 ${activeSection !== "basic" && "hidden md:block"}`}>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">Basic Information</h2>
+
+          <div className="space-y-4">
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Package Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={data.title}
+                onChange={handleChange}
+                className={`w-full px-4 py-2 rounded-lg border ${errors.title ? "border-red-500" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                placeholder="Enter package title"
+              />
+              {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title}</p>}
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                name="description"
+                value={data.description}
+                onChange={handleChange}
+                className={`w-full px-4 py-2 rounded-lg border ${errors.description ? "border-red-500" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]`}
+                placeholder="Enter package description"
+              />
+              {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description}</p>}
+            </div>
+
+            {/* Price */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Base Price</label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                <input
+                  type="number"
+                  name="price"
+                  value={data.price}
+                  onChange={handleChange}
+                  className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="0.00"
+                />
+              </div>
+              <p className="mt-1 text-xs text-gray-500">Either base price or pricing options must be provided</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Photos Card */}
+        <div className={`bg-white rounded-xl shadow-md p-6 mb-8 ${activeSection !== "photos" && "hidden md:block"}`}>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">Main Photos</h2>
+
+          <div className="space-y-4">
+            {data?.MainPhotos?.map((photo, index) => (
+              <div key={index} className="flex items-center gap-2">
                 <input
                   type="text"
-                  value={hotel.location}
-                  onChange={(e) =>
-                    handleLocationChange(hotelIndex, e.target.value)
-                  }
-                  className="border p-2 rounded"
+                  value={photo}
+                  onChange={(e) => handleMainPhotoChange(index, e.target.value)}
+                  className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter photo URL"
                 />
                 <button
-                  onClick={() => removeHotel(hotel._id)}
-                  className="text-red-500 bg-red-200 rounded px-2 py-1"
+                  type="button"
+                  onClick={() => {
+                    const updatedPhotos = [...data.MainPhotos]
+                    updatedPhotos.splice(index, 1)
+                    setData((prevData) => ({
+                      ...prevData,
+                      MainPhotos: updatedPhotos,
+                    }))
+                  }}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 >
-                  Remove Hotel
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      fillRule="evenodd"
+                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                 </button>
               </div>
+            ))}
 
-              <ul>
-                {hotel?.hotelDetails?.length > 0 ? (
-                  hotel.hotelDetails.map((detailId, hotelDetailIndex) => {
-                    const hotelObj = hotelData?.find(
-                      (hotel) => hotel._id === detailId
-                    );
+            <button
+              type="button"
+              onClick={() => {
+                setData((prevData) => ({
+                  ...prevData,
+                  MainPhotos: [...(prevData.MainPhotos || []), ""],
+                }))
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Add Photo
+            </button>
+          </div>
+        </div>
 
-                    return (
-                      <li
-                        key={hotelDetailIndex}
-                        className="bg-blue-100 text-blue-800 p-2 rounded-md mb-2"
-                      >
-                        {hotelObj?.hotelName || ` ${detailId.hotelName}`}{" "}
-                        <button
-                          className="text-red-500 ml-2"
-                          onClick={() =>
-                            removeHotelDetail(hotelIndex, hotelDetailIndex)
-                          }
-                        >
-                          x
-                        </button>
-                      </li>
-                    );
-                  })
-                ) : (
-                  <li>No hotel details available</li>
-                )}
-              </ul>
+        {/* What's Included Card */}
+        <div className={`bg-white rounded-xl shadow-md p-6 mb-8 ${activeSection !== "included" && "hidden md:block"}`}>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">What's Included</h2>
 
-              <div className="flex flex-col gap-2">
-                {/* Custom Searchable Dropdown */}
-                <div className="relative w-full">
-                  <input
-                    type="text"
-                    placeholder="Search and select a hotel"
-                    className="border p-2 w-full rounded"
-                    value={searchTerm} // Search input state
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setDropdownVisible(true);
-                    }} // Update search term
-                  />
-                  {dropdownVisible && searchTerm && (
-                    <ul className="absolute bg-white border rounded mt-2 w-full max-h-40 overflow-y-auto z-10">
-                      {hotelData
-                        ?.filter((hotelOption) =>
-                          hotelOption.hotelName
-                            .toLowerCase()
-                            .includes(searchTerm.toLowerCase())
-                        )
-                        .map((filteredHotel) => (
-                          <li
-                            key={filteredHotel._id}
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {data.whatsIncluded?.map((item, index) => (
+                <div key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg flex items-center gap-1">
+                  {item}
+                  <button
+                    className="ml-1 text-blue-600 hover:text-blue-800"
+                    onClick={() => {
+                      const updatedWhatsIncluded = data.whatsIncluded.filter((packid) => packid !== item)
+                      setData({
+                        ...data,
+                        whatsIncluded: updatedWhatsIncluded,
+                      })
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={toggleAllWhatsIncluded}
+                className="col-span-full px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors mb-2"
+              >
+                {data.whatsIncluded?.length === packageData.length ? "Deselect All" : "Select All"}
+              </button>
+
+              {packageData?.map((item, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => toggleWhatsIncluded(item)}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    data.whatsIncluded?.includes(item)
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Package Pricing Card */}
+        <div className={`bg-white rounded-xl shadow-md p-6 mb-8 ${activeSection !== "pricing" && "hidden md:block"}`}>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">Package Pricing</h2>
+
+          {errors.pricing && (
+            <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg border border-red-200">{errors.pricing}</div>
+          )}
+
+          <div className="space-y-6">
+            {data.pricing?.map((priceItem, index) => (
+              <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-medium">Pricing Option {index + 1}</h3>
+                  <button onClick={() => removePricing(index)} className="text-red-500 hover:text-red-700 p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Guest Count</label>
+                    <input
+                      type="number"
+                      name="guestCount"
+                      placeholder="Number of guests"
+                      value={priceItem.guestCount}
+                      onChange={(e) => handlePricingChange(index, e)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Package Type</label>
+                    <select
+                      name="packageType"
+                      value={priceItem.packageType}
+                      onChange={(e) => handlePricingChange(index, e)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                      <option value="">Select Package Type</option>
+                      <option value="Standard">Standard</option>
+                      <option value="Deluxe">Deluxe</option>
+                      <option value="Super Deluxe">Super Deluxe</option>
+                      <option value="Luxury">Luxury</option>
+                      <option value="Royal">Royal</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Base Price</label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                      <input
+                        type="number"
+                        name="basePrice"
+                        placeholder="0.00"
+                        value={priceItem.basePrice}
+                        onChange={(e) => handlePricingChange(index, e)}
+                        className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Extra Person Charge</label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                      <input
+                        type="number"
+                        name="extraPersonCharge"
+                        placeholder="0.00"
+                        value={priceItem.extraPersonCharge}
+                        onChange={(e) => handlePricingChange(index, e)}
+                        className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Extra Bed Charge</label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                      <input
+                        type="number"
+                        name="extraBedCharge"
+                        placeholder="0.00"
+                        value={priceItem.extraBedCharge}
+                        onChange={(e) => handlePricingChange(index, e)}
+                        className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CNB Charge</label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                      <input
+                        type="number"
+                        name="CNB"
+                        placeholder="0.00"
+                        value={priceItem.CNB}
+                        onChange={(e) => handlePricingChange(index, e)}
+                        className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CWB Charge</label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                      <input
+                        type="number"
+                        name="CWB"
+                        placeholder="0.00"
+                        value={priceItem.CWB}
+                        onChange={(e) => handlePricingChange(index, e)}
+                        className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="perPerson"
+                      checked={priceItem.perPerson || false}
+                      onChange={(e) => handlePricingChange(index, e)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">Per Person Pricing</span>
+                  </label>
+                </div>
+              </div>
+            ))}
+
+            <button
+              onClick={addPricing}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Add Pricing Option
+            </button>
+          </div>
+        </div>
+
+        {/* Day Description Card */}
+        <div className={`bg-white rounded-xl shadow-md p-6 mb-8 ${activeSection !== "days" && "hidden md:block"}`}>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">Day Description</h2>
+
+          <div className="space-y-6">
+            {data.dayDescription?.map((day, dayIndex) => (
+              <div key={dayIndex} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-medium">Day {dayIndex + 1}</h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updatedDayDescription = data.dayDescription.filter((item) => item._id !== day._id)
+                      setData((prevData) => ({
+                        ...prevData,
+                        dayDescription: updatedDayDescription,
+                      }))
+                    }}
+                    className="text-red-500 hover:text-red-700 p-1"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Day Title</label>
+                    <input
+                      type="text"
+                      name={`dayTitle-${dayIndex}`}
+                      value={day.dayTitle}
+                      onChange={(e) => handleArrayChange("dayDescription", dayIndex, "dayTitle", e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder={`Day ${dayIndex + 1} Title`}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Day Details</label>
+                    <textarea
+                      name={`dayDetails-${dayIndex}`}
+                      value={day.dayDetails}
+                      onChange={(e) => handleArrayChange("dayDescription", dayIndex, "dayDetails", e.target.value)}
+                      ref={(el) => (textareasRef.current[dayIndex] = el)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-none"
+                      placeholder={`Details for Day ${dayIndex + 1}`}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Photos</label>
+                    <div className="space-y-2">
+                      {day.photos?.map((photo, photoIndex) => (
+                        <div key={photoIndex} className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={photo}
+                            onChange={(e) => handlePhotoChange(dayIndex, photoIndex, e.target.value)}
+                            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder={`Photo URL ${photoIndex + 1}`}
+                          />
+                          <button
+                            type="button"
                             onClick={() => {
-                              setSelectedHotelIdForDetails(filteredHotel._id);
-                              setSearchTerm(filteredHotel.hotelName);
-                              setDropdownVisible(false);
+                              const updatedData = [...data.dayDescription]
+                              updatedData[dayIndex].photos.splice(photoIndex, 1)
+                              setData((prevData) => ({
+                                ...prevData,
+                                dayDescription: updatedData,
+                              }))
                             }}
-                            className="p-2 hover:bg-gray-100 cursor-pointer"
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                           >
-                            {filteredHotel.hotelName}
-                          </li>
-                        ))}
-                      {hotelData?.filter((hotelOption) =>
-                        hotelOption.hotelName
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
-                      ).length === 0 && (
-                        <li className="p-2 text-gray-500">No results found</li>
-                      )}
-                    </ul>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updatedData = [...data.dayDescription]
+                        if (!updatedData[dayIndex].photos) {
+                          updatedData[dayIndex].photos = []
+                        }
+                        updatedData[dayIndex].photos.push("")
+                        setData((prevData) => ({
+                          ...prevData,
+                          dayDescription: updatedData,
+                        }))
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 mt-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Add Photo
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => {
+                const newDay = {
+                  dayTitle: "",
+                  dayDetails: "",
+                  photos: [""],
+                }
+                setData((prevData) => ({
+                  ...prevData,
+                  dayDescription: [...(prevData.dayDescription || []), newDay],
+                }))
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Add Another Day
+            </button>
+          </div>
+        </div>
+
+        {/* Additional Information Card */}
+        <div className={`bg-white rounded-xl shadow-md p-6 mb-8 ${activeSection !== "details" && "hidden md:block"}`}>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">Additional Information</h2>
+
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Special Instructions</label>
+              <textarea
+                name="specialInstruction"
+                value={data.specialInstruction}
+                onChange={handleChange}
+                ref={(el) => textareasRef.current.push(el)}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                placeholder="Enter any special instructions"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Conditions of Travel</label>
+              <textarea
+                name="conditionOfTravel"
+                value={data.conditionOfTravel}
+                onChange={handleChange}
+                ref={(el) => textareasRef.current.push(el)}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                placeholder="Enter conditions of travel"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Things to Maintain</label>
+              <textarea
+                name="thingsToMaintain"
+                value={data.thingsToMaintain}
+                onChange={handleChange}
+                ref={(el) => textareasRef.current.push(el)}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                placeholder="Enter things to maintain"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Policies</label>
+              <textarea
+                name="policies"
+                value={data.policies}
+                onChange={handleChange}
+                ref={(el) => textareasRef.current.push(el)}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                placeholder="Enter policies"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Terms and Conditions</label>
+              <textarea
+                name="termsAndConditions"
+                value={data.termsAndConditions}
+                onChange={handleChange}
+                ref={(el) => textareasRef.current.push(el)}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                placeholder="Enter terms and conditions"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Hotels Card */}
+        <div className={`bg-white rounded-xl shadow-md p-6 mb-8 ${activeSection !== "hotels" && "hidden md:block"}`}>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">Hotels</h2>
+
+          <div className="space-y-6">
+            {data?.hotels?.map((hotel, hotelIndex) => (
+              <div key={hotelIndex} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                    <input
+                      type="text"
+                      value={hotel.location}
+                      onChange={(e) => handleLocationChange(hotelIndex, e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter location"
+                    />
+                  </div>
+                  <button
+                    onClick={() => removeHotel(hotel._id)}
+                    className="ml-4 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Selected Hotels</label>
+                  {hotel?.hotelDetails?.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {hotel.hotelDetails.map((detailId, hotelDetailIndex) => {
+                        const hotelObj = hotelData?.find((hotel) => hotel._id === detailId)
+
+                        return (
+                          <div
+                            key={hotelDetailIndex}
+                            className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg flex items-center gap-1"
+                          >
+                            {hotelObj?.hotelName || `Hotel ${hotelDetailIndex + 1}`}
+                            <button
+                              className="ml-1 text-blue-600 hover:text-blue-800"
+                              onClick={() => removeHotelDetail(hotelIndex, hotelDetailIndex)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm">No hotels selected</p>
                   )}
                 </div>
 
-                {/* Add Detail Button */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">Add Hotel</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search for a hotel"
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value)
+                        setDropdownVisible(true)
+                      }}
+                      onFocus={() => setDropdownVisible(true)}
+                    />
+
+                    {dropdownVisible && searchTerm && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        {hotelData
+                          ?.filter((hotelOption) =>
+                            hotelOption.hotelName.toLowerCase().includes(searchTerm.toLowerCase()),
+                          )
+                          .map((filteredHotel) => (
+                            <div
+                              key={filteredHotel._id}
+                              onClick={() => {
+                                setSelectedHotelIdForDetails(filteredHotel._id)
+                                setSearchTerm(filteredHotel.hotelName)
+                                setDropdownVisible(false)
+                              }}
+                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            >
+                              {filteredHotel.hotelName}
+                            </div>
+                          ))}
+
+                        {hotelData?.filter((hotelOption) =>
+                          hotelOption.hotelName.toLowerCase().includes(searchTerm.toLowerCase()),
+                        ).length === 0 && <div className="px-4 py-2 text-gray-500">No results found</div>}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      addHotelDetail(hotel._id)
+                      setDropdownVisible(false)
+                    }}
+                    disabled={!selectedHotelIdForDetails}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      selectedHotelIdForDetails
+                        ? "bg-blue-500 text-white hover:bg-blue-600"
+                        : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    }`}
+                  >
+                    Add Selected Hotel
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <div className="p-4 border border-gray-200 rounded-lg">
+              <h3 className="font-medium mb-4">Add New Location</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Location Name</label>
+                  <input
+                    type="text"
+                    value={newLocation}
+                    onChange={(e) => setNewLocation(e.target.value)}
+                    placeholder="Enter location name"
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Hotel</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onFocus={() => setDropdownVisible(true)}
+                      placeholder="Search for a hotel"
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+
+                    {dropdownVisible && searchQuery && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        {filteredHotels?.map((hotel) => (
+                          <div
+                            key={hotel._id}
+                            onClick={() => {
+                              setSelectedHotelIdForNewHotel(hotel._id)
+                              setSearchQuery(hotel.hotelName)
+                              setDropdownVisible(false)
+                            }}
+                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          >
+                            {hotel.hotelName}
+                          </div>
+                        ))}
+
+                        {filteredHotels?.length === 0 && (
+                          <div className="px-4 py-2 text-gray-500">No results found</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <button
-                  onClick={() => {
-                    addHotelDetail(hotel._id, selectedHotelIdForDetails);
-                    setSearchTerm("");
-                  }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-                  disabled={!selectedHotelIdForDetails} // Disable button if no hotel is selected
+                  onClick={addNewHotel}
+                  disabled={!newLocation || !selectedHotelIdForNewHotel}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    newLocation && selectedHotelIdForNewHotel
+                      ? "bg-blue-500 text-white hover:bg-blue-600"
+                      : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  }`}
                 >
-                  Add Detail
+                  Add New Location
                 </button>
               </div>
             </div>
-          ))}
-
-          <div className="mt-6 border p-4 rounded-lg">
-            <h3 className="text-lg font-semibold mb-2">Add New Hotel</h3>
-            <input
-              type="text"
-              value={newLocation}
-              onChange={(e) => setNewLocation(e.target.value)}
-              placeholder="Enter location"
-              className="border p-2 w-full mb-2"
-            />
-
-            <div className="relative w-full mb-2">
-              <input
-                type="text"
-                value={searchQuery}
-                onFocus={() => setDropdownVisible(true)}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search and select a hotel"
-                className="border p-2 rounded w-full"
-              />
-              {dropdownVisible && searchQuery && filteredHotels?.length > 0 && (
-                <ul className="absolute bg-white border rounded w-full max-h-40 overflow-y-auto mt-1 z-10">
-                  {filteredHotels.map((hotel) => (
-                    <li
-                      key={hotel._id}
-                      onClick={() => {
-                        setSelectedHotelIdForNewHotel(hotel._id);
-                        setSearchQuery(hotel.hotelName);
-                        setDropdownVisible(false);
-                      }}
-                      className="p-2 hover:bg-gray-200 cursor-pointer"
-                    >
-                      {hotel.hotelName}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            <button
-              onClick={addNewHotel}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2"
-            >
-              Add Hotel
-            </button>
           </div>
-        </section>
-        {/* Terms and Conditions */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Terms and Conditions</h2>
-          <textarea
-            name="termsAndConditions"
-            value={data.termsAndConditions}
-            ref={(el) => textareasRef.current.push(el)}
-            onChange={handleChange}
-            className="text-gray-700 whitespace-pre-line w-full"
-          />
-        </section>
-        {/* Save or Submit button */}
-        <button
-          onClick={saveState}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-        >
-          Save
-        </button>
-        <button
-          onClick={() => {
-            setEditPackage(false);
-          }}
-          className="bg-red-500 ml-4 text-white px-4 py-2 rounded-lg"
-        >
-          Back
-        </button>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-end">
+          <button
+            onClick={() => setEditPackage(false)}
+            className="px-6 py-3 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={saveState}
+            disabled={isSubmitting}
+            className={`px-6 py-3 rounded-lg transition-colors ${
+              isSubmitting ? "bg-blue-400 text-white cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
+          >
+            {isSubmitting ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
       </div>
     </div>
-  );
+  )
 }
