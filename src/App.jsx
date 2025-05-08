@@ -3,6 +3,7 @@ import {
   Route,
   Routes,
   useLocation,
+  Navigate,
 } from "react-router-dom";
 import "./App.css";
 import React, { Suspense, useEffect } from "react";
@@ -82,9 +83,19 @@ function App() {
   }, [location]);
 
   // Conditionally hide Footer on specific routes
-  const hideFooterOnRoutes = ["/signup", "/createprofile", "/login"];
-  const shouldShowNavbar = !hideFooterOnRoutes.includes(location.pathname);
-  const shouldShowFooter = !hideFooterOnRoutes.includes(location.pathname);
+  const hideFooterOnRoutes = [
+    "/signup",
+    "/createprofile",
+    "/login",
+    "/adminpanel",
+  ];
+
+  const shouldHide = hideFooterOnRoutes.some((route) =>
+    location.pathname.startsWith(route)
+  );
+  
+  const shouldShowNavbar = !shouldHide;
+  const shouldShowFooter = !shouldHide;
 
   return (
     <div className="bg-[#F8F8F8] ">

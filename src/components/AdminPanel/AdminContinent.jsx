@@ -1,19 +1,19 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState } from "react";
 import useApiData from "../../../hooks/useApiData";
-import Spinner from "../../../utils/Spinner";
-import ImageModal from "../../../utils/ImageModal";
-import { useNavigate } from "react-router-dom";
 import useFetch from "../../../hooks/useFetch";
-import LocationModal from "./LocationModal";
+import { useNavigate } from "react-router-dom";
 import Loader from "../Loader";
 import ConfirmationModal from "../ConfirmationModal";
+import ImageModal from "../../../utils/ImageModal";
+import LocationModal from "./LocationModal";
 
 function AdminContinent() {
   const baseUrl = "https://trippo-bazzar-backend.vercel.app/api/continent";
   const {
     data: continentData,
     loading,
-    error,
     deleteById,
     updateById,
     addNew,
@@ -34,16 +34,17 @@ function AdminContinent() {
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showContinentModal, setShowContinentModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
-  const startEditing = (user) => {
-    setEditingUserId(user._id);
-    setEditedDetails({ ...user });
+  const startEditing = (continent) => {
+    setEditingUserId(continent._id);
+    setEditedDetails({ ...continent });
   };
 
   const saveContinent = async () => {
     try {
-      await updateById(editingUserId, editedDetails); // Update data via hook
+      await updateById(editingUserId, editedDetails);
     } catch (error) {
       console.log(error);
     }
@@ -52,7 +53,7 @@ function AdminContinent() {
 
   const addContinent = async () => {
     try {
-      await addNew(newContinent); // Call the addNew function from hook
+      await addNew(newContinent);
       setNewContinent({
         ContinentName: "",
         ContinentPhotoUrl: "",
@@ -65,12 +66,12 @@ function AdminContinent() {
   };
 
   const openModal = (imageUrl) => {
-    setSelectedImage(imageUrl); // Set the selected image URL
-    setShowModal(true); // Show the modal
+    setSelectedImage(imageUrl);
+    setShowModal(true);
   };
 
   const closeModal = () => {
-    setShowModal(false); // Close the modal
+    setShowModal(false);
   };
 
   const openContinentModal = () => {
@@ -87,7 +88,7 @@ function AdminContinent() {
   };
 
   const handleContinentClick = (continentId, continentName) => {
-    navigate(`/adminpanel/destination/${continentName}/${continentId}`); // Redirect to the continent-country page
+    navigate(`/adminpanel/destination/${continentName}/${continentId}`);
   };
 
   const handleCountryChange = (e) => {
@@ -107,7 +108,6 @@ function AdminContinent() {
               : [selectedCountry],
           }));
         } else {
-          // If adding a new continent, update newContinent.Countries
           setNewContinent((prevContinent) => ({
             ...prevContinent,
             Countries: prevContinent.Countries
@@ -121,14 +121,18 @@ function AdminContinent() {
 
   const handleDelete = (id, name) => {
     setModal({
-      message: `Are you sure you want to delete this continent ${name}?`,
+      message: `Are you sure you want to delete ${name}?`,
       onConfirm: () => {
-        deleteById(id); // Perform delete operation
-        setModal(null); // Close modal
+        deleteById(id);
+        setModal(null);
       },
-      onCancel: () => setModal(null), // Close modal
+      onCancel: () => setModal(null),
     });
   };
+
+  const filteredContinents = continentData?.filter((continent) =>
+    continent.ContinentName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading === true) {
     return <Loader />;
@@ -143,225 +147,315 @@ function AdminContinent() {
           onCancel={modal.onCancel}
         />
       )}
-      <div className="mr-1 p-6">
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-med-green font-bold text-xl">
-              Add New Continent
-            </h3>
-            <button
-              onClick={openContinentModal}
-              className="bg-med-green text-white rounded-lg px-6 py-2 hover:bg-green-600 transition-all duration-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-green-300"
+
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
+            Continent Management
+          </h1>
+          <button
+            onClick={openContinentModal}
+            className="bg-green-500 hover:bg-green-600 text-white rounded-lg px-4 py-2 transition-all duration-200 flex items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
             >
-              Add Continent
-            </button>
-          </div>
+              <path
+                fillRule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Add Continent
+          </button>
+        </div>
 
-          {showContinentModal && (
-            <LocationModal
-              type="continent"
-              handleSelectionChange={handleCountryChange}
-              addLocation={addContinent}
-              list={countryList}
-              newLocation={newContinent}
-              setNewLocation={setNewContinent}
-              closeModal={closeContinentModal}
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+          <div className="relative w-full sm:w-64 mb-4 sm:mb-0">
+            <input
+              type="text"
+              placeholder="Search continents..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
-          )}
-        </div>
-
-        <div className="mb-6 flex justify-between">
-          <p className="text-med-green font-bold">
-            Total data: {continentData?.length}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-400 absolute left-3 top-2.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          <p className="text-sm text-gray-500">
+            Total continents:{" "}
+            <span className="font-medium">{continentData?.length || 0}</span>
           </p>
-          <p className="text-med-green font-bold">Destination</p>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full table-auto border-collapse border border-gray-200">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border border-gray-200 p-2 text-left">Sr.</th>
-                <th className="border border-gray-200 p-2 text-left">
-                  ContinentName
-                </th>
-                <th className="border border-gray-200 p-2 text-left">
-                  ContinentPhoto
-                </th>
-                <th className="border border-gray-200 p-2 text-left">
-                  Countries
-                </th>
-                <th className="border border-gray-200 p-2 text-left">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {continentData?.map((item, idx) => (
-                <tr key={item._id || idx} className="border-b border-gray-200">
-                  {editingUserId === item._id ? (
-                    <>
-                      <td className="border border-gray-200 p-2">{idx + 1}</td>
-                      <td className="border border-gray-200 p-2">
-                        <input
-                          type="text"
-                          value={editedDetails.ContinentName || ""}
-                          onChange={(e) =>
-                            setEditedDetails({
-                              ...editedDetails,
-                              ContinentName: e.target.value,
-                            })
-                          }
-                          className="w-full border p-2 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-200 p-2">
-                        <input
-                          type="text"
-                          value={editedDetails.ContinentPhotoUrl || ""}
-                          onChange={(e) =>
-                            setEditedDetails({
-                              ...editedDetails,
-                              ContinentPhotoUrl: e.target.value,
-                            })
-                          }
-                          className="w-full border p-2 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-200 p-2">
-                        {/* Loop through the Countries array and create an editable tag for each country */}
-                        {editedDetails.Countries &&
-                        editedDetails.Countries.length > 0 ? (
-                          editedDetails.Countries.map((country, index) => {
-                            return (
-                              <div
-                                key={index}
-                                className="inline-flex items-center mb-2 mr-2"
-                              >
-                                <span
-                                  key={country._id}
-                                  className="inline-block relative bg-blue-100 text-blue-800 py-1 px-3 rounded-full text-sm mr-2 mb-2"
-                                >
-                                  {country.CountryName}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredContinents?.map((continent) => (
+            <div
+              key={continent._id}
+              className={`bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 ${
+                editingUserId === continent._id ? "ring-2 ring-blue-500" : ""
+              }`}
+            >
+              {editingUserId === continent._id ? (
+                // Edit Mode
+                <div className="p-4">
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Continent Name
+                    </label>
+                    <input
+                      type="text"
+                      value={editedDetails.ContinentName || ""}
+                      onChange={(e) =>
+                        setEditedDetails({
+                          ...editedDetails,
+                          ContinentName: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
 
-                                  <button
-                                    className="text-red-500 absolute -top-1 -right-1 bg-red-300 rounded-full w-4 h-4 flex justify-center items-center"
-                                    onClick={() => {
-                                      const updatedCountries =
-                                        editedDetails.Countries.filter(
-                                          (_, i) => i !== index
-                                        );
-                                      setEditedDetails({
-                                        ...editedDetails,
-                                        Countries: updatedCountries,
-                                      });
-                                    }}
-                                  >
-                                    x
-                                  </button>
-                                </span>
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <span>No countries</span>
-                        )}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Photo URL
+                    </label>
+                    <input
+                      type="text"
+                      value={editedDetails.ContinentPhotoUrl || ""}
+                      onChange={(e) =>
+                        setEditedDetails({
+                          ...editedDetails,
+                          ContinentPhotoUrl: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
 
-                        {/* Add new country input */}
-                        <div className="mt-2">
-                          <select
-                            onChange={handleCountryChange}
-                            className="border px-2 py-1 rounded-full bg-gray-100 text-sm"
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Countries
+                    </label>
+                    <div className="flex flex-wrap mb-2">
+                      {editedDetails.Countries &&
+                      editedDetails.Countries.length > 0 ? (
+                        editedDetails.Countries.map((country, index) => (
+                          <div
+                            key={index}
+                            className="inline-flex items-center mr-2 mb-2"
                           >
-                            <option value="">Select Country</option>
-                            {countryList?.map((country) => (
-                              <option key={country._id} value={country._id}>
-                                {country.CountryName}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </td>
+                            <span className="inline-block bg-blue-100 text-blue-800 py-1 px-3 rounded-full text-xs">
+                              {country.CountryName}
+                              <button
+                                className="ml-1 text-blue-800 hover:text-red-600 font-bold"
+                                onClick={() => {
+                                  const updatedCountries =
+                                    editedDetails.Countries.filter(
+                                      (_, i) => i !== index
+                                    );
+                                  setEditedDetails({
+                                    ...editedDetails,
+                                    Countries: updatedCountries,
+                                  });
+                                }}
+                              >
+                                ×
+                              </button>
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <span className="text-sm text-gray-500">
+                          No countries selected
+                        </span>
+                      )}
+                    </div>
 
-                      <td className="border border-gray-200 p-2">
-                        <button
-                          className="text-green-400 px-3 py-1 rounded mr-2"
-                          onClick={saveContinent}
-                        >
-                          Save
-                        </button>
-                        <button
-                          className="text-red-400 px-3 py-1 rounded"
-                          onClick={() => setEditingUserId(null)}
-                        >
-                          Cancel
-                        </button>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td className="border border-gray-200 p-2">{idx + 1}</td>
-                      <td
-                        onClick={() => {
-                          handleContinentClick(item._id, item?.ContinentName);
-                        }}
-                        className="border border-gray-200 p-2"
-                      >
-                        {item?.ContinentName}
-                      </td>
-                      <td className="border border-gray-200 p-2">
-                        <img
-                          src={item?.ContinentPhotoUrl}
-                          alt="continentImage"
-                          onClick={() => openModal(item?.ContinentPhotoUrl)}
-                          className="w-40 h-20 cursor-pointer"
-                        />
-                      </td>
-                      <td className="border border-gray-200 p-2">
-                        {item?.Countries.length > 0 ? (
-                          item.Countries.map((country) => (
+                    <select
+                      onChange={handleCountryChange}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="">Add a country</option>
+                      {countryList?.map((country) => (
+                        <option key={country._id} value={country._id}>
+                          {country.CountryName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex justify-end space-x-2">
+                    <button
+                      className="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-sm"
+                      onClick={() => setEditingUserId(null)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+                      onClick={saveContinent}
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // View Mode
+                <>
+                  <div
+                    className="h-40 bg-gray-200 relative cursor-pointer"
+                    onClick={() => openModal(continent.ContinentPhotoUrl)}
+                  >
+                    <img
+                      src={continent.ContinentPhotoUrl || "/placeholder.svg"}
+                      alt={continent.ContinentName}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div className="p-4">
+                    <h3
+                      className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer hover:text-blue-600"
+                      onClick={() =>
+                        handleContinentClick(
+                          continent._id,
+                          continent.ContinentName
+                        )
+                      }
+                    >
+                      {continent.ContinentName}
+                    </h3>
+
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-500 mb-1">Countries:</p>
+                      <div className="flex flex-wrap">
+                        {continent.Countries &&
+                        continent.Countries.length > 0 ? (
+                          continent.Countries.map((country) => (
                             <span
                               key={country._id}
-                              className="inline-block bg-blue-100 text-blue-800 py-1 px-3 rounded-full text-sm mr-2 mb-2"
+                              className="inline-block bg-blue-100 text-blue-800 py-0.5 px-2 rounded-full text-xs mr-1 mb-1"
                             >
                               {country.CountryName}
                             </span>
                           ))
                         ) : (
-                          <span>No countries</span>
+                          <span className="text-sm text-gray-500">
+                            No countries
+                          </span>
                         )}
-                      </td>
-                      <td className="border border-gray-200 p-2">
-                        <button
-                          className="text-green-400 px-3 py-1 rounded mr-2"
-                          onClick={() => startEditing(item)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="text-red-400 px-3 py-1 rounded"
-                          onClick={() =>
-                            handleDelete(item._id, item.ContinentName)
-                          }
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                      </div>
+                    </div>
 
-        {showModal && (
-          <ImageModal
-            image={{ images: { original: { url: selectedImage } } }}
-            handleCloseModal={closeModal}
-          />
-        )}
+                    <div className="flex justify-end space-x-2">
+                      <button
+                        className="p-1.5 text-gray-500 hover:text-blue-600 rounded-full hover:bg-blue-50"
+                        onClick={() => startEditing(continent)}
+                        title="Edit"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        className="p-1.5 text-gray-500 hover:text-red-600 rounded-full hover:bg-red-50"
+                        onClick={() =>
+                          handleDelete(continent._id, continent.ContinentName)
+                        }
+                        title="Delete"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+
+          {filteredContinents?.length === 0 && (
+            <div className="col-span-full text-center py-8">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 mx-auto text-gray-400 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                />
+              </svg>
+              <p className="text-gray-500">
+                No continents found. Try a different search or add a new
+                continent.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
+
+      {showContinentModal && (
+        <LocationModal
+          type="continent"
+          handleSelectionChange={handleCountryChange}
+          addLocation={addContinent}
+          list={countryList}
+          newLocation={newContinent}
+          setNewLocation={setNewContinent}
+          closeModal={closeContinentModal}
+        />
+      )}
+
+      {showModal && (
+        <ImageModal
+          image={{ images: { original: { url: selectedImage } } }}
+          handleCloseModal={closeModal}
+        />
+      )}
     </>
   );
 }

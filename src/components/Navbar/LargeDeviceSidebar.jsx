@@ -39,7 +39,7 @@ const LargeDeviceSidebar = ({ isSidebarOpen, closeSidebar }) => {
       link: "/contactus",
       subItems: ["Sub-item X", "Sub-item Y", "Sub-item Z"],
     },
-    { title: "Admin Panel", link: "/adminpanel/*", subItems: [] },
+    { title: "Admin Panel", link: "/adminpanel/users", subItems: [] },
   ];
 
   const handleLogout = () => {
