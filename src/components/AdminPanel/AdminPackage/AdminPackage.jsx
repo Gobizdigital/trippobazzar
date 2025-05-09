@@ -148,7 +148,7 @@ export default function AdminPackage() {
         <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl shadow-xl p-6 min-h-[80vh]">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              Package Management
+              {`${isAddingPackage?"Add New Package":"Package Management"}`}
             </h1>
             <button
               onClick={() => setIsAddingPackage(!isAddingPackage)}
