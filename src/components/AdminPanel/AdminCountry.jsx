@@ -122,9 +122,6 @@ function AdminCountry() {
     })
   }
 
-  const handleContinentClick = (continentId, continentName) => {
-    navigate(`/adminpanel/destination/${continentName}/${continentId}`)
-  }
 
   const handleStateSelect = (state) => {
     if (editingUserId) {
@@ -372,7 +369,7 @@ function AdminCountry() {
                       <div className="p-4 w-full">
                         <h3
                           className="text-white font-bold text-xl cursor-pointer hover:underline flex items-center"
-                          onClick={() => handleContinentClick(item._id, item?.CountryName)}
+                          onClick={() => startEditing(item)}
                         >
                           <MapPin className="w-5 h-5 mr-1.5 inline" />
                           {item?.CountryName}
