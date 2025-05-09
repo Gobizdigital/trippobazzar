@@ -28,7 +28,7 @@ export default function ViewAndAddAllState({
     if (allStateData) {
       setFilteredStates(
         allStateData.filter(state => 
-          state.StateName.toLowerCase().includes(searchTerm.toLowerCase())
+          state?.StateName.toLowerCase().includes(searchTerm.toLowerCase())
         )
       )
     }
