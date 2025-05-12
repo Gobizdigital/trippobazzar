@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import CompanyLogo from "../../svgs/CompanyLogo";
 import { socialMediaData } from "../../utils/SocialMediaData";
 import TransitionLink from "../../utils/TransitionLink";

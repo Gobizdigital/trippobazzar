@@ -1,95 +1,142 @@
-// src/components/Navbar.jsx
+"use client"
 
-import { useEffect, useRef, useState } from "react";
-import { FaSearch } from "react-icons/fa"; // Importing icons
-import HamburgerSvg from "../../../svgs/HamburgerSvg";
-import LargeDeviceSidebar from "./LargeDeviceSidebar";
-import SideHamBurgerMenu from "./SideHamBurgerMenu";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-
-import { IoIosArrowDown } from "react-icons/io";
-import MenuSvg from "../../../svgs/MenuSvg";
-
-import TransitionLink from "../../../utils/TransitionLink";
-import { Destination, NavbarData } from "./DestinationAccordionData";
-import HomeLogoSvg from "../../../svgs/HomeLogo";
+import { useEffect, useRef, useState } from "react"
+import { FaSearch } from "react-icons/fa"
+import HamburgerSvg from "../../../svgs/HamburgerSvg"
+import LargeDeviceSidebar from "./LargeDeviceSidebar"
+import SideHamBurgerMenu from "./SideHamBurgerMenu"
+import { Link, useLocation } from "react-router-dom"
+import useFetch from "../../../hooks/useFetch"
+import { IoIosArrowDown } from "react-icons/io"
+import MenuSvg from "../../../svgs/MenuSvg"
+import TransitionLink from "../../../utils/TransitionLink"
+import { NavbarData } from "./DestinationAccordionData"
+import HomeLogoSvg from "../../../svgs/HomeLogo"
 
 const Navbar = () => {
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const location = useLocation();
-  const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // New state for large device sidebar
-  const [userData, setUserData] = useState(null);
-  const downRef = useRef([]);
-  const navigate = useNavigate();
-  const toggleDestinations = (index) => {
-    setOpenDropdownIndex((prevIndex) => (prevIndex === index ? null : index));
-  };
+  const [isSearchVisible, setIsSearchVisible] = useState(false)
+  const location = useLocation()
+  const [openDropdownIndex, setOpenDropdownIndex] = useState(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [userData, setUserData] = useState(null)
+  const downRef = useRef([])
 
-  useEffect(() => {}, [openDropdownIndex]);
+  const toggleDestinations = (index) => {
+    setOpenDropdownIndex((prevIndex) => (prevIndex === index ? null : index))
+  }
+
+  // Fetch continent data from API
+  const { data } = useFetch(`https://trippo-bazzar-backend.vercel.app/api/continent/fields/query?fields=ContinentName,Countries`, false)
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+    setIsMenuOpen(!isMenuOpen)
+  }
+
   const hideMenu = () => {
-    setIsMenuOpen(false);
-  };
+    setIsMenuOpen(false)
+  }
+
   const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
+    setIsSidebarOpen((prev) => !prev)
+  }
+
   const closeSidebar = () => {
-    setIsSidebarOpen(false);
-  };
+    setIsSidebarOpen(false)
+  }
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 999px)");
+    const mediaQuery = window.matchMedia("(min-width: 999px)")
 
     const handleMediaQueryChange = (e) => {
       if (e.matches) {
-        hideMenu();
+        hideMenu()
       }
-    };
+    }
 
-    // Attach listener
-    mediaQuery.addEventListener("change", handleMediaQueryChange);
+    mediaQuery.addEventListener("change", handleMediaQueryChange)
 
     return () => {
-      mediaQuery.removeEventListener("change", handleMediaQueryChange);
-    };
-  }, [hideMenu]);
+      mediaQuery.removeEventListener("change", handleMediaQueryChange)
+    }
+  }, [])
 
   useEffect(() => {
-    const data = localStorage.getItem("userInfo");
+    const data = localStorage.getItem("userInfo")
     if (data) {
-      setUserData(JSON.parse(data));
+      setUserData(JSON.parse(data))
     }
-  }, []);
+  }, [])
+
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (
-        downRef.current &&
-        !Object.values(downRef.current).some(
-          (ref) => ref && ref.contains(e.target)
-        )
-      ) {
-        setOpenDropdownIndex(null); // Close any open dropdown
+      if (downRef.current && !Object.values(downRef.current).some((ref) => ref && ref.contains(e.target))) {
+        setOpenDropdownIndex(null)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside)
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
+  // Group continents and organize data for the dropdown
+  const organizeDestinationData = () => {
+    if (!data) return []
+
+    const continents = data
+    const result = []
+
+    // Find Asia continent to extract India
+    const asiaContinent = continents.find((cont) => cont.ContinentName === "Asia")
+
+    // Add India section if it exists
+    if (asiaContinent) {
+      const indiaCountry = asiaContinent.Countries.find((country) => country.CountryName === "India")
+      if (indiaCountry && indiaCountry.States && indiaCountry.States.length > 0) {
+        result.push({
+          region: "India",
+          items: indiaCountry.States.map((state) => ({
+            name: state.StateName,
+            path: `/destination/asia/India/${state.StateName}`,
+          })),
+        })
+      }
+    }
+
+    // Add other continents
+    continents.forEach((continent) => {
+      // Skip empty continents
+      if (!continent.Countries || continent.Countries.length === 0) return
+
+      // For Asia, exclude India as it's already handled
+      let countries = continent.Countries
+      if (continent.ContinentName === "Asia") {
+        countries = countries.filter((country) => country.CountryName !== "India")
+      }
+
+      if (countries.length > 0) {
+        result.push({
+          region: continent.ContinentName,
+          items: countries.map((country) => ({
+            name: country.CountryName,
+            path: `/destination/${continent.ContinentName}/${country.CountryName}`,
+          })),
+        })
+      }
+    })
+
+    return result
+  }
+
+  const destinationGroups = organizeDestinationData()
 
   return (
-    <div className="sticky top-0 z-100  max-w-[1920px] mx-auto">
-      <div className="z-30    border-b bg-white mx-auto">
-        <nav
-          className={`bg-white flex items-center justify-between py-4  relative w-[90%] emd:w-[95%] xlg:w-[90%] mx-auto`}
-        >
+    <div className="sticky top-0 z-100 max-w-[1920px] mx-auto">
+      <div className="z-30 border-b bg-white mx-auto">
+        <nav className="bg-white flex items-center justify-between py-4 relative w-[90%] emd:w-[95%] xlg:w-[90%] mx-auto">
           <div className="hidden emd:flex items-center gap-8 xlg:gap-10">
             {userData === null ? (
               <Link
@@ -115,56 +162,92 @@ const Navbar = () => {
                   <TransitionLink to="/destination" className="px-2 py-2">
                     Destinations
                   </TransitionLink>
-                  <IoIosArrowDown
-                    onClick={() => toggleDestinations("dest")}
-                    className="w-5 h-5 ml-2 text-med-green"
-                  />
+                  <IoIosArrowDown onClick={() => toggleDestinations("dest")} className="w-5 h-5 ml-2 text-med-green" />
                 </button>
 
+                {/* Compact Destinations Dropdown */}
                 <div
                   ref={(el) => (downRef.current["dest"] = el)}
                   style={{
-                    visibility:
-                      openDropdownIndex === "dest" ? "visible" : "hidden",
+                    visibility: openDropdownIndex === "dest" ? "visible" : "hidden",
                   }}
-                  className={`absolute z-20 w-max transition-opacity ease-in-out duration-300 left-0 mt-2 bg-white shadow-md border rounded-md ${
+                  className={`absolute z-20 transition-all ease-in-out duration-300 left-0 mt-2 w-[90vw] md:w-[95vw] lg:w-[90vw] max-w-[1200px] ${
                     openDropdownIndex === "dest"
-                      ? "opacity-100"
-                      : "opacity-0 pointer-events-none"
+                      ? "opacity-100 transform translate-y-0"
+                      : "opacity-0 pointer-events-none transform -translate-y-2"
                   }`}
                 >
-                  <div className="flex flex-row z-20 flex-wrap gap-4 p-2">
-                    {Destination.description.map((region, idx) => (
-                      <div key={idx} className="flex flex-col">
-                        <h3 className="text-sm font-semibold text-med-green uppercase mb-1 border-b-2 border-med-green">
-                          {region.region}
-                        </h3>
-                        <ul className="whitespace-nowrap">
-                          {region.destinations.map((destination, destIdx) => (
-                            <li
-                              key={destIdx}
-                              onClick={() => {
-                                setOpenDropdownIndex(null);
-                                let navigatePath;
-                                if (region.region === "India") {
-                                  navigatePath = `/destination/asia/${region.region}/${destination.name}`;
-                                } else if (region.region === "Australia") {
-                                  navigatePath = `/destination/ViewAll-Australia/${region.region}/${destination.name}`;
-                                } else {
-                                  navigatePath = `/destination/${region.region}/${destination.name}`;
-                                }
-
-                                navigate(navigatePath);
-                              }}
-                              className="py-1 text-sm cursor-pointer border-b-2 border-transparent hover:border-med-green transition-all duration-200"
-                            >
-                              {destination.name}
-                            </li>
-                          ))}
-                        </ul>
+                  {!destinationGroups || destinationGroups.length === 0 ? (
+                    // Skeleton loader when data is not available
+                    <div className="p-6 animate-pulse bg-white rounded-lg shadow-xl">
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6">
+                        {Array.from({ length: 7 }).map((_, idx) => (
+                          <div key={idx} className="flex flex-col space-y-3">
+                            <div className="h-5 w-24 bg-gray-200 rounded-md"></div>
+                            <div className="space-y-2">
+                              {Array.from({ length: 4 }).map((_, itemIdx) => (
+                                <div key={itemIdx} className="h-4 w-full bg-gray-100 rounded-md"></div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ) : (
+                    // Improved destinations dropdown
+                    <div className="p-6 bg-white rounded-lg shadow-xl border border-gray-100">
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6 max-h-[70vh] overflow-y-auto">
+                        {destinationGroups.map((group, idx) => (
+                          <div key={idx} className="flex flex-col">
+                            <h3 className="text-sm uppercase font-semibold text-[#02896F] border-b border-[#02896F] pb-2 mb-3">
+                              {group.region}
+                            </h3>
+                            <ul className="space-y-2">
+                              {group.items.map((item, itemIdx) => (
+                                <li key={itemIdx} className="group relative">
+                                  <Link
+                                    to={item.path}
+                                    className="text-sm text-gray-700 hover:text-[#02896F] transition-colors duration-200 flex items-center group-hover:translate-x-1 transform transition-transform duration-200"
+                                  >
+                                    <span className="opacity-0 group-hover:opacity-100 absolute -left-4 transition-opacity duration-200">
+                                      •
+                                    </span>
+                                    {item.name}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+
+                        {/* Fill remaining columns with empty divs if we have fewer than 7 groups */}
+                        {Array.from({
+                          length: Math.max(0, 7 - destinationGroups.length),
+                        }).map((_, idx) => (
+                          <div key={`empty-${idx}`} className="flex flex-col"></div>
+                        ))}
+                      </div>
+
+                      <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <p className="text-xs text-gray-500">Explore our curated destinations</p>
+                        <Link
+                          to="/destination"
+                          className="text-xs font-medium text-[#02896F] hover:underline flex items-center"
+                        >
+                          View all destinations
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-3 w-3 ml-1"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -175,18 +258,15 @@ const Navbar = () => {
                     className="flex text-sm uppercase justify-center items-center"
                   >
                     {item.title}
-                    <IoIosArrowDown className="w-5 h-5 ml-2 text-med-green " />
+                    <IoIosArrowDown className="w-5 h-5 ml-2 text-med-green" />
                   </button>
                   <div
                     ref={(el) => (downRef.current[idx] = el)}
                     style={{
-                      visibility:
-                        openDropdownIndex === idx ? "visible" : "hidden",
+                      visibility: openDropdownIndex === idx ? "visible" : "hidden",
                     }}
                     className={`absolute z-20 w-[160px] transition-opacity ease-in-out duration-300 left-0 mt-2 bg-white shadow-md border rounded-md ${
-                      openDropdownIndex === idx
-                        ? "opacity-100"
-                        : "opacity-0 pointer-events-none"
+                      openDropdownIndex === idx ? "opacity-100" : "opacity-0 pointer-events-none"
                     }`}
                   >
                     <ul className="p-2 whitespace-nowrap">
@@ -210,17 +290,17 @@ const Navbar = () => {
           <TransitionLink
             to="/"
             aria-label="Go to homepage"
-            className="flex-grow flex justify-start  emd:justify-center"
+            className="flex-grow flex justify-start emd:justify-center"
           >
             <HomeLogoSvg />
           </TransitionLink>
 
           {/* Right Side - Nav Links and Search Bar (visible on medium and larger screens) */}
-          <div className="hidden whitespace-nowrap  emd:flex items-center justify-center space-x-5 xlg:space-x-9">
+          <div className="hidden whitespace-nowrap emd:flex items-center justify-center space-x-5 xlg:space-x-9">
             <TransitionLink
-              className={`font-poppins text-[.8rem] font-normal relative inline-block transition duration-300 ease-in-out  ${
+              className={`font-poppins text-[.8rem] font-normal relative inline-block transition duration-300 ease-in-out ${
                 location.pathname === "/aboutus" ? "text-med-green" : ""
-              } hover:text-green-500 `}
+              } hover:text-green-500`}
               to={"/aboutus"}
             >
               ABOUT US
@@ -229,13 +309,13 @@ const Navbar = () => {
               to={"/traveltips"}
               className={`font-poppins text-[.8rem] font-normal
                 ${location.pathname === "/traveltips" ? "text-med-green" : ""}
-                relative inline-block transition duration-300 ease-in-out hover:text-green-500 `}
+                relative inline-block transition duration-300 ease-in-out hover:text-green-500`}
             >
               TRAVEL TIPS
             </TransitionLink>
             <TransitionLink
               to="/"
-              className="font-poppins text-[.8rem] font-normal relative inline-block transition duration-300 ease-in-out hover:text-green-500 "
+              className="font-poppins text-[.8rem] font-normal relative inline-block transition duration-300 ease-in-out hover:text-green-500"
             >
               OFFERS
             </TransitionLink>
@@ -243,10 +323,7 @@ const Navbar = () => {
             {/* Search Icon */}
             <div className="relative">
               <Link to={"/searchpage"} aria-label="Go to search page">
-                <button
-                  aria-label="Search"
-                  className="text-sm border-[1px] border-[#012831] rounded-full p-2"
-                >
+                <button aria-label="Search" className="text-sm border-[1px] border-[#012831] rounded-full p-2">
                   <FaSearch />
                 </button>
               </Link>
@@ -261,13 +338,9 @@ const Navbar = () => {
 
             {/* Book a Trip Button */}
             <TransitionLink to="/destination">
-              <button className="bg-med-green text-white text-[.8rem] px-4 h-9 rounded-md">
-                Book a Trip
-              </button>
+              <button className="bg-med-green text-white text-[.8rem] px-4 h-9 rounded-md">Book a Trip</button>
             </TransitionLink>
           </div>
-
-          {/* Mobile Menu Overlay */}
 
           {/* Mobile Menu Toggle Button (Hamburger Icon) */}
           <button
@@ -286,12 +359,9 @@ const Navbar = () => {
           isMenuOpen={isMenuOpen}
         />
       </div>
-      <LargeDeviceSidebar
-        isSidebarOpen={isSidebarOpen}
-        closeSidebar={closeSidebar}
-      />
+      <LargeDeviceSidebar isSidebarOpen={isSidebarOpen} closeSidebar={closeSidebar} />
     </div>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
