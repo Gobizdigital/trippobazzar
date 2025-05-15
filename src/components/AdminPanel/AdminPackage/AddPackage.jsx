@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react"
 import useFetch from "../../../../hooks/useFetch"
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css"
 
 const AddPackage = ({ addNew, setIsAddingPackage }) => {
   const { data: hotelData, loading } = useFetch(`https://trippo-bazzar-backend.vercel.app/api/hotel`)
@@ -42,6 +44,33 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
   const packageData = ["Food", "Hotel", "Car", "Explore", "Travel", "Visa"]
   const textareasRef = useRef([])
 
+  // Rich text editor modules/formats configuration
+  const quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ indent: "-1" }, { indent: "+1" }],
+      [{ color: [] }, { background: [] }],
+      ["link"],
+      ["clean"],
+    ],
+  }
+
+  const quillFormats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+    "bullet",
+    "indent",
+    "color",
+    "background",
+    "link",
+  ]
+
   // Validate form fields
   const validateForm = () => {
     const newErrors = {}
@@ -71,6 +100,22 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
   const handleChange = (e) => {
     const { name, value } = e.target
 
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }))
+
+    // Clear error when field is edited
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null,
+      })
+    }
+  }
+
+  // Handle rich text editor changes
+  const handleRichTextChange = (name, value) => {
     setData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -340,9 +385,7 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
 
   return (
     <div className="bg-gray-50 text-gray-900 min-h-screen">
-      <div className="container mx-auto  max-w-6xl">
-       
-
+      <div className="container mx-auto max-w-6xl">
         {/* Tabbed Navigation - Both Mobile and Desktop */}
         <div className="mb-6 border-b border-gray-200">
           <div className="flex overflow-x-auto space-x-2 pb-2 scrollbar-hide">
@@ -389,7 +432,7 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
                   {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title}</p>}
                 </div>
 
-                {/* Description */}
+                {/* Description - Regular textarea */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Description <span className="text-red-500">*</span>
@@ -897,60 +940,65 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Special Instructions</label>
-                  <textarea
-                    name="specialInstruction"
+                  <ReactQuill
+                    theme="snow"
                     value={data.specialInstruction}
-                    onChange={handleChange}
-                    ref={(el) => textareasRef.current.push(el)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                    onChange={(content) => handleRichTextChange("specialInstruction", content)}
+                    modules={quillModules}
+                    formats={quillFormats}
+                    className="bg-white rounded-lg"
                     placeholder="Enter any special instructions"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Conditions of Travel</label>
-                  <textarea
-                    name="conditionOfTravel"
+                  <ReactQuill
+                    theme="snow"
                     value={data.conditionOfTravel}
-                    onChange={handleChange}
-                    ref={(el) => textareasRef.current.push(el)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                    onChange={(content) => handleRichTextChange("conditionOfTravel", content)}
+                    modules={quillModules}
+                    formats={quillFormats}
+                    className="bg-white rounded-lg"
                     placeholder="Enter conditions of travel"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Things to Maintain</label>
-                  <textarea
-                    name="thingsToMaintain"
+                  <ReactQuill
+                    theme="snow"
                     value={data.thingsToMaintain}
-                    onChange={handleChange}
-                    ref={(el) => textareasRef.current.push(el)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                    onChange={(content) => handleRichTextChange("thingsToMaintain", content)}
+                    modules={quillModules}
+                    formats={quillFormats}
+                    className="bg-white rounded-lg"
                     placeholder="Enter things to maintain"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Policies</label>
-                  <textarea
-                    name="policies"
+                  <ReactQuill
+                    theme="snow"
                     value={data.policies}
-                    onChange={handleChange}
-                    ref={(el) => textareasRef.current.push(el)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                    onChange={(content) => handleRichTextChange("policies", content)}
+                    modules={quillModules}
+                    formats={quillFormats}
+                    className="bg-white rounded-lg"
                     placeholder="Enter policies"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Terms and Conditions</label>
-                  <textarea
-                    name="termsAndConditions"
+                  <ReactQuill
+                    theme="snow"
                     value={data.termsAndConditions}
-                    onChange={handleChange}
-                    ref={(el) => textareasRef.current.push(el)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                    onChange={(content) => handleRichTextChange("termsAndConditions", content)}
+                    modules={quillModules}
+                    formats={quillFormats}
+                    className="bg-white rounded-lg"
                     placeholder="Enter terms and conditions"
                   />
                 </div>

@@ -23,11 +23,20 @@ const Navbar = () => {
   const downRef = useRef([])
 
   const toggleDestinations = (index) => {
-    setOpenDropdownIndex((prevIndex) => (prevIndex === index ? null : index))
+    // If clicking the same dropdown that's already open, close it
+    if (openDropdownIndex === index) {
+      setOpenDropdownIndex(null)
+    } else {
+      // Otherwise, open the clicked dropdown
+      setOpenDropdownIndex(index)
+    }
   }
 
   // Fetch continent data from API
-  const { data } = useFetch(`https://trippo-bazzar-backend.vercel.app/api/continent/fields/query?fields=ContinentName,Countries`, false)
+  const { data } = useFetch(
+    `https://trippo-bazzar-backend.vercel.app/api/continent/fields/query?fields=ContinentName,Countries`,
+    false,
+  )
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -159,10 +168,16 @@ const Navbar = () => {
             <div className="flex flex-row whitespace-nowrap items-center justify-between gap-6">
               <div className="relative">
                 <button className="flex text-sm uppercase justify-center items-center">
-                  <TransitionLink to="/destination" className="px-2 py-2">
+                  <TransitionLink to="/destination" className="px-2 py-2" onClick={() => setOpenDropdownIndex(null)}>
                     Destinations
                   </TransitionLink>
-                  <IoIosArrowDown onClick={() => toggleDestinations("dest")} className="w-5 h-5 ml-2 text-med-green" />
+                  <IoIosArrowDown
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      toggleDestinations("dest")
+                    }}
+                    className="w-5 h-5 ml-2 text-med-green"
+                  />
                 </button>
 
                 {/* Compact Destinations Dropdown */}
@@ -179,72 +194,85 @@ const Navbar = () => {
                 >
                   {!destinationGroups || destinationGroups.length === 0 ? (
                     // Skeleton loader when data is not available
-                    <div className="p-6 animate-pulse bg-white rounded-lg shadow-xl">
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6">
-                        {Array.from({ length: 7 }).map((_, idx) => (
-                          <div key={idx} className="flex flex-col space-y-3">
-                            <div className="h-5 w-24 bg-gray-200 rounded-md"></div>
-                            <div className="space-y-2">
-                              {Array.from({ length: 4 }).map((_, itemIdx) => (
-                                <div key={itemIdx} className="h-4 w-full bg-gray-100 rounded-md"></div>
-                              ))}
+                    <div className="absolute z-20 transition-all duration-200 ease-in-out left-0 mt-2 w-auto max-w-[800px] opacity-100 transform translate-y-0">
+                      <div className="p-4 bg-white rounded-md shadow-md border border-gray-200">
+                        <div className="flex flex-wrap gap-4 max-h-[400px] overflow-y-auto">
+                          {Array.from({ length: 4 }).map((_, groupIdx) => (
+                            <div key={groupIdx} className="min-w-[140px] max-w-[180px]">
+                              <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                              <ul className="space-y-2">
+                                {Array.from({ length: 6 }).map((_, itemIdx) => (
+                                  <li key={itemIdx} className="h-3 bg-gray-200 rounded w-full"></li>
+                                ))}
+                              </ul>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+
+                        <div className="mt-3 pt-2 border-t border-gray-100 flex justify-between items-center">
+                          <div className="h-3 bg-gray-200 rounded w-32"></div>
+                          <div className="h-3 bg-gray-200 rounded w-20"></div>
+                        </div>
                       </div>
                     </div>
                   ) : (
                     // Improved destinations dropdown
-                    <div className="p-6 bg-white rounded-lg shadow-xl border border-gray-100">
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6 max-h-[70vh] overflow-y-auto">
-                        {destinationGroups.map((group, idx) => (
-                          <div key={idx} className="flex flex-col">
-                            <h3 className="text-sm uppercase font-semibold text-[#02896F] border-b border-[#02896F] pb-2 mb-3">
-                              {group.region}
-                            </h3>
-                            <ul className="space-y-2">
-                              {group.items.map((item, itemIdx) => (
-                                <li key={itemIdx} className="group relative">
-                                  <Link
-                                    to={item.path}
-                                    className="text-sm text-gray-700 hover:text-[#02896F] transition-colors duration-200 flex items-center group-hover:translate-x-1 transform transition-transform duration-200"
-                                  >
-                                    <span className="opacity-0 group-hover:opacity-100 absolute -left-4 transition-opacity duration-200">
-                                      •
-                                    </span>
-                                    {item.name}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
+                    <div
+                      className={`absolute z-20 transition-all duration-200 ease-in-out left-0 mt-2 w-auto max-w-[800px] ${
+                        openDropdownIndex === "dest"
+                          ? "opacity-100 transform translate-y-0"
+                          : "opacity-0 pointer-events-none transform -translate-y-2"
+                      }`}
+                    >
+                      <div className="p-4 bg-white rounded-md shadow-md border border-gray-200">
+                        <div className="flex flex-wrap gap-4 max-h-[400px] overflow-y-auto">
+                          {destinationGroups.map((group, idx) => (
+                            <div key={idx} className="min-w-[140px] max-w-[180px]">
+                              <h3 className="text-xs uppercase font-semibold text-[#02896F] border-b border-[#02896F] pb-1 mb-2">
+                                {group.region}
+                              </h3>
+                              <ul className="space-y-1">
+                                {group.items.slice(0, 6).map((item, itemIdx) => (
+                                  <li key={itemIdx} className="group">
+                                    <Link
+                                      to={item.path}
+                                      onClick={() => setOpenDropdownIndex(null)}
+                                      className="text-xs text-gray-700 hover:text-[#02896F] transition-colors duration-200 flex items-center"
+                                    >
+                                      <span className="opacity-0 group-hover:opacity-100 mr-1 transition-opacity duration-200">
+                                        •
+                                      </span>
+                                      {item.name}
+                                    </Link>
+                                  </li>
+                                ))}
+                                {group.items.length > 6 && (
+                                  <li className="text-xs text-[#02896F] italic">+{group.items.length - 6} more</li>
+                                )}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
 
-                        {/* Fill remaining columns with empty divs if we have fewer than 7 groups */}
-                        {Array.from({
-                          length: Math.max(0, 7 - destinationGroups.length),
-                        }).map((_, idx) => (
-                          <div key={`empty-${idx}`} className="flex flex-col"></div>
-                        ))}
-                      </div>
-
-                      <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
-                        <p className="text-xs text-gray-500">Explore our curated destinations</p>
-                        <Link
-                          to="/destination"
-                          className="text-xs font-medium text-[#02896F] hover:underline flex items-center"
-                        >
-                          View all destinations
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-3 w-3 ml-1"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                        <div className="mt-3 pt-2 border-t border-gray-100 flex justify-between items-center">
+                          <p className="text-xs text-gray-500">Explore destinations</p>
+                          <Link
+                            to="/destination"
+                            onClick={() => setOpenDropdownIndex(null)}
+                            className="text-xs font-medium text-[#02896F] hover:underline flex items-center"
                           >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </Link>
+                            View all
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-3 w-3 ml-1"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -273,7 +301,10 @@ const Navbar = () => {
                       {item.description.map((liItems, liIdx) => (
                         <li
                           key={liIdx}
-                          onClick={() => console.log("Clicked")}
+                          onClick={() => {
+                            console.log("Clicked")
+                            setOpenDropdownIndex(null)
+                          }}
                           className="py-1 text-sm cursor-pointer border-b-2 border-transparent hover:border-med-green transition-all duration-200"
                         >
                           {liItems.name}

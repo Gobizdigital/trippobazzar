@@ -6,7 +6,7 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
   const [data, setData] = useState(
     initialData || {
       hotelName: "",
-      hotelPrice: "",
+      // hotelPrice: "",
       hotelRating: "",
       hotelPhotoUrl: [],
       hotelType: "",
@@ -38,7 +38,7 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
       setEditPackage(false)
       setData({
         hotelName: "",
-        hotelPrice: "",
+        // hotelPrice: "",
         hotelRating: "",
         hotelPhotoUrl: [],
         hotelType: "",
@@ -88,7 +88,7 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
               <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-600">Rating (0-5)</label>
             </div>
 
-            <div className="relative">
+            {/* <div className="relative">
               <input
                 type="number"
                 name="hotelPrice"
@@ -99,7 +99,7 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
                 min="0"
               />
               <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-600">Price (₹)</label>
-            </div>
+            </div> */}
           </div>
         </section>
 

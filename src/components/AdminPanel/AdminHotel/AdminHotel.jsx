@@ -163,7 +163,7 @@ export default function AdminHotel() {
                               {item?.hotelName}
                             </h3>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="text-sm text-gray-500">₹{item?.hotelPrice}</span>
+                              {/* <span className="text-sm text-gray-500">₹{item?.hotelPrice}</span> */}
                               {item?.hotelRating && (
                                 <div className="flex items-center bg-yellow-100 px-2 py-0.5 rounded text-sm">
                                   <IoIosStar className="text-yellow-500 mr-1" />
@@ -268,7 +268,7 @@ export default function AdminHotel() {
                     <h1 className="text-3xl font-bold text-gray-800">{data?.hotelName}</h1>
 
                     <div className="flex flex-wrap items-center gap-4 mt-3">
-                      {data?.hotelPrice && (
+                      {/* {data?.hotelPrice && (
                         <div className="flex items-center gap-1">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -286,7 +286,7 @@ export default function AdminHotel() {
                           </svg>
                           <span className="text-lg font-semibold text-green-600">₹{data?.hotelPrice}</span>
                         </div>
-                      )}
+                      )} */}
 
                       {data?.hotelRating && (
                         <div className="flex items-center gap-1 bg-yellow-50 px-3 py-1 rounded-full">

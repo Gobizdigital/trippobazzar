@@ -5,7 +5,7 @@ import { useState } from "react"
 export default function AddHotel({ setIsAddingPackage, addNew }) {
   const [data, setData] = useState({
     hotelName: "",
-    hotelPrice: "",
+    // hotelPrice: "",
     hotelRating: "",
     hotelPhotoUrl: [],
     hotelType: "",
@@ -36,7 +36,7 @@ export default function AddHotel({ setIsAddingPackage, addNew }) {
       console.log(data)
       setData({
         hotelName: "",
-        hotelPrice: "",
+        // hotelPrice: "",
         hotelRating: "",
         hotelPhotoUrl: [],
         hotelType: "",
@@ -81,7 +81,7 @@ export default function AddHotel({ setIsAddingPackage, addNew }) {
               <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-600">Rating (0-5)</label>
             </div>
 
-            <div className="relative">
+            {/* <div className="relative">
               <input
                 type="number"
                 name="hotelPrice"
@@ -92,7 +92,7 @@ export default function AddHotel({ setIsAddingPackage, addNew }) {
                 min="0"
               />
               <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-600">Price (₹)</label>
-            </div>
+            </div> */}
           </div>
         </section>
 

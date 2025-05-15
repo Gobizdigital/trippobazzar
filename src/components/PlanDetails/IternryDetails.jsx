@@ -10,10 +10,10 @@ import CarosalImageModal from "../../../utils/CarosalImageModal";
 import { useNavigate, useParams } from "react-router-dom";
 import { useBooking } from "../../../context/BookingContext";
 import { IoCheckmarkCircle } from "react-icons/io5";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ChevronDown, Check } from "lucide-react";
 
 function IternryDetails({ data }) {
-  const { id: pkdid } = useParams();
+  const { id: pkdid, country } = useParams();
   const {
     searchData,
     setSearchData,
@@ -25,7 +25,6 @@ function IternryDetails({ data }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Plan Details");
   const { setBookingDetails } = useBooking();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [fadeState, setFadeState] = useState("fadeIn");
   const [imgmodal, setImgModal] = useState({
     isOpen: false,
@@ -45,6 +44,9 @@ function IternryDetails({ data }) {
     maxDiscount: 0,
   });
   const [validationError, setValidationError] = useState("");
+  const [isPricingPanelOpen, setIsPricingPanelOpen] = useState(false);
+  const [selectedPackageId, setSelectedPackageId] = useState(null);
+  const [selectedPackageType, setSelectedPackageType] = useState(null);
 
   const [additionalServices, setAdditionalServices] = useState({
     extraBed: false,
@@ -53,18 +55,14 @@ function IternryDetails({ data }) {
   });
 
   const pricingOptions =
-    data?.pricing?.map((item) => ({
+    data?.pricing?.map((item, index) => ({
+      id: index, // Add unique ID to each option
       label: `${item.packageType} (${item.guestCount} Guests)`,
       value: item.basePrice,
       guestCount: item.guestCount,
       perPerson: item.perPerson,
+      packageType: item.packageType,
     })) || [];
-
-  const toggleDropdown = (id) => {
-    if (selectedHotel.length > 0) {
-      setIsDropdownOpen((prevId) => (prevId === id ? null : id));
-    }
-  };
 
   const handleCoupon = (coupon) => {
     setSelectedCoupon(
@@ -116,84 +114,6 @@ function IternryDetails({ data }) {
     setValidationError("");
   };
 
-  const handleHotelChangeInput = (e) => {
-    e.stopPropagation();
-    const { name, value } = e.target;
-
-    setCustomizeHotel((prev) => ({
-      ...prev,
-      [name]: Math.max(name === "children" ? 0 : 1, value), // Ensure at least 0 for children and 1 for others
-    }));
-  };
-
-  const handleRoomChange = (
-    hdetail,
-    newRoomCount,
-    newAdultsCount,
-    newChildrenCount,
-    newExtraBed,
-    newUnderAge5
-  ) => {
-    setSelectedHotel((prevSelected) =>
-      prevSelected.map((item) =>
-        item._id === hdetail._id
-          ? {
-              ...item,
-              room: newRoomCount,
-              adults: newAdultsCount,
-              children: newChildrenCount,
-              extraBed: newExtraBed,
-              childrenAgeUnder5: newUnderAge5,
-              hotelPrice: (() => {
-                let price = hdetail.hotelPrice * newRoomCount;
-
-                if (newAdultsCount > 1) {
-                  price +=
-                    (newAdultsCount - 1) *
-                    hdetail.hotelPrice *
-                    0.85 *
-                    newRoomCount;
-                }
-
-                // Add price for children if newChildrenCount > 0
-                if (newChildrenCount > 0) {
-                  if (
-                    newChildrenCount > 0 &&
-                    !customizeHotel.childrenAgeUnder5 &&
-                    !customizeHotel.extraBed
-                  ) {
-                    price += newChildrenCount * hdetail.hotelPrice * 0.5; // Charge for children
-                  } else if (
-                    newChildrenCount > 0 &&
-                    !customizeHotel.childrenAgeUnder5 &&
-                    customizeHotel.extraBed
-                  ) {
-                    price += newChildrenCount * hdetail.hotelPrice * 0.75;
-                  } else {
-                    console.log("Children under 5 are complimentary.");
-                  }
-                }
-
-                return price;
-              })(), // Calculate hotelPrice based on the conditions
-            }
-          : item
-      )
-    );
-  };
-
-  const handleApplyClick = (hdetail) => {
-    handleRoomChange(
-      hdetail,
-      customizeHotel.rooms,
-      customizeHotel.adults,
-      customizeHotel.children,
-      customizeHotel.extraBed,
-      customizeHotel.childrenAgeUnder5
-    );
-    setIsDropdownOpen(null);
-  };
-
   const handleTabChange = (tab) => {
     setFadeState("fadeOut");
     setTimeout(() => {
@@ -203,10 +123,6 @@ function IternryDetails({ data }) {
   };
 
   const calculateDiscountedPrice = () => {
-    const totalHotelPrice = selectedHotel.reduce((total, hotel) => {
-      return total + (hotel.hotelPrice || 0);
-    }, 0);
-
     // Ensure selectedPricing is applied before adding extra charges
     let mainPrice = selectedPricing
       ? selectedPricing * searchData.guests
@@ -224,12 +140,12 @@ function IternryDetails({ data }) {
 
       const cnbCharge = additionalServices?.cnb ? selectedPackage?.CNB || 0 : 0;
 
-      const cwbCharge = additionalServices?.cwb ? selectedPackage?.CWB || 0 : 0; // Add this line
+      const cwbCharge = additionalServices?.cwb ? selectedPackage?.CWB || 0 : 0;
 
-      mainPrice += extraBedCharge + cnbCharge + cwbCharge; // Update this line
+      mainPrice += extraBedCharge + cnbCharge + cwbCharge;
     }
 
-    const totalCost = mainPrice + totalHotelPrice;
+    const totalCost = mainPrice;
 
     // Apply discount if coupon is selected
     if (!selectedCoupon.id) return totalCost;
@@ -245,18 +161,15 @@ function IternryDetails({ data }) {
   const openModal = (images) => {
     setImgModal((prev) => ({ ...prev, isOpen: true, img: images }));
   };
+
   const closeModal = () => {
     setImgModal((prev) => ({ ...prev, isOpen: false, img: [] }));
   };
 
-  const handleDropdownClick = (e) => {
-    e.stopPropagation();
-  };
-
   const handleToggle = (service) => {
     setAdditionalServices((prev) => ({
-      ...(prev && typeof prev === "object" ? prev : {}), // Ensure prev is an object
-      [service]: !prev?.[service], // Safely access prev[service]
+      ...(prev && typeof prev === "object" ? prev : {}),
+      [service]: !prev?.[service],
     }));
   };
 
@@ -308,14 +221,71 @@ function IternryDetails({ data }) {
       coupon: selectedCoupon,
       services: additionalServices ? additionalServices : null,
       selectedPricing: selectedPricing ? selectedPricing : null,
+      IsDomesticPackage: country === "India" ? true : false,
     };
 
     setBookingDetails(requestData);
     navigate("/destination/confirmation-page");
   };
 
+  const handleSelectPricing = (option) => {
+    setSelectedPricing(option.value);
+    setSelectedPackageId(option.id);
+    setSelectedPricePerPerson(!!option.perPerson);
+    setSelectedPackageType(option.packageType); // Add this line
+    setSearchData((prev) => ({
+      ...prev,
+      guests: option.guestCount || 1,
+    }));
+    setIsPricingPanelOpen(false);
+  };
+
+  // Get unique guest counts
+  const getUniqueGuestCounts = () => {
+    const guestCounts = pricingOptions.map((option) => option.guestCount);
+    return [...new Set(guestCounts)].sort((a, b) => a - b);
+  };
+
+  // Filter options by guest count
+  const getFilteredOptions = (guestCount) => {
+    return pricingOptions.filter((option) => option.guestCount === guestCount);
+  };
+
+  // Get selected pricing label
+  const getSelectedPricingLabel = () => {
+    if (!selectedPricing) return "Select Package";
+
+    const option = pricingOptions.find((opt) => opt.id === selectedPackageId);
+    if (!option) return "Select Package";
+
+    return `${option.packageType} (${option.guestCount} Guests) - ₹${option.value}`;
+  };
+
+  // Handle click outside to close panel
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const panel = document.getElementById("pricing-panel");
+      const button = document.getElementById("pricing-button");
+
+      if (
+        isPricingPanelOpen &&
+        panel &&
+        !panel.contains(event.target) &&
+        !button.contains(event.target)
+      ) {
+        setIsPricingPanelOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isPricingPanelOpen]);
+
   useEffect(() => {
     setSelectedPricing(null);
+    setSelectedPackageId(null);
   }, [pkdid]);
 
   // Set pricing when `data` is available
@@ -329,7 +299,9 @@ function IternryDetails({ data }) {
       const defaultPricing = data.pricing[0]; // Select the first available pricing
 
       setSelectedPricing(defaultPricing.basePrice || 0);
+      setSelectedPackageId(0); // First option has id 0
       setSelectedPricePerPerson(!!defaultPricing.perPerson);
+      setSelectedPackageType(defaultPricing.packageType); // Add this line
       setSearchData((prev) => ({
         ...prev,
         guests: defaultPricing.guestCount || 1,
@@ -342,20 +314,18 @@ function IternryDetails({ data }) {
       {/* Left Side */}
       <div className="w-full lg:w-4/5 p-4 ">
         {/* Navigation */}
-        <nav className="flex w-full gap-4 em:gap-10 border-[.5px] px-4 em:px-0 scrollbar-hide overflow-x-auto rounded-lg justify-start em:justify-center py-4 whitespace-nowrap  mb-4 text-center text-sm sm:text-base">
-          {["Plan Details", "Hotel", "SightSeeing", "Policies"].map(
-            (tab, tabIdx) => (
-              <li
-                key={tabIdx}
-                className={`cursor-pointer list-none ${
-                  activeTab === tab ? "text-green-500 font-semibold" : ""
-                }`}
-                onClick={() => handleTabChange(tab)}
-              >
-                {tab}
-              </li>
-            )
-          )}
+        <nav className="flex w-full gap-4 em:gap-10 border-[.5px] px-4 em:px-0 scrollbar-hide overflow-x-auto rounded-lg justify-start em:justify-center py-4 whitespace-nowrap mb-4 text-center text-sm sm:text-base">
+          {["Plan Details", "Hotel", "Policies"].map((tab, tabIdx) => (
+            <li
+              key={tabIdx}
+              className={`cursor-pointer list-none ${
+                activeTab === tab ? "text-green-500 font-semibold" : ""
+              }`}
+              onClick={() => handleTabChange(tab)}
+            >
+              {tab}
+            </li>
+          ))}
         </nav>
 
         {/* Dynamic Content */}
@@ -417,112 +387,131 @@ function IternryDetails({ data }) {
                 </div>
               )}
               <HotelsPlan
-                customizeHotel={customizeHotel}
-                handleDropdownClick={handleDropdownClick}
-                toggleDropdown={toggleDropdown}
-                openModal={openModal}
                 handleHotelArray={handleHotelArray}
                 selectedHotel={selectedHotel}
                 data={data}
-                setCustomizeHotel={setCustomizeHotel}
-                isDropdownOpen={isDropdownOpen}
-                handleApplyClick={handleApplyClick}
-                handleHotelChangeInput={handleHotelChangeInput}
+                openModal={openModal}
+                selectedPackageType={selectedPackageType}
               />
             </>
-          )}
-
-          {activeTab === "SightSeeing" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {[...Array(4)].map((_, index) => (
-                <img
-                  key={index}
-                  src="/src/assets/oneContinent.png"
-                  alt={`Hotel ${index + 1}`}
-                  className="rounded-md sm:mr-4"
-                />
-              ))}
-            </div>
           )}
 
           {activeTab === "Policies" && <Policies data={data?.policies} />}
         </div>
       </div>
+
       {/* Right Side */}
       <div className="w-full lg:w-1/3 p-4">
         <div className="lg:sticky top-[150px] z-20">
           <div className="space-y-4 mb-4">
-            <div className="border p-6 rounded-3xl relative bg-white text-sm sm:text-base">
+            <div className="border p-6 rounded-3xl relative bg-white text-sm sm:text-base shadow-sm">
               <p className="font-semibold text-lg mb-2 mt-7">Payment Details</p>
 
-              {/* Pricing Selection Dropdown */}
+              {/* Pricing Selection */}
               {data?.pricing && (
-                <div className="mb-3">
-                  <label className="block text-gray-700 font-semibold">
+                <div className="mb-3 relative">
+                  <label className="block text-gray-700 font-semibold mb-2">
                     Select Pricing
                   </label>
-                  <select
-                    className="w-full border p-2 rounded-lg"
-                    value={selectedPricing !== null ? selectedPricing : ""}
-                    onChange={(e) => {
-                      const selectedValue = e.target.value
-                        ? Number(e.target.value)
-                        : null;
-
-                      if (selectedValue === null) {
-                        setSelectedPricePerPerson(false);
-                        setSelectedPricing(null);
-                        setAdditionalServices(null);
-                        setSearchData((prev) => ({
-                          ...prev,
-                          guests: 1, // Default back to original guests
-                        }));
-                      } else {
-                        const selectedOption = pricingOptions.find(
-                          (option) => option.value === selectedValue
-                        );
-
-                        if (selectedOption) {
-                          setSelectedPricePerPerson(
-                            selectedOption.perPerson ? true : false
-                          );
-                          setSelectedPricing(selectedOption.value);
-                          setSearchData((prev) => ({
-                            ...prev,
-                            guests: selectedOption.guestCount || 1,
-                          }));
-                        }
-                      }
-                    }}
+                  <button
+                    id="pricing-button"
+                    onClick={() => setIsPricingPanelOpen(!isPricingPanelOpen)}
+                    className="w-full border p-3 rounded-lg bg-white text-left flex justify-between items-center hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                   >
-                    <option value="">Select Package</option>
-                    {pricingOptions.map((option) => (
-                      <option key={option.label} value={option.value}>
-                        {option.label} - ₹{option.value} per person
-                      </option>
-                    ))}
-                  </select>
+                    <span className="text-gray-800 truncate">
+                      {getSelectedPricingLabel()}
+                    </span>
+                    <ChevronDown
+                      className={`h-5 w-5 text-gray-500 transition-transform duration-200 ${
+                        isPricingPanelOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {/* Pricing Panel */}
+                  {isPricingPanelOpen && (
+                    <div
+                      id="pricing-panel"
+                      className="absolute top-full left-0 right-0 mt-1 bg-white border rounded-lg shadow-lg z-50 max-h-[70vh] overflow-y-auto animate-fadeIn"
+                    >
+                      {getUniqueGuestCounts().map((guestCount) => (
+                        <div
+                          key={guestCount}
+                          className="border-b last:border-b-0"
+                        >
+                          <div className="px-4 py-2 bg-gray-50 font-medium text-gray-700 sticky top-0 z-10">
+                            {guestCount} Guests
+                          </div>
+                          {getFilteredOptions(guestCount).map((option) => (
+                            <div
+                              key={option.id}
+                              onClick={() => handleSelectPricing(option)}
+                              className={`px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-between ${
+                                selectedPackageId === option.id
+                                  ? "bg-green-50"
+                                  : ""
+                              }`}
+                            >
+                              <div className="flex-1">
+                                <div className="flex justify-between items-center">
+                                  <span
+                                    className={`${
+                                      selectedPackageId === option.id
+                                        ? "font-medium text-green-600"
+                                        : "font-medium"
+                                    }`}
+                                  >
+                                    {option.packageType}
+                                  </span>
+                                  <span className="text-green-600 font-semibold">
+                                    ₹{option.value}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-gray-500">
+                                  per person
+                                </p>
+                              </div>
+                              {selectedPackageId === option.id && (
+                                <div className="ml-2 flex-shrink-0">
+                                  <Check className="h-5 w-5 text-green-600" />
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                      <div className="p-3 bg-gray-50 border-t sticky bottom-0">
+                        <button
+                          onClick={() => setIsPricingPanelOpen(false)}
+                          className="w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Extra Bed & CNB Checkboxes */}
-
               {selectedPricing && (
-                <div className="mt-4">
+                <div className="mt-4 space-y-2">
                   {data?.pricing?.find((p) => p.basePrice === selectedPricing)
                     ?.extraBedCharge > 0 && (
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
                       <input
                         type="checkbox"
                         checked={additionalServices?.extraBed}
                         onChange={() => handleToggle("extraBed")}
-                        className="w-4 h-4"
+                        className="w-4 h-4 accent-green-600"
                       />
-                      Extra Bed (+ ₹
-                      {data?.pricing?.find(
-                        (p) => p.basePrice === selectedPricing
-                      )?.extraBedCharge || 0}
-                      )
+                      <span className="flex-1">
+                        Extra Bed (+ ₹
+                        {data?.pricing?.find(
+                          (p) => p.basePrice === selectedPricing
+                        )?.extraBedCharge || 0}
+                        )
+                      </span>
                       {additionalServices?.extraBed && (
                         <IoCheckmarkCircle className="text-green-500 text-lg" />
                       )}
@@ -531,18 +520,20 @@ function IternryDetails({ data }) {
 
                   {data?.pricing?.find((p) => p.basePrice === selectedPricing)
                     ?.CNB > 0 && (
-                    <label className="flex items-center gap-2 cursor-pointer mt-2">
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
                       <input
                         type="checkbox"
                         checked={additionalServices?.cnb}
                         onChange={() => handleToggle("cnb")}
-                        className="w-4 h-4"
+                        className="w-4 h-4 accent-green-600"
                       />
-                      Child Without Bed (CNB) (+ ₹
-                      {data?.pricing?.find(
-                        (p) => p.basePrice === selectedPricing
-                      )?.CNB || 0}
-                      )
+                      <span className="flex-1">
+                        Child Without Bed (CNB) (+ ₹
+                        {data?.pricing?.find(
+                          (p) => p.basePrice === selectedPricing
+                        )?.CNB || 0}
+                        )
+                      </span>
                       {additionalServices?.cnb && (
                         <IoCheckmarkCircle className="text-green-500 text-lg" />
                       )}
@@ -551,18 +542,20 @@ function IternryDetails({ data }) {
 
                   {data?.pricing?.find((p) => p.basePrice === selectedPricing)
                     ?.CWB > 0 && (
-                    <label className="flex items-center gap-2 cursor-pointer mt-2">
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
                       <input
                         type="checkbox"
                         checked={additionalServices?.cwb}
                         onChange={() => handleToggle("cwb")}
-                        className="w-4 h-4"
+                        className="w-4 h-4 accent-green-600"
                       />
-                      Child With Bed (CWB) (+ ₹
-                      {data?.pricing?.find(
-                        (p) => p.basePrice === selectedPricing
-                      )?.CWB || 0}
-                      )
+                      <span className="flex-1">
+                        Child With Bed (CWB) (+ ₹
+                        {data?.pricing?.find(
+                          (p) => p.basePrice === selectedPricing
+                        )?.CWB || 0}
+                        )
+                      </span>
                       {additionalServices?.cwb && (
                         <IoCheckmarkCircle className="text-green-500 text-lg" />
                       )}
@@ -572,39 +565,44 @@ function IternryDetails({ data }) {
               )}
 
               {/* Pricing Details */}
-              <p className="text-gray-500 mt-4">
-                Base Price: ₹
-                <span className="line-through">
-                  {selectedPricing
-                    ? selectedPricing * searchData.guests * 1.25
-                    : data?.price
-                    ? data.price * searchData.guests * 1.25
+              <div className="mt-6 p-3 bg-gray-50 rounded-lg">
+                <p className="text-gray-500">
+                  Base Price: ₹
+                  <span className="line-through">
+                    {selectedPricing
+                      ? selectedPricing * searchData.guests * 1.25
+                      : data?.price
+                      ? data.price * searchData.guests * 1.25
+                      : "N/A"}
+                  </span>
+                </p>
+
+                <p className="text-green-600 font-semibold mt-1">
+                  {selectedPricing || data?.price
+                    ? searchData.guests === 1
+                      ? `₹ ${calculateDiscountedPrice()} /- per person`
+                      : `₹ ${calculateDiscountedPrice()} /- total pack price`
                     : "N/A"}
-                </span>
-              </p>
+                </p>
 
-              <p className="text-med-green font-semibold">
-                {selectedPricing || data?.price
-                  ? searchData.guests === 1
-                    ? `₹ ${calculateDiscountedPrice()} /- per person`
-                    : `₹ ${calculateDiscountedPrice()} /- total pack price`
-                  : "N/A"}
-              </p>
+                <p className="border rounded-xl mb-3 text-blue-500 flex justify-center items-center gap-4 py-1 text-xs mt-3 bg-white">
+                  <span className="text-2xl">🎉</span> No Additional or Hidden
+                  Costs!!!
+                </p>
 
-              <p className="border rounded-xl mb-3 text-blue-500 flex justify-center items-center gap-4 py-1 text-[.7rem] mt-2">
-                <span className="text-2xl">🎉</span> No Additional or Hidden
-                Costs!!!
-              </p>
+                <div className="border-b my-3 border-gray-200 w-full"></div>
 
-              <div className="border-b mb-3 border-[#A4B6B9] w-full"></div>
-
-              <p className="mb-4 cursor-pointer font-semibold gap-2 flex items-start justify-between">
-                Total Payable: ₹ {calculateDiscountedPrice()}
-              </p>
+                <p className="font-semibold gap-2 flex items-start justify-between">
+                  <span>Total Payable:</span>{" "}
+                  <span className="text-green-600">
+                    ₹ {calculateDiscountedPrice()}
+                  </span>
+                </p>
+              </div>
 
               <button
                 onClick={handleSubmit}
-                className="bg-med-green text-lg cursor-pointer text-white inline-flex py-3 px-4 rounded-xl w-full justify-center"
+                className="bg-green-600 text-lg cursor-pointer text-white inline-flex py-3 px-4 rounded-xl w-full justify-center mt-4 hover:bg-green-700 transition-colors font-medium"
               >
                 Confirm and Book
               </button>
@@ -619,44 +617,46 @@ function IternryDetails({ data }) {
                 )}
             </div>
           </div>
-          <div className="bg-[#EDF7F9] rounded-3xl border-[.5px] w-full p-6 ">
-            <div className="flex flex-col border-gray-400 rounded-xl border-[.6px] px-4 py-3 sm:flex-row items-center gap-0 sm:gap-2 mb-4">
+
+          {/* Coupon Section */}
+          <div className="bg-[#EDF7F9] rounded-3xl border-[.5px] w-full p-6 shadow-sm">
+            <div className="flex flex-col border-gray-400 rounded-xl border-[.6px] px-4 py-3 sm:flex-row items-center gap-0 sm:gap-2 mb-4 bg-white">
               <input
                 type="text"
                 placeholder="Have a Coupon?"
-                className="flex-1 w-full text-base bg-transparent rounded text-center sm:text-left"
+                className="flex-1 w-full text-base bg-transparent rounded text-center sm:text-left focus:outline-none"
               />
               <button
                 className={`text-green-500 ${
                   selectedCoupon.id ? "text-opacity-65" : "text-opacity-100"
-                } px-0 text-base py-1 rounded`}
-                disabled={selectedCoupon}
+                } px-0 text-base py-1 rounded hover:text-green-600 transition-colors`}
+                disabled={selectedCoupon.id}
               >
                 {selectedCoupon.id ? "Applied" : "Apply"}
               </button>
             </div>
 
-            <p className="text-center text-gray-500">OR</p>
+            <p className="text-center text-gray-500 my-3">OR</p>
             <div className="max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-              {userDetails?.Coupons.length > 0 ? (
+              {userDetails?.Coupons?.length > 0 ? (
                 userDetails.Coupons.map((item) => {
                   return (
                     <div
                       key={item._id}
                       onClick={() => handleCoupon(item)}
                       className={`flex items-start cursor-pointer gap-3 bg-white mt-4 
-                    ${
-                      selectedCoupon.id === item._id
-                        ? "border-med-green"
-                        : "border-white"
-                    } 
-                    ${
-                      selectedCoupon.id !== null &&
-                      selectedCoupon.id !== item._id
-                        ? "hover:border-[#e5e7eb]"
-                        : "hover:border-med-green"
-                    } 
-                    border-[3px] p-2 rounded-xl`}
+                      ${
+                        selectedCoupon.id === item._id
+                          ? "border-green-600"
+                          : "border-white"
+                      } 
+                      ${
+                        selectedCoupon.id !== null &&
+                        selectedCoupon.id !== item._id
+                          ? "hover:border-[#e5e7eb]"
+                          : "hover:border-green-600"
+                      } 
+                      border-[3px] p-2 rounded-xl transition-colors`}
                     >
                       <CouponSvg />
                       <div className="w-full">
@@ -673,7 +673,7 @@ function IternryDetails({ data }) {
                           </p>
                           {selectedCoupon.id === item._id && (
                             <button
-                              className="text-red-500 text-sm rounded"
+                              className="text-red-500 text-sm rounded hover:text-red-600 transition-colors"
                               onClick={(e) => {
                                 e.stopPropagation(); // Prevent parent onClick
                                 handleCoupon(item._id);
@@ -694,6 +694,8 @@ function IternryDetails({ data }) {
           </div>
         </div>
       </div>
+
+      {/* Image Modal */}
       {imgmodal.isOpen && (
         <CarosalImageModal
           images={imgmodal.img}
