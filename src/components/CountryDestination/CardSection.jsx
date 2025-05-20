@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useWishlist } from "../../../context/WishListContext";
 const CardSection = ({ data, error }) => {
   const { continent, country } = useParams();
+
   const navigate = useNavigate();
 
   const [liked, setLiked] = useState(Array(data?.length || 0).fill([])); // Initial state for heart toggle

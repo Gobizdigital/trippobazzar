@@ -1,129 +1,144 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import { FaSearch } from "react-icons/fa"
-import HamburgerSvg from "../../../svgs/HamburgerSvg"
-import LargeDeviceSidebar from "./LargeDeviceSidebar"
-import SideHamBurgerMenu from "./SideHamBurgerMenu"
-import { Link, useLocation } from "react-router-dom"
-import useFetch from "../../../hooks/useFetch"
-import { IoIosArrowDown } from "react-icons/io"
-import MenuSvg from "../../../svgs/MenuSvg"
-import TransitionLink from "../../../utils/TransitionLink"
-import { NavbarData } from "./DestinationAccordionData"
-import HomeLogoSvg from "../../../svgs/HomeLogo"
+import { useEffect, useRef, useState } from "react";
+import { FaSearch } from "react-icons/fa";
+import HamburgerSvg from "../../../svgs/HamburgerSvg";
+import LargeDeviceSidebar from "./LargeDeviceSidebar";
+import SideHamBurgerMenu from "./SideHamBurgerMenu";
+import { Link, useLocation } from "react-router-dom";
+import useFetch from "../../../hooks/useFetch";
+import { IoIosArrowDown } from "react-icons/io";
+import MenuSvg from "../../../svgs/MenuSvg";
+import TransitionLink from "../../../utils/TransitionLink";
+import { NavbarData } from "./DestinationAccordionData";
+import HomeLogoSvg from "../../../svgs/HomeLogo";
 
 const Navbar = () => {
-  const [isSearchVisible, setIsSearchVisible] = useState(false)
-  const location = useLocation()
-  const [openDropdownIndex, setOpenDropdownIndex] = useState(null)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [userData, setUserData] = useState(null)
-  const downRef = useRef([])
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const location = useLocation();
+  const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const downRef = useRef([]);
 
   const toggleDestinations = (index) => {
     // If clicking the same dropdown that's already open, close it
     if (openDropdownIndex === index) {
-      setOpenDropdownIndex(null)
+      setOpenDropdownIndex(null);
     } else {
       // Otherwise, open the clicked dropdown
-      setOpenDropdownIndex(index)
+      setOpenDropdownIndex(index);
     }
-  }
+  };
 
   // Fetch continent data from API
   const { data } = useFetch(
     `https://trippo-bazzar-backend.vercel.app/api/continent/fields/query?fields=ContinentName,Countries`,
-    false,
-  )
+    false
+  );
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const hideMenu = () => {
-    setIsMenuOpen(false)
-  }
+    setIsMenuOpen(false);
+  };
 
   const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev)
-  }
+    setIsSidebarOpen((prev) => !prev);
+  };
 
   const closeSidebar = () => {
-    setIsSidebarOpen(false)
-  }
+    setIsSidebarOpen(false);
+  };
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 999px)")
+    const mediaQuery = window.matchMedia("(min-width: 999px)");
 
     const handleMediaQueryChange = (e) => {
       if (e.matches) {
-        hideMenu()
+        hideMenu();
       }
-    }
+    };
 
-    mediaQuery.addEventListener("change", handleMediaQueryChange)
+    mediaQuery.addEventListener("change", handleMediaQueryChange);
 
     return () => {
-      mediaQuery.removeEventListener("change", handleMediaQueryChange)
-    }
-  }, [])
+      mediaQuery.removeEventListener("change", handleMediaQueryChange);
+    };
+  }, []);
 
   useEffect(() => {
-    const data = localStorage.getItem("userInfo")
+    const data = localStorage.getItem("userInfo");
     if (data) {
-      setUserData(JSON.parse(data))
+      setUserData(JSON.parse(data));
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (downRef.current && !Object.values(downRef.current).some((ref) => ref && ref.contains(e.target))) {
-        setOpenDropdownIndex(null)
+      if (
+        downRef.current &&
+        !Object.values(downRef.current).some(
+          (ref) => ref && ref.contains(e.target)
+        )
+      ) {
+        setOpenDropdownIndex(null);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Group continents and organize data for the dropdown
   const organizeDestinationData = () => {
-    if (!data) return []
+    if (!data) return [];
 
-    const continents = data
-    const result = []
+    const continents = data;
+    const result = [];
 
     // Find Asia continent to extract India
-    const asiaContinent = continents.find((cont) => cont.ContinentName === "Asia")
+    const asiaContinent = continents.find(
+      (cont) => cont.ContinentName === "Asia"
+    );
 
     // Add India section if it exists
     if (asiaContinent) {
-      const indiaCountry = asiaContinent.Countries.find((country) => country.CountryName === "India")
-      if (indiaCountry && indiaCountry.States && indiaCountry.States.length > 0) {
+      const indiaCountry = asiaContinent.Countries.find(
+        (country) => country.CountryName === "India"
+      );
+      if (
+        indiaCountry &&
+        indiaCountry.States &&
+        indiaCountry.States.length > 0
+      ) {
         result.push({
           region: "India",
           items: indiaCountry.States.map((state) => ({
             name: state.StateName,
             path: `/destination/asia/India/${state.StateName}`,
           })),
-        })
+        });
       }
     }
 
     // Add other continents
     continents.forEach((continent) => {
       // Skip empty continents
-      if (!continent.Countries || continent.Countries.length === 0) return
+      if (!continent.Countries || continent.Countries.length === 0) return;
 
       // For Asia, exclude India as it's already handled
-      let countries = continent.Countries
+      let countries = continent.Countries;
       if (continent.ContinentName === "Asia") {
-        countries = countries.filter((country) => country.CountryName !== "India")
+        countries = countries.filter(
+          (country) => country.CountryName !== "India"
+        );
       }
 
       if (countries.length > 0) {
@@ -133,14 +148,14 @@ const Navbar = () => {
             name: country.CountryName,
             path: `/destination/${continent.ContinentName}/${country.CountryName}`,
           })),
-        })
+        });
       }
-    })
+    });
 
-    return result
-  }
+    return result;
+  };
 
-  const destinationGroups = organizeDestinationData()
+  const destinationGroups = organizeDestinationData();
 
   return (
     <div className="sticky top-0 z-100 max-w-[1920px] mx-auto">
@@ -167,153 +182,152 @@ const Navbar = () => {
             )}
             <div className="flex flex-row whitespace-nowrap items-center justify-between gap-6">
               <div className="relative">
-                <button className="flex text-sm uppercase justify-center items-center">
-                  <TransitionLink to="/destination" className="px-2 py-2" onClick={() => setOpenDropdownIndex(null)}>
-                    Destinations
-                  </TransitionLink>
-                  <IoIosArrowDown
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      toggleDestinations("dest")
-                    }}
-                    className="w-5 h-5 ml-2 text-med-green"
-                  />
-                </button>
+              
 
                 {/* Compact Destinations Dropdown */}
-                <div
-                  ref={(el) => (downRef.current["dest"] = el)}
-                  style={{
-                    visibility: openDropdownIndex === "dest" ? "visible" : "hidden",
-                  }}
-                  className={`absolute z-20 transition-all ease-in-out duration-300 left-0 mt-2 w-[90vw] md:w-[95vw] lg:w-[90vw] max-w-[1200px] ${
-                    openDropdownIndex === "dest"
-                      ? "opacity-100 transform translate-y-0"
-                      : "opacity-0 pointer-events-none transform -translate-y-2"
-                  }`}
-                >
-                  {!destinationGroups || destinationGroups.length === 0 ? (
-                    // Skeleton loader when data is not available
-                    <div className="absolute z-20 transition-all duration-200 ease-in-out left-0 mt-2 w-auto max-w-[800px] opacity-100 transform translate-y-0">
-                      <div className="p-4 bg-white rounded-md shadow-md border border-gray-200">
-                        <div className="flex flex-wrap gap-4 max-h-[400px] overflow-y-auto">
-                          {Array.from({ length: 4 }).map((_, groupIdx) => (
-                            <div key={groupIdx} className="min-w-[140px] max-w-[180px]">
-                              <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
-                              <ul className="space-y-2">
-                                {Array.from({ length: 6 }).map((_, itemIdx) => (
-                                  <li key={itemIdx} className="h-3 bg-gray-200 rounded w-full"></li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
-                        </div>
+                <div className="flex flex-row whitespace-nowrap items-center justify-between gap-4">
+                  <div className="relative">
+                    <button className="flex text-xs uppercase justify-center items-center">
+                      <TransitionLink
+                        to="/destination"
+                        className="px-1.5 py-1.5"
+                        onClick={() => setOpenDropdownIndex(null)}
+                      >
+                        Destinations
+                      </TransitionLink>
+                      <IoIosArrowDown
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleDestinations("dest");
+                        }}
+                        className="w-4 h-4 ml-1 text-med-green"
+                      />
+                    </button>
 
-                        <div className="mt-3 pt-2 border-t border-gray-100 flex justify-between items-center">
-                          <div className="h-3 bg-gray-200 rounded w-32"></div>
-                          <div className="h-3 bg-gray-200 rounded w-20"></div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    // Improved destinations dropdown
+                    {/* Improved Destinations Dropdown - Shows all locations */}
                     <div
-                      className={`absolute z-20 transition-all duration-200 ease-in-out left-0 mt-2 w-auto max-w-[800px] ${
+                      ref={(el) => (downRef.current["dest"] = el)}
+                      style={{
+                        visibility:
+                          openDropdownIndex === "dest" ? "visible" : "hidden",
+                      }}
+                      className={`absolute z-20 transition-all ease-in-out duration-300 left-0 mt-2 w-[90vw] md:w-[95vw] lg:w-[90vw] max-w-[1200px] ${
                         openDropdownIndex === "dest"
                           ? "opacity-100 transform translate-y-0"
                           : "opacity-0 pointer-events-none transform -translate-y-2"
                       }`}
                     >
-                      <div className="p-4 bg-white rounded-md shadow-md border border-gray-200">
-                        <div className="flex flex-wrap gap-4 max-h-[400px] overflow-y-auto">
-                          {destinationGroups.map((group, idx) => (
-                            <div key={idx} className="min-w-[140px] max-w-[180px]">
-                              <h3 className="text-xs uppercase font-semibold text-[#02896F] border-b border-[#02896F] pb-1 mb-2">
-                                {group.region}
-                              </h3>
-                              <ul className="space-y-1">
-                                {group.items.slice(0, 6).map((item, itemIdx) => (
-                                  <li key={itemIdx} className="group">
-                                    <Link
-                                      to={item.path}
-                                      onClick={() => setOpenDropdownIndex(null)}
-                                      className="text-xs text-gray-700 hover:text-[#02896F] transition-colors duration-200 flex items-center"
-                                    >
-                                      <span className="opacity-0 group-hover:opacity-100 mr-1 transition-opacity duration-200">
-                                        •
-                                      </span>
-                                      {item.name}
-                                    </Link>
-                                  </li>
-                                ))}
-                                {group.items.length > 6 && (
-                                  <li className="text-xs text-[#02896F] italic">+{group.items.length - 6} more</li>
-                                )}
-                              </ul>
+                      {!destinationGroups || destinationGroups.length === 0 ? (
+                        // Skeleton loader when data is not available
+                        <div className="absolute z-20 transition-all duration-200 ease-in-out left-0 mt-2 w-auto max-w-[800px] opacity-100 transform translate-y-0">
+                          <div className="p-4 bg-white rounded-md shadow-md border border-gray-200">
+                            <div className="flex flex-wrap gap-4 max-h-[400px] overflow-y-auto">
+                              {Array.from({ length: 4 }).map((_, groupIdx) => (
+                                <div
+                                  key={groupIdx}
+                                  className="min-w-[140px] max-w-[180px]"
+                                >
+                                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                                  <ul className="space-y-2">
+                                    {Array.from({ length: 6 }).map(
+                                      (_, itemIdx) => (
+                                        <li
+                                          key={itemIdx}
+                                          className="h-3 bg-gray-200 rounded w-full"
+                                        ></li>
+                                      )
+                                    )}
+                                  </ul>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          </div>
                         </div>
+                      ) : (
+                        // Improved destinations dropdown - Shows all locations
+                        <div
+                          className={`absolute z-20 transition-all duration-200 ease-in-out left-0 mt-2 w-auto max-w-[1000px] ${
+                            openDropdownIndex === "dest"
+                              ? "opacity-100 transform translate-y-0"
+                              : "opacity-0 pointer-events-none transform -translate-y-2"
+                          }`}
+                        >
+                          <div className="p-4 bg-white rounded-md shadow-md border border-gray-200">
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 max-h-[500px] overflow-y-auto">
+                              {destinationGroups.map((group, idx) => (
+                                <div key={idx} className="min-w-[120px]">
+                                  <h3 className="text-xs uppercase font-semibold text-[#02896F] border-b border-[#02896F] pb-1 mb-2">
+                                    {group.region}
+                                  </h3>
+                                  <ul className="space-y-1">
+                                    {/* Show all items without limiting to 6 */}
+                                    {group.items.map((item, itemIdx) => (
+                                      <li key={itemIdx} className="group">
+                                        <Link
+                                          to={item.path}
+                                          onClick={() =>
+                                            setOpenDropdownIndex(null)
+                                          }
+                                          className="text-xs text-gray-700 hover:text-[#02896F] transition-colors duration-200 flex items-center"
+                                        >
+                                          <span className="opacity-0 group-hover:opacity-100 mr-1 transition-opacity duration-200">
+                                            •
+                                          </span>
+                                          {item.name}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
-                        <div className="mt-3 pt-2 border-t border-gray-100 flex justify-between items-center">
-                          <p className="text-xs text-gray-500">Explore destinations</p>
-                          <Link
-                            to="/destination"
-                            onClick={() => setOpenDropdownIndex(null)}
-                            className="text-xs font-medium text-[#02896F] hover:underline flex items-center"
-                          >
-                            View all
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-3 w-3 ml-1"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
+                  {NavbarData.map((item, idx) => (
+                    <div key={idx} className="relative">
+                      <button
+                        onClick={() => toggleDestinations(idx)}
+                        className="flex text-xs uppercase justify-center items-center"
+                      >
+                        {item.title}
+                        <IoIosArrowDown className="w-4 h-4 ml-1 text-med-green" />
+                      </button>
+                      <div
+                        ref={(el) => (downRef.current[idx] = el)}
+                        style={{
+                          visibility:
+                            openDropdownIndex === idx ? "visible" : "hidden",
+                        }}
+                        className={`absolute z-20 w-[160px] transition-opacity ease-in-out duration-300 left-0 mt-2 bg-white shadow-md border rounded-md ${
+                          openDropdownIndex === idx
+                            ? "opacity-100"
+                            : "opacity-0 pointer-events-none"
+                        }`}
+                      >
+                        <ul className="p-2 whitespace-nowrap">
+                          {item.description.map((liItems, liIdx) => (
+                            <li
+                              key={liIdx}
+                              onClick={() => {
+                                setOpenDropdownIndex(null);
+                              }}
+                              className="py-1 text-xs cursor-pointer border-b-2 border-transparent hover:border-med-green transition-all duration-200"
                             >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </Link>
-                        </div>
+                              {liItems.name}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
-                  )}
+                  ))}
                 </div>
               </div>
 
-              {NavbarData.map((item, idx) => (
-                <div key={idx} className="relative">
-                  <button
-                    onClick={() => toggleDestinations(idx)}
-                    className="flex text-sm uppercase justify-center items-center"
-                  >
-                    {item.title}
-                    <IoIosArrowDown className="w-5 h-5 ml-2 text-med-green" />
-                  </button>
-                  <div
-                    ref={(el) => (downRef.current[idx] = el)}
-                    style={{
-                      visibility: openDropdownIndex === idx ? "visible" : "hidden",
-                    }}
-                    className={`absolute z-20 w-[160px] transition-opacity ease-in-out duration-300 left-0 mt-2 bg-white shadow-md border rounded-md ${
-                      openDropdownIndex === idx ? "opacity-100" : "opacity-0 pointer-events-none"
-                    }`}
-                  >
-                    <ul className="p-2 whitespace-nowrap">
-                      {item.description.map((liItems, liIdx) => (
-                        <li
-                          key={liIdx}
-                          onClick={() => {
-                            console.log("Clicked")
-                            setOpenDropdownIndex(null)
-                          }}
-                          className="py-1 text-sm cursor-pointer border-b-2 border-transparent hover:border-med-green transition-all duration-200"
-                        >
-                          {liItems.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              ))}
+             
             </div>
           </div>
 
@@ -354,7 +368,10 @@ const Navbar = () => {
             {/* Search Icon */}
             <div className="relative">
               <Link to={"/searchpage"} aria-label="Go to search page">
-                <button aria-label="Search" className="text-sm border-[1px] border-[#012831] rounded-full p-2">
+                <button
+                  aria-label="Search"
+                  className="text-sm border-[1px] border-[#012831] rounded-full p-2"
+                >
                   <FaSearch />
                 </button>
               </Link>
@@ -369,7 +386,9 @@ const Navbar = () => {
 
             {/* Book a Trip Button */}
             <TransitionLink to="/destination">
-              <button className="bg-med-green text-white text-[.8rem] px-4 h-9 rounded-md">Book a Trip</button>
+              <button className="bg-med-green text-white text-[.8rem] px-4 h-9 rounded-md">
+                Book a Trip
+              </button>
             </TransitionLink>
           </div>
 
@@ -390,9 +409,12 @@ const Navbar = () => {
           isMenuOpen={isMenuOpen}
         />
       </div>
-      <LargeDeviceSidebar isSidebarOpen={isSidebarOpen} closeSidebar={closeSidebar} />
+      <LargeDeviceSidebar
+        isSidebarOpen={isSidebarOpen}
+        closeSidebar={closeSidebar}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

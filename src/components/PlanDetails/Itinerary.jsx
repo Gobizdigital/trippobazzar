@@ -9,7 +9,7 @@ const Itinerary = ({ data }) => {
           <h3 className="text-med-green  text-start font-bold text-lg md:text-2xl mt-2">
             Here’s Your Itinerary:
             <span className="text-black font-bold ml-2 text-lg md:text-2xl mt-2">
-              Trip to {data?.title} All Inclusive Deal Seasonal Special Offer
+               {data?.title} All Inclusive Deal Seasonal Special Offer
             </span>{" "}
           </h3>
         </div>

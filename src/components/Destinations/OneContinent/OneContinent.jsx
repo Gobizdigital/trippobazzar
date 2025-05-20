@@ -31,6 +31,7 @@ function OneContinent({ data, loading }) {
 
   const firstContinent = filteredData?.[0];
 
+
   if (loading) {
     return <Loader />;
   }

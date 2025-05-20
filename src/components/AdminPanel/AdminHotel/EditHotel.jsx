@@ -1,8 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 
-export default function EditHotel({ setEditPackage, initialData, id, updateById, setSelectedId }) {
+export default function EditHotel({
+  setEditPackage,
+  initialData,
+  id,
+  updateById,
+  setSelectedId,
+}) {
   const [data, setData] = useState(
     initialData || {
       hotelName: "",
@@ -10,43 +16,52 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
       hotelRating: "",
       hotelPhotoUrl: [],
       hotelType: "",
-    },
-  )
+    }
+  );
 
-  const packageData = ["Deluxe", "Super Deluxe", "Luxury"]
+  const packageData = [
+    "Budget",
+    "Standard",
+    "Deluxe",
+    "Super Deluxe",
+    "Premium",
+    "Luxury",
+    "Royal",
+    "UNI",
+  ];
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setData((prevData) => ({
       ...prevData,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleMainPhotoChange = (index, value) => {
     setData((prevData) => {
-      const updatedPhotos = [...prevData.hotelPhotoUrl]
-      updatedPhotos[index] = value
-      return { ...prevData, hotelPhotoUrl: updatedPhotos }
-    })
-  }
+      const updatedPhotos = [...prevData.hotelPhotoUrl];
+      updatedPhotos[index] = value;
+      return { ...prevData, hotelPhotoUrl: updatedPhotos };
+    });
+  };
 
   const saveState = async () => {
     try {
-      await updateById(id, data)
-      setSelectedId(null)
-      setEditPackage(false)
+      await updateById(id, data);
+      setSelectedId(null);
+      setEditPackage(false);
       setData({
         hotelName: "",
         // hotelPrice: "",
         hotelRating: "",
         hotelPhotoUrl: [],
         hotelType: "",
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 rounded-xl shadow-lg border border-gray-200">
@@ -54,7 +69,9 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
         <div className="flex justify-between items-center mb-6 border-b pb-4">
           <h2 className="text-2xl font-bold text-gray-800">Edit Hotel</h2>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">ID: {id?.substring(0, 8)}...</span>
+            <span className="text-sm text-gray-500">
+              ID: {id?.substring(0, 8)}...
+            </span>
           </div>
         </div>
 
@@ -69,7 +86,9 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-xl font-medium outline-none"
             />
-            <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-600">Hotel Name</label>
+            <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-600">
+              Hotel Name
+            </label>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -85,7 +104,9 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
                 max="5"
                 step="0.1"
               />
-              <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-600">Rating (0-5)</label>
+              <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-600">
+                Rating (0-5)
+              </label>
             </div>
 
             {/* <div className="relative">
@@ -105,7 +126,9 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
 
         {/* Hotel Type Selection */}
         <section className="mb-8">
-          <h2 className="text-lg font-semibold mb-4 text-gray-700">Hotel Category</h2>
+          <h2 className="text-lg font-semibold mb-4 text-gray-700">
+            Hotel Category
+          </h2>
           <div className="grid grid-cols-3 gap-3">
             {packageData.map((packag, idx) => (
               <div
@@ -122,20 +145,33 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
             ))}
           </div>
 
-          {data.hotelType && <p className="mt-3 text-sm font-medium text-blue-600">Selected: {data.hotelType}</p>}
+          {data.hotelType && (
+            <p className="mt-3 text-sm font-medium text-blue-600">
+              Selected: {data.hotelType}
+            </p>
+          )}
         </section>
 
         {/* Hotel Photos */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-700">Hotel Photos</h2>
+            <h2 className="text-lg font-semibold text-gray-700">
+              Hotel Photos
+            </h2>
             <button
               type="button"
               onClick={() => {
                 setData((prevData) => ({
                   ...prevData,
-                  hotelPhotoUrl: [...prevData.hotelPhotoUrl, "", "", "", "", ""],
-                }))
+                  hotelPhotoUrl: [
+                    ...prevData.hotelPhotoUrl,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                  ],
+                }));
               }}
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 flex items-center"
             >
@@ -146,7 +182,12 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
               </svg>
               Add 5 Photos
             </button>
@@ -159,25 +200,31 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
                   <input
                     type="text"
                     value={photo}
-                    onChange={(e) => handleMainPhotoChange(index, e.target.value)}
+                    onChange={(e) =>
+                      handleMainPhotoChange(index, e.target.value)
+                    }
                     className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-sm"
                     placeholder={`Photo URL ${index + 1}`}
                   />
                   {photo && (
                     <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full overflow-hidden border border-gray-300">
-                      <img src={photo || "/placeholder.svg"} alt="" className="w-full h-full object-cover" />
+                      <img
+                        src={photo || "/placeholder.svg"}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   )}
                 </div>
                 <button
                   type="button"
                   onClick={() => {
-                    const updatedPhotos = [...data.hotelPhotoUrl]
-                    updatedPhotos.splice(index, 1)
+                    const updatedPhotos = [...data.hotelPhotoUrl];
+                    updatedPhotos.splice(index, 1);
                     setData((prevData) => ({
                       ...prevData,
                       hotelPhotoUrl: updatedPhotos,
-                    }))
+                    }));
                   }}
                   className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors"
                 >
@@ -206,7 +253,7 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
               setData((prevData) => ({
                 ...prevData,
                 hotelPhotoUrl: [...prevData.hotelPhotoUrl, ""],
-              }))
+              }));
             }}
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 flex items-center"
           >
@@ -231,7 +278,9 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
         {/* Preview Section */}
         {data.hotelPhotoUrl.length > 0 && data.hotelPhotoUrl[0] && (
           <section className="mb-8">
-            <h2 className="text-lg font-semibold mb-4 text-gray-700">Preview</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-700">
+              Preview
+            </h2>
             <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-1/3 h-40 rounded-lg overflow-hidden">
@@ -242,9 +291,15 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
                   />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-800">{data.hotelName || "Hotel Name"}</h3>
+                  <h3 className="text-xl font-bold text-gray-800">
+                    {data.hotelName || "Hotel Name"}
+                  </h3>
                   <div className="flex items-center gap-3 mt-2">
-                    {data.hotelPrice && <div className="text-green-600 font-semibold">₹{data.hotelPrice}</div>}
+                    {data.hotelPrice && (
+                      <div className="text-green-600 font-semibold">
+                        ₹{data.hotelPrice}
+                      </div>
+                    )}
                     {data.hotelRating && (
                       <div className="flex items-center bg-yellow-100 px-2 py-0.5 rounded text-sm">
                         <svg
@@ -259,7 +314,9 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
                       </div>
                     )}
                     {data.hotelType && (
-                      <div className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">{data.hotelType}</div>
+                      <div className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">
+                        {data.hotelType}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -281,14 +338,19 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
             Save Changes
           </button>
 
           <button
             onClick={() => {
-              setEditPackage(false)
+              setEditPackage(false);
             }}
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg font-medium transition-colors duration-300 flex items-center"
           >
@@ -299,12 +361,17 @@ export default function EditHotel({ setEditPackage, initialData, id, updateById,
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
             Cancel
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -3,6 +3,7 @@ import { socialMediaData } from "../../../utils/SocialMediaData";
 import TransitionLink from "../../../utils/TransitionLink";
 import CompanyLogo from "../../../svgs/CompanyLogo";
 import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react"
 
 const LargeDeviceSidebar = ({ isSidebarOpen, closeSidebar }) => {
   const [activeItem, setActiveItem] = useState(null);
@@ -66,11 +67,12 @@ const LargeDeviceSidebar = ({ isSidebarOpen, closeSidebar }) => {
       }`}
     >
       <div className="flex items-center w-full relative h-full">
-        <button
+          <button
           onClick={closeSidebar}
-          className="text-gray-600 p-0 text-5xl font-light absolute top-0 right-5"
+          className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 z-50"
+          aria-label="Close sidebar"
         >
-          x
+          <X className="h-6 w-6" />
         </button>
 
         {/* First Part: Large logo */}
