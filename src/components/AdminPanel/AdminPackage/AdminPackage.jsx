@@ -148,7 +148,7 @@ export default function AdminPackage() {
         <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl shadow-xl p-6 min-h-[80vh]">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              {`${isAddingPackage?"Add New Package":"Package Management"}`}
+              {`${isAddingPackage ? "Add New Package" : "Package Management"}`}
             </h1>
             <button
               onClick={() => setIsAddingPackage(!isAddingPackage)}
@@ -1023,29 +1023,91 @@ export default function AdminPackage() {
                             className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
                           >
                             <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4 text-white">
-                              <h3 className="text-xl font-bold flex items-center gap-2">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-5 w-5 text-amber-100"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
+                              <div className="flex justify-between items-center">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 text-amber-100"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                    />
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                    />
+                                  </svg>
+                                  {hotel.location}
+                                </h3>
+                                <button
+                                  onClick={() => {
+                                    // Get all hotel names for this location
+                                    const hotelNames = hotel.hotelDetails
+                                      .map((detail) => {
+                                        // Handle both object references and direct IDs
+                                        const hotelObj = data?.hotels
+                                          ?.flatMap(
+                                            (hotel) => hotel.hotelDetails || []
+                                          )
+                                          .find(
+                                            (h) =>
+                                              h._id === (detail?._id ?? detail)
+                                          );
+
+                                        return (
+                                          hotelObj?.hotelName || "Unknown Hotel"
+                                        );
+                                      })
+
+                                      .filter((name) => name); // Filter out any undefined names
+
+                                    // Format the text as "Location: Hotel1, Hotel2, Hotel3"
+                                    const textToCopy = `${
+                                      hotel.location
+                                    }: ${hotelNames.join(", ")}`;
+
+                                    // Copy to clipboard
+                                    navigator.clipboard.writeText(textToCopy);
+
+                                    // Show a temporary tooltip or feedback
+                                    const el = document.createElement("div");
+                                    el.className =
+                                      "fixed top-4 right-4 bg-black/80 text-white px-4 py-2 rounded-lg z-50";
+                                    el.textContent = "Hotel info copied!";
+                                    document.body.appendChild(el);
+                                    setTimeout(
+                                      () => document.body.removeChild(el),
+                                      2000
+                                    );
+                                  }}
+                                  className="bg-white/20 hover:bg-white/30 text-white rounded-lg px-3 py-1.5 text-sm flex items-center gap-1 transition-colors"
+                                  title="Copy hotel information"
                                 >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                  />
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                  />
-                                </svg>
-                                {hotel.location}
-                              </h3>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                                    />
+                                  </svg>
+                                  Copy
+                                </button>
+                              </div>
                             </div>
                             <div className="p-6">
                               {hotel?.hotelDetails?.length > 0 ? (

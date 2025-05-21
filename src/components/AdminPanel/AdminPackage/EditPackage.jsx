@@ -38,6 +38,8 @@ export default function EditPackage({ initialData, updateById, id, setSelectedId
   const [searchQuery, setSearchQuery] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [dropdownVisible, setDropdownVisible] = useState(false)
+  const [bulkHotelInput, setBulkHotelInput] = useState("")
+  const [showBulkInput, setShowBulkInput] = useState(false)
 
   // Active tab state for both mobile and desktop
   const [activeSection, setActiveSection] = useState("basic")
@@ -197,6 +199,55 @@ export default function EditPackage({ initialData, updateById, id, setSelectedId
     setNewLocation("")
     setSearchQuery("")
     setSelectedHotelIdForNewHotel("")
+  }
+
+  const handleBulkHotelAdd = () => {
+    if (!bulkHotelInput.trim()) return
+
+    try {
+      // Parse the input - expecting format like: "Location: Hotel1, Hotel2; Location2: Hotel3, Hotel4"
+      const locationGroups = bulkHotelInput.split(";").filter((group) => group.trim())
+
+      const newHotels = [...data.hotels]
+
+      locationGroups.forEach((group) => {
+        const [location, hotelsList] = group.split(":")
+
+        if (!location || !hotelsList) return
+
+        const locationName = location.trim()
+        const hotelNames = hotelsList
+          .split(",")
+          .map((h) => h.trim())
+          .filter((h) => h)
+
+        // Find matching hotels in the database
+        const matchedHotels = hotelNames
+          .map((name) => {
+            const hotel = hotelData?.find((h) => h.hotelName.toLowerCase() === name.toLowerCase())
+            return hotel?._id
+          })
+          .filter((id) => id) // Filter out undefined IDs
+
+        if (matchedHotels.length > 0) {
+          newHotels.push({
+            location: locationName,
+            hotelDetails: matchedHotels,
+          })
+        }
+      })
+
+      setData((prevData) => ({
+        ...prevData,
+        hotels: newHotels,
+      }))
+
+      setBulkHotelInput("")
+      setShowBulkInput(false)
+    } catch (error) {
+      console.error("Error parsing bulk hotel input:", error)
+      alert("There was an error processing your input. Please check the format and try again.")
+    }
   }
 
   const removeHotel = (hotelId) => {
@@ -1014,6 +1065,50 @@ export default function EditPackage({ initialData, updateById, id, setSelectedId
               <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">Hotels</h2>
 
               <div className="space-y-6">
+                <div className="p-4 border border-gray-200 rounded-lg mb-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-medium">Bulk Add Hotels</h3>
+                    <button
+                      onClick={() => setShowBulkInput(!showBulkInput)}
+                      className="text-emerald-600 hover:text-emerald-800"
+                    >
+                      {showBulkInput ? "Hide" : "Show"}
+                    </button>
+                  </div>
+
+                  {showBulkInput && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Paste Hotels (Format: Location: Hotel1, Hotel2; Location2: Hotel3, Hotel4)
+                        </label>
+                        <textarea
+                          value={bulkHotelInput}
+                          onChange={(e) => setBulkHotelInput(e.target.value)}
+                          placeholder="Delhi: Taj Palace, Hyatt Regency; Mumbai: Oberoi, Trident"
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[100px]"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Format: "Location: Hotel1, Hotel2; Location2: Hotel3, Hotel4"
+                          <br />
+                          Note: Only hotels that match names in the database will be added.
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={handleBulkHotelAdd}
+                        disabled={!bulkHotelInput.trim()}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                          bulkHotelInput.trim()
+                            ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        }`}
+                      >
+                        Add Bulk Hotels
+                      </button>
+                    </div>
+                  )}
+                </div>
                 {data?.hotels?.map((hotel, hotelIndex) => (
                   <div key={hotelIndex} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
                     <div className="flex justify-between items-center mb-4">
@@ -1051,7 +1146,7 @@ export default function EditPackage({ initialData, updateById, id, setSelectedId
                       {hotel?.hotelDetails?.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
                           {hotel.hotelDetails.map((detailId, hotelDetailIndex) => {
-                            const hotelObj = hotelData?.find((hotel) => hotel._id === detailId._id)
+                            const hotelObj = hotelData?.find((hotel) => hotel._id === (detailId?._id ?? detailId))
 
                             return (
                               <div
