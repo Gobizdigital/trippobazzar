@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import useApiData from "../../../../hooks/useApiData";
+import { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import useDebounce from "../../../../hooks/useDebounce";
 import useFetch from "../../../../hooks/useFetch";
 import EditPackage from "./EditPackage";
 import AddPackage from "./AddPackage";
 import Loader from "../../Loader";
 import ConfirmationModal from "../../ConfirmationModal";
+import { ChevronLeft, ChevronRight, Search, Loader2 } from "lucide-react";
 
 export default function AdminPackage() {
   const [selectedId, setSelectedId] = useState();
@@ -17,23 +19,108 @@ export default function AdminPackage() {
   const [activeTab, setActiveTab] = useState("details");
   const [imageModal, setImageModal] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const baseUrl = "https://trippo-bazzar-backend.vercel.app/api/package";
-  const {
-    data: allStateData,
-    loading: allpackage,
-    deleteById,
-    updateById,
-    addNew,
-  } = useApiData(baseUrl);
+  // Pagination state
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0,
+    limit: 9,
+  });
 
-  const { data, loading } = useFetch(
-    `https://trippo-bazzar-backend.vercel.app/api/package/${selectedId}`
+  // Sorting state
+  const [sortBy, setSortBy] = useState("title");
+  const [sortDirection, setSortDirection] = useState("asc");
+
+  const baseUrl = selectedId
+    ? "https://trippo-bazzar-backend.vercel.app/api/package"
+    : "https://trippo-bazzar-backend.vercel.app/api/package/fields/query";
+
+  // Debounce search term to avoid excessive API calls
+  const debouncedSearchTerm = useDebounce(searchInput, 500);
+
+  const { data, loading: packageLoading } = useFetch(
+    selectedId ? `${baseUrl}/${selectedId}` : null
   );
 
-  const filteredData = allStateData.filter((item) =>
-    item?.title?.toLowerCase().includes(searchInput.toLowerCase())
-  );
+  // Memoize fetchPackages to avoid recreating it on every render
+  const fetchPackages = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(baseUrl, {
+        params: {
+          page: pagination.currentPage,
+          limit: pagination.limit,
+          search: debouncedSearchTerm || undefined,
+          sortBy,
+          sortDirection,
+        },
+      });
+
+      setPackages(response.data.data);
+      setPagination({
+        currentPage: response.data.pagination.currentPage,
+        totalPages: response.data.pagination.totalPages,
+        totalCount: response.data.pagination.totalCount,
+        limit: response.data.pagination.limit,
+      });
+      setLoading(false);
+      setIsSearching(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+      setIsSearching(false);
+    }
+  }, [
+    pagination.currentPage,
+    pagination.limit,
+    debouncedSearchTerm,
+    sortBy,
+    sortDirection,
+  ]);
+
+  // Effect for fetching packages when dependencies change
+  useEffect(() => {
+    fetchPackages();
+  }, [fetchPackages]);
+
+  // Effect for showing search indicator
+  useEffect(() => {
+    if (searchInput !== debouncedSearchTerm) {
+      setIsSearching(true);
+    }
+  }, [searchInput, debouncedSearchTerm]);
+
+  const deleteById = async (id) => {
+    try {
+      await axios.delete(`${baseUrl}/${id}`);
+      fetchPackages();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const updateById = async (id, data) => {
+    try {
+      await axios.put(`${baseUrl}/${id}`, data);
+      fetchPackages();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addNew = async (data) => {
+    try {
+      await axios.post(baseUrl, data);
+      fetchPackages();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // Function to get the lowest base price from pricing array
   const getLowestPrice = (pricingArray) => {
@@ -62,7 +149,85 @@ export default function AdminPackage() {
     setImageModal(imageUrl);
   };
 
-  if (allpackage || loading) {
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination((prev) => ({
+        ...prev,
+        currentPage: newPage,
+      }));
+    }
+  };
+
+  const handleLimitChange = (e) => {
+    const newLimit = Number.parseInt(e.target.value);
+    setPagination((prev) => ({
+      ...prev,
+      limit: newLimit,
+      currentPage: 1, // Reset to first page when changing limit
+    }));
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchInput(e.target.value);
+    setPagination((prev) => ({
+      ...prev,
+      currentPage: 1, // Reset to first page when searching
+    }));
+  };
+
+  const handleSort = () => {
+    // Toggle direction
+    setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    setPagination((prev) => ({
+      ...prev,
+      currentPage: 1, // Reset to first page when sorting
+    }));
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const totalPages = pagination.totalPages;
+    const currentPage = pagination.currentPage;
+
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    // Always show first and last page
+    const pages = [1];
+
+    // Calculate middle pages
+    const startPage = Math.max(2, currentPage - 1);
+    const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+    // Add ellipsis if needed
+    if (startPage > 2) {
+      pages.push("...");
+    }
+
+    // Add middle pages
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    // Add ellipsis if needed
+    if (endPage < totalPages - 1) {
+      pages.push("...");
+    }
+
+    // Add last page if not already included
+    if (totalPages > 1) {
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  if (loading && packages.length === 0) {
+    return <Loader />;
+  }
+
+  if (packageLoading && selectedId) {
     return <Loader />;
   }
 
@@ -199,30 +364,81 @@ export default function AdminPackage() {
           </div>
 
           {!isAddingPackage && (
-            <div className="relative mb-8">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            <div className="mb-8 space-y-4">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search packages by title..."
+                    value={searchInput}
+                    onChange={handleSearchChange}
+                    className="w-full pl-12 pr-10 py-4 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all bg-white shadow-md hover:shadow-lg"
                   />
-                </svg>
+                  {isSearching && (
+                    <Loader2 className="absolute right-4 top-4 w-5 h-5 text-emerald-500 animate-spin" />
+                  )}
+                </div>
+                {debouncedSearchTerm && (
+                  <div className="mt-1 text-sm text-gray-500 pl-4">
+                    Showing results for "{debouncedSearchTerm}"
+                  </div>
+                )}
               </div>
-              <input
-                type="text"
-                placeholder="Search packages by title..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all bg-white shadow-md hover:shadow-lg"
-              />
+
+              <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-600">Sort by:</span>
+                  <button
+                    onClick={handleSort}
+                    className="flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors"
+                  >
+                    <span>Title</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={`h-4 w-4 ${
+                        sortDirection === "desc" ? "rotate-180" : ""
+                      } transition-transform`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-600">Show:</span>
+                  <select
+                    value={pagination.limit}
+                    onChange={handleLimitChange}
+                    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+                  >
+                    <option value="6">6</option>
+                    <option value="9">9</option>
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Loading Overlay */}
+          {loading && packages.length > 0 && (
+            <div className="fixed inset-0 bg-black/5 flex items-center justify-center z-10 pointer-events-none">
+              <div className="bg-white p-4 rounded-lg shadow-lg flex items-center gap-3">
+                <Loader2 className="w-5 h-5 text-emerald-500 animate-spin" />
+                <span>Loading packages...</span>
+              </div>
             </div>
           )}
 
@@ -233,8 +449,8 @@ export default function AdminPackage() {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredData.length > 0 ? (
-                filteredData.map((item, idx) => {
+              {packages.length > 0 ? (
+                packages.map((item, idx) => {
                   // Get lowest price from pricing array if available
                   const lowestPrice = getLowestPrice(item?.pricing);
                   const displayPrice = lowestPrice || item?.price || "N/A";
@@ -415,6 +631,138 @@ export default function AdminPackage() {
                   </button>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {!isAddingPackage && pagination.totalPages > 1 && (
+            <div className="mt-8 bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-b border-gray-100">
+                <div className="text-sm text-gray-600 mb-4 sm:mb-0">
+                  Showing{" "}
+                  <span className="font-medium">
+                    {(pagination.currentPage - 1) * pagination.limit + 1}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-medium">
+                    {Math.min(
+                      pagination.currentPage * pagination.limit,
+                      pagination.totalCount
+                    )}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-medium">{pagination.totalCount}</span>{" "}
+                  packages
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center p-4">
+                <nav className="flex items-center space-x-1">
+                  <button
+                    onClick={() => handlePageChange(1)}
+                    disabled={pagination.currentPage === 1}
+                    className={`p-2 rounded-md ${
+                      pagination.currentPage === 1
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                    aria-label="Go to first page"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+
+                  <button
+                    onClick={() => handlePageChange(pagination.currentPage - 1)}
+                    disabled={pagination.currentPage === 1}
+                    className={`p-2 rounded-md ${
+                      pagination.currentPage === 1
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                    aria-label="Go to previous page"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+
+                  <div className="flex items-center">
+                    {getPageNumbers().map((pageNum, index) =>
+                      pageNum === "..." ? (
+                        <span
+                          key={`ellipsis-${index}`}
+                          className="px-2 py-1 text-gray-500"
+                        >
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={`page-${pageNum}`}
+                          onClick={() => handlePageChange(pageNum)}
+                          className={`w-9 h-9 mx-0.5 rounded-full ${
+                            pagination.currentPage === pageNum
+                              ? "bg-emerald-500 text-white font-medium"
+                              : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      )
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => handlePageChange(pagination.currentPage + 1)}
+                    disabled={pagination.currentPage === pagination.totalPages}
+                    className={`p-2 rounded-md ${
+                      pagination.currentPage === pagination.totalPages
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                    aria-label="Go to next page"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+
+                  <button
+                    onClick={() => handlePageChange(pagination.totalPages)}
+                    disabled={pagination.currentPage === pagination.totalPages}
+                    className={`p-2 rounded-md ${
+                      pagination.currentPage === pagination.totalPages
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                    aria-label="Go to last page"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                        clipRule="evenodd"
+                      />
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </nav>
+              </div>
             </div>
           )}
         </div>

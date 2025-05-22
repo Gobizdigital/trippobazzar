@@ -11,6 +11,7 @@ export const BookingProvider = ({ children }) => {
     selectedPricing: null,
     services: null,
     IsDomesticPackage: false,
+    SpecialRemarks: "",
   });
   return (
     <BookingContext.Provider value={{ bookingDetails, setBookingDetails }}>

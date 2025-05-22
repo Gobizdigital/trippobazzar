@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 const GuestForm = () => {
-  const { bookingDetails } = useBooking();
+  const { bookingDetails, setBookingDetails } = useBooking();
   const RAZOR_KEY = import.meta.env.VITE_RAZOR_KEY_ID;
   const { searchData } = useSearch();
   const [loading, setLoading] = useState(false);
@@ -1018,6 +1018,26 @@ const GuestForm = () => {
               </p>
             )}
           </div>
+        </div>
+
+        <div className="bg-slate-300 w-full h-[1px] mt-5"></div>
+
+        {/* Special Remarks */}
+        <h2 className="text-xl font-bold my-5">Special Remarks</h2>
+
+        <div>
+          <textarea
+            name="SpecialRemarks"
+            value={bookingDetails.SpecialRemarks}
+            onChange={(e) =>
+              setBookingDetails({
+                ...bookingDetails,
+                SpecialRemarks: e.target.value,
+              })
+            }
+            placeholder="Remark Note"
+            className={`w-full p-2 border-gray-400 text-gray-400 placeholder:text-gray-400 rounded-lg border-[1.6px] `}
+          />
         </div>
 
         <div className="bg-slate-300 w-full h-[1px] mt-5"></div>

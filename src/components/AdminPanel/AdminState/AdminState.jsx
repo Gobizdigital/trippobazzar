@@ -9,7 +9,6 @@ import {
   ChevronLeft,
   Package,
   MapPin,
-  Loader2,
   Search,
   Check,
 } from "lucide-react";
@@ -25,20 +24,25 @@ export default function AdminState() {
   const [editedDetails, setEditedDetails] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+
   const [packageSearch, setPackageSearch] = useState("");
   const [filteredPackages, setFilteredPackages] = useState([]);
+  const [modal, setModal] = useState(null);
+  const [newState, setNewState] = useState({
+    StateName: "",
+    StatePhotoUrl: "",
+    Packages: [],
+  });
 
   const { data: packageData, loading } = useFetch(
     "https://trippo-bazzar-backend.vercel.app/api/package"
   );
 
-  const baseUrl = "https://trippo-bazzar-backend.vercel.app/api/state";
-  const {
-    data: allStateData,
-    deleteById,
-    updateById,
-    addNew,
-  } = useApiData(baseUrl);
+  const baseUrl =
+    selectedId || newState || modal
+      ? "https://trippo-bazzar-backend.vercel.app/api/state"
+      : "https://trippo-bazzar-backend.vercel.app/api/state/fields/query";
+  const { deleteById, updateById, addNew } = useApiData(baseUrl);
 
   useEffect(() => {
     if (selectedId) {
@@ -91,10 +95,6 @@ export default function AdminState() {
     setShowModal(true);
   };
 
-  const deleteState = (id) => {
-    deleteById(id);
-  };
-
   const closeModal = () => {
     setShowModal(false);
   };
@@ -109,10 +109,13 @@ export default function AdminState() {
     <div className="container mx-auto px-4 py-6">
       {!selectedId ? (
         <ViewAndAddAllState
-          deleteState={deleteState}
-          allStateData={allStateData}
+          deleteById={deleteById}
           addNew={addNew}
+          setNewState={setNewState}
+          newState={newState}
           setSelectedId={setSelectedId}
+          setModal={setModal}
+          modal={modal}
           openModal={openModal}
         />
       ) : (
