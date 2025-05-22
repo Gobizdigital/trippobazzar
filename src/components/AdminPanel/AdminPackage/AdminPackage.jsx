@@ -108,7 +108,7 @@ export default function AdminPackage() {
 
   const deleteById = async (id) => {
     try {
-      await axios.delete(`${baseUrl}/${id}`, axiosConfig);
+      await axios.delete(`${"https://trippo-bazzar-backend.vercel.app/api/package"}/${id}`, axiosConfig);
       fetchPackages();
     } catch (error) {
       console.error(error);
