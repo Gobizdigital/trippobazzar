@@ -8,7 +8,7 @@ import useFetch from "../../../hooks/useFetch";
 import BreadCrumbsLink from "../../../utils/BreadCrumbsLink";
 
 export default function DestinationPage() {
-  const { data, loading } = useFetch("https://trippo-bazzar-backend.vercel.app/api/continent");
+  const { data, loading } = useFetch("https://trippo-bazzar-backend.vercel.app/api/continent/all/limit");
 
   return (
     <div className="bg-[#F8F8F8] max-w-[1920px] mx-auto">
