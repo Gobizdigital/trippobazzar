@@ -367,12 +367,10 @@ function IternryDetails({ data }) {
                     </div>
                   </div>
 
-                  {day?.dayDetails?.split("\n").map((line, idx) => (
-                    <span className="sm:text-base text-sm " key={idx}>
-                      {line}
-                      <br />
-                    </span>
-                  ))}
+                  <span
+                    className="sm:text-base text-sm"
+                    dangerouslySetInnerHTML={{ __html: day?.dayDetails }}
+                  />
                 </div>
               ))}
             </div>

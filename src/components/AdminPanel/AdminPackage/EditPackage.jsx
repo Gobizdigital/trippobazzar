@@ -872,12 +872,13 @@ export default function EditPackage({ initialData, updateById, id, setSelectedId
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Day Details</label>
-                        <textarea
-                          name={`dayDetails-${dayIndex}`}
+                        <ReactQuill
+                          theme="snow"
                           value={day.dayDetails}
-                          onChange={(e) => handleArrayChange("dayDescription", dayIndex, "dayDetails", e.target.value)}
-                          ref={(el) => (textareasRef.current[dayIndex] = el)}
-                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[100px] resize-none"
+                          onChange={(content) => handleArrayChange("dayDescription", dayIndex, "dayDetails", content)}
+                          modules={quillModules}
+                          formats={quillFormats}
+                          className="bg-white rounded-lg"
                           placeholder={`Details for Day ${dayIndex + 1}`}
                         />
                       </div>
