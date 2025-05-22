@@ -33,9 +33,11 @@ import useDebounce from "../../../hooks/useDebounce";
 function AdminCountry() {
   const [editingUserId, setEditingUserId] = useState(null);
   const [editedDetails, setEditedDetails] = useState({});
-  const baseUrl = editingUserId
-    ? "https://trippo-bazzar-backend.vercel.app/api/country"
-    : "https://trippo-bazzar-backend.vercel.app/api/country/fields/query";
+  const [showCountryModal, setShowCountryModal] = useState(false);
+  const baseUrl =
+    editingUserId || showCountryModal
+      ? "https://trippo-bazzar-backend.vercel.app/api/country"
+      : "https://trippo-bazzar-backend.vercel.app/api/country/fields/query";
   const [countryData, setCountryData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,7 +54,7 @@ function AdminCountry() {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [showCountryModal, setShowCountryModal] = useState(false);
+
   const [modal, setModal] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [stateSearchTerm, setStateSearchTerm] = useState("");
