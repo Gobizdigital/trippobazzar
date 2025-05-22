@@ -36,9 +36,20 @@ export default function AdminPackage() {
   const [sortBy, setSortBy] = useState("title");
   const [sortDirection, setSortDirection] = useState("asc");
 
-  const baseUrl = selectedId
-    ? "https://trippo-bazzar-backend.vercel.app/api/package"
-    : "https://trippo-bazzar-backend.vercel.app/api/package/fields/query";
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const token = userInfo?.token;
+
+  // Create axios headers
+  const axiosConfig = {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  };
+
+  const baseUrl =
+    selectedId || isAddingPackage
+      ? "https://trippo-bazzar-backend.vercel.app/api/package"
+      : "https://trippo-bazzar-backend.vercel.app/api/package/fields/query";
 
   // Debounce search term to avoid excessive API calls
   const debouncedSearchTerm = useDebounce(searchInput, 500);
@@ -97,7 +108,7 @@ export default function AdminPackage() {
 
   const deleteById = async (id) => {
     try {
-      await axios.delete(`${baseUrl}/${id}`);
+      await axios.delete(`${baseUrl}/${id}`, axiosConfig);
       fetchPackages();
     } catch (error) {
       console.error(error);
@@ -106,7 +117,7 @@ export default function AdminPackage() {
 
   const updateById = async (id, data) => {
     try {
-      await axios.put(`${baseUrl}/${id}`, data);
+      await axios.put(`${baseUrl}/${id}`, data, axiosConfig);
       fetchPackages();
     } catch (error) {
       console.error(error);
@@ -115,7 +126,7 @@ export default function AdminPackage() {
 
   const addNew = async (data) => {
     try {
-      await axios.post(baseUrl, data);
+      await axios.post(baseUrl, data, axiosConfig);
       fetchPackages();
     } catch (error) {
       console.error(error);
