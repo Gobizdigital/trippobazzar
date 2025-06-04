@@ -781,10 +781,12 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
                           className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                         >
                           <option value="">Select Package Type</option>
+                          <option value="Budget">Budget</option>
                           <option value="Standard">Standard</option>
                           <option value="Deluxe">Deluxe</option>
                           <option value="Super Deluxe">Super Deluxe</option>
                           <option value="Luxury">Luxury</option>
+                          <option value="Premium">Premium</option>
                           <option value="Royal">Royal</option>
                         </select>
                       </div>
