@@ -27,9 +27,12 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     termsAndConditions: "",
   });
 
-  // Validation state
+  // Enhanced validation and notification states
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Hotel search states - Updated to be location-specific
   const [newLocation, setNewLocation] = useState("");
@@ -81,6 +84,15 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     "link",
   ];
 
+  // Helper function to clear specific error
+  const clearError = (fieldName) => {
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[fieldName];
+      return newErrors;
+    });
+  };
+
   // Helper function to get hotel search state for a specific hotel index
   const getHotelSearchState = (hotelIndex) => {
     return (
@@ -103,33 +115,63 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     }));
   };
 
-  // Validate form fields
+  // Enhanced validation function
   const validateForm = () => {
     const newErrors = {};
 
+    // Basic Information Validation
     if (!data.title.trim()) {
-      newErrors.title = "Title is required";
+      newErrors.title = "Package title is required";
     }
 
     if (!data.description.trim()) {
-      newErrors.description = "Description is required";
+      newErrors.description = "Package description is required";
     }
 
-    // Only validate pricing if both price and pricing array are empty
-    if (
-      data.price <= 0 &&
-      (!Array.isArray(data.pricing) ||
-        data.pricing.length === 0 ||
-        data.pricing.every((item) => !item.basePrice || item.basePrice <= 0))
-    ) {
-      newErrors.pricing =
-        "Either base price or at least one pricing option with base price is required";
+    // Enhanced pricing validation - fixed logic
+    if (data.price <= 0) {
+      // If base price is 0 or negative, check if there are valid pricing options
+      if (!Array.isArray(data.pricing) || data.pricing.length === 0) {
+        newErrors.pricing =
+          "Either base price or at least one pricing option with base price is required";
+      } else {
+        // Check if at least one pricing option has a valid base price
+        const hasValidPricingOption = data.pricing.some(
+          (item) => item.basePrice && Number(item.basePrice) > 0
+        );
+        if (!hasValidPricingOption) {
+          newErrors.pricing =
+            "At least one pricing option must have a base price greater than 0";
+        }
+      }
+    }
+    // If base price > 0, no need to check pricing options - it's valid
+
+    // Day description validation - at least one day should have a title
+    if (data.dayDescription && data.dayDescription.length > 0) {
+      const hasValidDay = data.dayDescription.some(
+        (day) => day.dayTitle && day.dayTitle.trim()
+      );
+      if (!hasValidDay) {
+        newErrors.dayDescription = "At least one day must have a title";
+      }
+    }
+
+    // Hotel validation - if hotels are added, they should have locations
+    if (data.hotels && data.hotels.length > 0) {
+      const hasInvalidHotel = data.hotels.some(
+        (hotel) => !hotel.location || !hotel.location.trim()
+      );
+      if (hasInvalidHotel) {
+        newErrors.hotels = "All hotel entries must have a location";
+      }
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // Enhanced change handler with real-time validation
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -138,12 +180,20 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
       [name]: value,
     }));
 
-    // Clear error when field is edited
+    // Clear error when field is edited and has valid content
     if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: null,
-      });
+      if (name === "title" || name === "description") {
+        if (value.trim()) {
+          clearError(name);
+        }
+      } else {
+        clearError(name);
+      }
+    }
+
+    // Clear pricing error if base price becomes valid
+    if (name === "price" && Number(value) > 0 && errors.pricing) {
+      clearError("pricing");
     }
   };
 
@@ -156,10 +206,7 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
 
     // Clear error when field is edited
     if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: null,
-      });
+      clearError(name);
     }
   };
 
@@ -177,12 +224,9 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
 
     setData({ ...data, pricing: updatedPricing });
 
-    // Clear pricing error if basePrice is added
-    if (name === "basePrice" && value > 0 && errors.pricing) {
-      setErrors({
-        ...errors,
-        pricing: null,
-      });
+    // Clear pricing error if basePrice is added and valid
+    if (name === "basePrice" && Number(value) > 0 && errors.pricing) {
+      clearError("pricing");
     }
   };
 
@@ -231,6 +275,11 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     setSearchQuery("");
     setSelectedHotelIdForNewHotel("");
     setNewLocationDropdownVisible(false);
+
+    // Clear hotels error if it exists
+    if (errors.hotels) {
+      clearError("hotels");
+    }
   };
 
   const handleBulkHotelAdd = () => {
@@ -280,11 +329,17 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
 
       setBulkHotelInput("");
       setShowBulkInput(false);
+
+      // Clear hotels error if it exists
+      if (errors.hotels) {
+        clearError("hotels");
+      }
     } catch (error) {
       console.error("Error parsing bulk hotel input:", error);
-      alert(
+      setErrorMessage(
         "There was an error processing your input. Please check the format and try again."
       );
+      setShowErrorNotification(true);
     }
   };
 
@@ -367,42 +422,60 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     });
   };
 
+  // Enhanced save function with better error handling
   const saveState = async () => {
     setIsSubmitting(true);
+    setShowErrorNotification(false);
+    setShowSuccessNotification(false);
 
     if (!validateForm()) {
-      // Scroll to the first error
+      // Scroll to the first error and show error notification
       const firstErrorField = Object.keys(errors)[0];
-      const element = document.querySelector(`[name="${firstErrorField}"]`);
+      const element =
+        document.querySelector(`[name="${firstErrorField}"]`) ||
+        document.querySelector(`[data-field="${firstErrorField}"]`);
+
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "center" });
       }
+
+      setErrorMessage("Please fix the highlighted errors before saving.");
+      setShowErrorNotification(true);
       setIsSubmitting(false);
       return;
     }
 
     try {
       await addNew(data);
-      setIsAddingPackage(false);
-      setData({
-        title: "",
-        description: "",
-        price: 0,
-        whatsIncluded: [],
-        coupon: [],
-        MainPhotos: [],
-        pricing: [],
-        dayDescription: [],
-        specialInstruction: "",
-        conditionOfTravel: "",
-        thingsToMaintain: "",
-        hotels: [],
-        policies: "",
-        termsAndConditions: "",
-      });
+
+      // Show success notification
+      setShowSuccessNotification(true);
+
+      // Reset form after successful submission
+      setTimeout(() => {
+        setIsAddingPackage(false);
+        setData({
+          title: "",
+          description: "",
+          price: 0,
+          whatsIncluded: [],
+          coupon: [],
+          MainPhotos: [],
+          pricing: [],
+          dayDescription: [],
+          specialInstruction: "",
+          conditionOfTravel: "",
+          thingsToMaintain: "",
+          hotels: [],
+          policies: "",
+          termsAndConditions: "",
+        });
+        setShowSuccessNotification(false);
+      }, 2000);
     } catch (error) {
       console.log(error);
-      alert("Error creating package. Please try again.");
+      setErrorMessage("Error creating package. Please try again.");
+      setShowErrorNotification(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -414,6 +487,16 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
       updatedArray[index][subField] = value;
       return { ...prevData, [field]: updatedArray };
     });
+
+    // Clear day description error if title is added
+    if (
+      field === "dayDescription" &&
+      subField === "dayTitle" &&
+      value.trim() &&
+      errors.dayDescription
+    ) {
+      clearError("dayDescription");
+    }
   };
 
   const handlePhotoChange = (dayIndex, photoIndex, value) => {
@@ -451,6 +534,11 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
 
       return { ...prevData, hotels: updatedHotels };
     });
+
+    // Clear hotels error if location is added
+    if (value.trim() && errors.hotels) {
+      clearError("hotels");
+    }
   };
 
   // Toggle all "What's Included" items
@@ -494,28 +582,125 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
     handleAutoResize();
   }, [data]);
 
-  // Navigation tabs for both mobile and desktop
+  // Auto-hide notifications
+  useEffect(() => {
+    if (showErrorNotification) {
+      const timer = setTimeout(() => {
+        setShowErrorNotification(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showErrorNotification]);
+
+  // Navigation tabs for both mobile and desktop with error indicators
   const navigationTabs = [
-    { id: "basic", label: "Basic Info", icon: "📋" },
-    { id: "photos", label: "Photos", icon: "🖼️" },
-    { id: "pricing", label: "Pricing", icon: "💰" },
-    { id: "days", label: "Itinerary", icon: "🗓️" },
-    { id: "included", label: "Included", icon: "✅" },
-    { id: "hotels", label: "Hotels", icon: "🏨" },
-    { id: "details", label: "Details", icon: "📝" },
+    {
+      id: "basic",
+      label: "Basic Info",
+      icon: "📋",
+      hasError: !!(errors.title || errors.description || errors.pricing),
+    },
+    { id: "photos", label: "Photos", icon: "🖼️", hasError: false },
+    {
+      id: "pricing",
+      label: "Pricing",
+      icon: "💰",
+      hasError: !!errors.pricing,
+    },
+    {
+      id: "days",
+      label: "Itinerary",
+      icon: "🗓️",
+      hasError: !!errors.dayDescription,
+    },
+    { id: "included", label: "Included", icon: "✅", hasError: false },
+    {
+      id: "hotels",
+      label: "Hotels",
+      icon: "🏨",
+      hasError: !!errors.hotels,
+    },
+    { id: "details", label: "Details", icon: "📝", hasError: false },
   ];
+
+  // Check if form has any errors to disable save button - FIXED
+  const hasErrors =
+    Object.keys(errors).filter(
+      (key) => errors[key] !== null && errors[key] !== undefined
+    ).length > 0;
+
+  console.log("Current errors:", errors);
+  console.log("Has errors:", hasErrors);
 
   return (
     <div className="bg-gray-50 text-gray-900 min-h-screen">
+      {/* Success Notification */}
+      {showSuccessNotification && (
+        <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-2 animate-pulse">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M5 13l4 4L19 7"
+            ></path>
+          </svg>
+          <span className="font-medium">Package added successfully!</span>
+        </div>
+      )}
+
+      {/* Error Notification */}
+      {showErrorNotification && (
+        <div className="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-2">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <span className="font-medium">{errorMessage}</span>
+          <button
+            onClick={() => setShowErrorNotification(false)}
+            className="ml-2 text-white hover:text-gray-200"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      )}
+
       <div className="container mx-auto max-w-6xl">
-        {/* Tabbed Navigation - Both Mobile and Desktop */}
+        {/* Tabbed Navigation - Both Mobile and Desktop with Error Indicators */}
         <div className="mb-6 border-b border-gray-200">
           <div className="flex overflow-x-auto space-x-2 pb-2 scrollbar-hide">
             {navigationTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveSection(tab.id)}
-                className={`px-4 py-3 rounded-t-lg text-sm font-medium flex items-center gap-2 whitespace-nowrap transition-colors ${
+                className={`px-4 py-3 rounded-t-lg text-sm font-medium flex items-center gap-2 whitespace-nowrap transition-colors relative ${
                   activeSection === tab.id
                     ? "bg-white text-blue-600 border-t border-l border-r border-gray-200"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -523,6 +708,14 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
               >
                 <span className="hidden sm:inline">{tab.icon}</span>
                 {tab.label}
+                {tab.hasError && (
+                  <span
+                    className="text-red-500 text-lg font-bold ml-1"
+                    title="This section has errors"
+                  >
+                    !
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -533,15 +726,32 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
           {/* Basic Information Section */}
           {activeSection === "basic" && (
             <div>
-              <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">
+              <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2 flex items-center">
                 Basic Information
+                {(errors.title || errors.description || errors.pricing) && (
+                  <span
+                    className="text-red-500 text-2xl ml-2"
+                    title="This section has errors"
+                  >
+                    !
+                  </span>
+                )}
               </h2>
 
               <div className="space-y-4">
                 {/* Title */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Package Title <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    Package Title
+                    <span className="text-red-500 ml-1">*</span>
+                    {errors.title && (
+                      <span
+                        className="text-red-500 text-lg ml-2"
+                        title={errors.title}
+                      >
+                        !
+                      </span>
+                    )}
                   </label>
                   <input
                     type="text"
@@ -549,31 +759,48 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
                     value={data.title}
                     onChange={handleChange}
                     className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.title ? "border-red-500" : "border-gray-300"
+                      errors.title
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                     } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     placeholder="Enter package title"
                   />
                   {errors.title && (
-                    <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+                    <p className="mt-1 text-sm text-red-500 flex items-center">
+                      <span className="text-red-500 mr-1">⚠</span>
+                      {errors.title}
+                    </p>
                   )}
                 </div>
 
                 {/* Description - Regular textarea */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    Description
+                    <span className="text-red-500 ml-1">*</span>
+                    {errors.description && (
+                      <span
+                        className="text-red-500 text-lg ml-2"
+                        title={errors.description}
+                      >
+                        !
+                      </span>
+                    )}
                   </label>
                   <textarea
                     name="description"
                     value={data.description}
                     onChange={handleChange}
                     className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.description ? "border-red-500" : "border-gray-300"
+                      errors.description
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                     } focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]`}
                     placeholder="Enter package description"
                   />
                   {errors.description && (
-                    <p className="mt-1 text-sm text-red-500">
+                    <p className="mt-1 text-sm text-red-500 flex items-center">
+                      <span className="text-red-500 mr-1">⚠</span>
                       {errors.description}
                     </p>
                   )}
@@ -581,8 +808,16 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
 
                 {/* Price */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                     Base Price
+                    {errors.pricing && (
+                      <span
+                        className="text-red-500 text-lg ml-2"
+                        title={errors.pricing}
+                      >
+                        !
+                      </span>
+                    )}
                   </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
@@ -593,13 +828,23 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
                       name="price"
                       value={data.price}
                       onChange={handleChange}
-                      className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={`w-full pl-8 pr-4 py-2 rounded-lg border ${
+                        errors.pricing
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       placeholder="0.00"
                     />
                   </div>
                   <p className="mt-1 text-xs text-gray-500">
                     Either base price or pricing options must be provided
                   </p>
+                  {errors.pricing && (
+                    <p className="mt-1 text-sm text-red-500 flex items-center">
+                      <span className="text-red-500 mr-1">⚠</span>
+                      {errors.pricing}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -758,12 +1003,21 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
           {/* Package Pricing Section */}
           {activeSection === "pricing" && (
             <div>
-              <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">
+              <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2 flex items-center">
                 Package Pricing
+                {errors.pricing && (
+                  <span
+                    className="text-red-500 text-2xl ml-2"
+                    title="This section has errors"
+                  >
+                    !
+                  </span>
+                )}
               </h2>
 
               {errors.pricing && (
-                <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg border border-red-200">
+                <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg border border-red-200 flex items-center">
+                  <span className="text-red-500 mr-2">⚠</span>
                   {errors.pricing}
                 </div>
               )}
@@ -885,7 +1139,7 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
                             placeholder="0.00"
                             value={priceItem.extraBedCharge}
                             onChange={(e) => handlePricingChange(index, e)}
-                            className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300"
                           />
                         </div>
                       </div>
@@ -971,9 +1225,24 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
           {/* Day Description Section */}
           {activeSection === "days" && (
             <div>
-              <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">
+              <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2 flex items-center">
                 Day Description
+                {errors.dayDescription && (
+                  <span
+                    className="text-red-500 text-2xl ml-2"
+                    title="This section has errors"
+                  >
+                    !
+                  </span>
+                )}
               </h2>
+
+              {errors.dayDescription && (
+                <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg border border-red-200 flex items-center">
+                  <span className="text-red-500 mr-2">⚠</span>
+                  {errors.dayDescription}
+                </div>
+              )}
 
               <div className="space-y-6">
                 {data.dayDescription?.map((day, dayIndex) => (
@@ -1280,9 +1549,24 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
           {/* Hotels Section - FIXED */}
           {activeSection === "hotels" && (
             <div>
-              <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">
+              <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-2 flex items-center">
                 Hotels
+                {errors.hotels && (
+                  <span
+                    className="text-red-500 text-2xl ml-2"
+                    title="This section has errors"
+                  >
+                    !
+                  </span>
+                )}
               </h2>
+
+              {errors.hotels && (
+                <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg border border-red-200 flex items-center">
+                  <span className="text-red-500 mr-2">⚠</span>
+                  {errors.hotels}
+                </div>
+              )}
 
               <div className="p-4 border border-gray-200 rounded-lg mb-4">
                 <div className="flex justify-between items-center mb-4">
@@ -1596,14 +1880,45 @@ const AddPackage = ({ addNew, setIsAddingPackage }) => {
           </button>
           <button
             onClick={saveState}
-            disabled={isSubmitting}
-            className={`px-6 py-3 rounded-lg transition-colors ${
-              isSubmitting
-                ? "bg-blue-400 text-white cursor-not-allowed"
+            disabled={isSubmitting || hasErrors}
+            className={`px-6 py-3 rounded-lg transition-colors flex items-center justify-center ${
+              isSubmitting || hasErrors
+                ? "bg-gray-400 text-white cursor-not-allowed"
                 : "bg-blue-500 text-white hover:bg-blue-600"
             }`}
           >
-            {isSubmitting ? "Saving..." : "Save Package"}
+            {isSubmitting ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Saving...
+              </>
+            ) : hasErrors ? (
+              <>
+                <span className="text-red-300 mr-2">!</span>
+                Fix Errors to Save
+              </>
+            ) : (
+              "Save Package"
+            )}
           </button>
         </div>
       </div>
