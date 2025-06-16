@@ -90,9 +90,9 @@ export default function EditPackage({
   ];
 
   // Helper function to get hotel search state for a specific hotel ID
-  const getHotelSearchState = (hotelId) => {
+  const getHotelSearchState = (hotelIndex) => {
     return (
-      hotelSearchStates[hotelId] || {
+      hotelSearchStates[hotelIndex] || {
         searchTerm: "",
         dropdownVisible: false,
         selectedHotelId: "",
@@ -101,11 +101,11 @@ export default function EditPackage({
   };
 
   // Helper function to update hotel search state for a specific hotel ID
-  const updateHotelSearchState = (hotelId, updates) => {
+  const updateHotelSearchState = (hotelIndex, updates) => {
     setHotelSearchStates((prev) => ({
       ...prev,
-      [hotelId]: {
-        ...getHotelSearchState(hotelId),
+      [hotelIndex]: {
+        ...getHotelSearchState(hotelIndex),
         ...updates,
       },
     }));
@@ -296,9 +296,9 @@ export default function EditPackage({
     }
   };
 
-  const removeHotel = (hotelId) => {
+  const removeHotel = (hotelIndex) => {
     const updatedHotels = data.hotels.filter(
-      (details) => details._id !== hotelId
+      (_, index) => index !== hotelIndex
     );
 
     setData((prevData) => ({
@@ -306,10 +306,18 @@ export default function EditPackage({
       hotels: updatedHotels,
     }));
 
-    // Clean up search state for removed hotel
+    // Clean up search state for removed hotel and reindex remaining states
     setHotelSearchStates((prev) => {
-      const newStates = { ...prev };
-      delete newStates[hotelId];
+      const newStates = {};
+      Object.keys(prev).forEach((key) => {
+        const index = Number.parseInt(key);
+        if (index < hotelIndex) {
+          newStates[index] = prev[key];
+        } else if (index > hotelIndex) {
+          newStates[index - 1] = prev[key];
+        }
+        // Skip the removed hotel index
+      });
       return newStates;
     });
   };
@@ -328,18 +336,14 @@ export default function EditPackage({
     }));
   };
 
-  const addHotelDetail = (hotelId) => {
-    const hotelSearchState = getHotelSearchState(hotelId);
+  const addHotelDetail = (hotelIndex) => {
+    const hotelSearchState = getHotelSearchState(hotelIndex);
     const selectedHotel = hotelData?.find(
       (hotel) => hotel._id === hotelSearchState.selectedHotelId
     );
 
     if (selectedHotel) {
-      const hotelIndex = data.hotels.findIndex(
-        (hotel) => hotel._id === hotelId
-      );
-
-      if (hotelIndex !== -1) {
+      if (hotelIndex >= 0 && hotelIndex < data.hotels.length) {
         const hotelAlreadyAdded = data.hotels[hotelIndex].hotelDetails.some(
           (detail) => detail === selectedHotel._id
         );
@@ -362,8 +366,8 @@ export default function EditPackage({
       }
     }
 
-    // Clear search state for this hotel
-    updateHotelSearchState(hotelId, {
+    // Clear search state for this hotel index
+    updateHotelSearchState(hotelIndex, {
       searchTerm: "",
       dropdownVisible: false,
       selectedHotelId: "",
@@ -1334,7 +1338,7 @@ export default function EditPackage({
                 </div>
 
                 {data?.hotels?.map((hotel, hotelIndex) => {
-                  const hotelSearchState = getHotelSearchState(hotel._id);
+                  const hotelSearchState = getHotelSearchState(hotelIndex);
 
                   return (
                     <div
@@ -1357,7 +1361,7 @@ export default function EditPackage({
                           />
                         </div>
                         <button
-                          onClick={() => removeHotel(hotel._id)}
+                          onClick={() => removeHotel(hotelIndex)}
                           className="ml-4 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                         >
                           <svg
@@ -1440,13 +1444,13 @@ export default function EditPackage({
                             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             value={hotelSearchState.searchTerm}
                             onChange={(e) => {
-                              updateHotelSearchState(hotel._id, {
+                              updateHotelSearchState(hotelIndex, {
                                 searchTerm: e.target.value,
                                 dropdownVisible: true,
                               });
                             }}
                             onFocus={() => {
-                              updateHotelSearchState(hotel._id, {
+                              updateHotelSearchState(hotelIndex, {
                                 dropdownVisible: true,
                               });
                             }}
@@ -1467,7 +1471,7 @@ export default function EditPackage({
                                     <div
                                       key={filteredHotel._id}
                                       onClick={() => {
-                                        updateHotelSearchState(hotel._id, {
+                                        updateHotelSearchState(hotelIndex, {
                                           selectedHotelId: filteredHotel._id,
                                           searchTerm: filteredHotel.hotelName,
                                           dropdownVisible: false,
@@ -1496,7 +1500,7 @@ export default function EditPackage({
 
                         <button
                           onClick={() => {
-                            addHotelDetail(hotel._id);
+                            addHotelDetail(hotelIndex);
                           }}
                           disabled={!hotelSearchState.selectedHotelId}
                           className={`px-4 py-2 rounded-lg transition-colors ${
