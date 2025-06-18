@@ -625,7 +625,7 @@ function IternryDetails({ data }) {
                 </button>
 
                 <a
-                  href="tel:9020192019"
+                  href="tel:8980527418"
                   className="bg-blue-600 text-lg cursor-pointer text-white inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl w-full hover:bg-blue-700 transition-colors font-medium"
                 >
                   <Phone size={20} />
