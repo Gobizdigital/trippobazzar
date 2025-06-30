@@ -49,6 +49,7 @@ function IternryDetails({ data }) {
   const [selectedPackageType, setSelectedPackageType] = useState(null);
 
   const [additionalServices, setAdditionalServices] = useState({
+    extraPerson: false,
     extraBed: false,
     cnb: false,
     cwb: false,
@@ -134,6 +135,10 @@ function IternryDetails({ data }) {
         (p) => p.basePrice === selectedPricing
       );
 
+      const extraPersonCharge = additionalServices?.extraPerson
+        ? selectedPackage?.extraPersonCharge || 0
+        : 0;
+
       const extraBedCharge = additionalServices?.extraBed
         ? selectedPackage?.extraBedCharge || 0
         : 0;
@@ -142,7 +147,7 @@ function IternryDetails({ data }) {
 
       const cwbCharge = additionalServices?.cwb ? selectedPackage?.CWB || 0 : 0;
 
-      mainPrice += extraBedCharge + cnbCharge + cwbCharge;
+      mainPrice += extraBedCharge + cnbCharge + cwbCharge + extraPersonCharge;
     }
 
     const totalCost = mainPrice;
@@ -529,6 +534,28 @@ function IternryDetails({ data }) {
                         )
                       </span>
                       {additionalServices?.extraBed && (
+                        <IoCheckmarkCircle className="text-green-500 text-lg" />
+                      )}
+                    </label>
+                  )}
+
+                  {data?.pricing?.find((p) => p.basePrice === selectedPricing)
+                    ?.extraPersonCharge > 0 && (
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={additionalServices?.extraPerson}
+                        onChange={() => handleToggle("extraPerson")}
+                        className="w-4 h-4 accent-green-600"
+                      />
+                      <span className="flex-1">
+                        Extra Person (+ ₹
+                        {data?.pricing?.find(
+                          (p) => p.basePrice === selectedPricing
+                        )?.extraPersonCharge || 0}
+                        )
+                      </span>
+                      {additionalServices?.extraPerson && (
                         <IoCheckmarkCircle className="text-green-500 text-lg" />
                       )}
                     </label>
