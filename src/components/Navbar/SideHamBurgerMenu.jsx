@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoCloseOutline } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
-import { Destination } from "./DestinationAccordionData";
-
 import MultiDesitinationDropdown from "./MultiDesitinationDropdown";
 import MultilevelDropDown from "./MultiLevelDropDown";
 import HomeLogoSvg from "../../../svgs/HomeLogo";
+import useFetch from "../../../hooks/useFetch";
 
 export default function SideHamBurgerMenu({
   toggleMenu,
@@ -15,9 +16,6 @@ export default function SideHamBurgerMenu({
   setIsMenuOpen,
 }) {
   const data = [
-    // { name: "Destinations", link: "/destination" },
-    // { name: "What's new", link: "/" },
-    // { name: "My trips", link: "/" },
     { name: "About Us", link: "/aboutus" },
     { name: "Travel Tips", link: "/traveltips" },
     { name: "Visas", link: "/visas" },
@@ -29,8 +27,75 @@ export default function SideHamBurgerMenu({
   ];
 
   const [userData, setUserData] = useState(null);
-
   const location = useLocation();
+
+  // Fetch continent data from API (same as Navbar)
+  const { data: apiData } = useFetch(
+    `https://trippo-bazzar-backend.vercel.app/api/continent/fields/query?fields=ContinentName,Countries`,
+    false
+  );
+
+  // Organize destination data (same logic as Navbar)
+  const organizeDestinationData = () => {
+    if (!apiData) return [];
+
+    const continents = apiData;
+    const result = [];
+
+    // Find Asia continent to extract India
+    const asiaContinent = continents.find(
+      (cont) => cont.ContinentName === "Asia"
+    );
+
+    // Add India section if it exists
+    if (asiaContinent) {
+      const indiaCountry = asiaContinent.Countries.find(
+        (country) => country.CountryName === "India"
+      );
+
+      if (
+        indiaCountry &&
+        indiaCountry.States &&
+        indiaCountry.States.length > 0
+      ) {
+        result.push({
+          region: "India",
+          destinations: indiaCountry.States.map((state) => ({
+            name: state.StateName,
+            path: `/destination/asia/India/${state.StateName}`,
+          })),
+        });
+      }
+    }
+
+    // Add other continents
+    continents.forEach((continent) => {
+      // Skip empty continents
+      if (!continent.Countries || continent.Countries.length === 0) return;
+
+      // For Asia, exclude India as it's already handled
+      let countries = continent.Countries;
+      if (continent.ContinentName === "Asia") {
+        countries = countries.filter(
+          (country) => country.CountryName !== "India"
+        );
+      }
+
+      if (countries.length > 0) {
+        result.push({
+          region: continent.ContinentName,
+          destinations: countries.map((country) => ({
+            name: country.CountryName,
+            path: `/destination/${continent.ContinentName}/${country.CountryName}`,
+          })),
+        });
+      }
+    });
+
+    return result;
+  };
+
+  const destinationGroups = organizeDestinationData();
 
   useEffect(() => {
     // Prevent body scroll when the menu is open
@@ -113,10 +178,9 @@ export default function SideHamBurgerMenu({
           <div className="flex flex-col overflow-y-auto py-4">
             <MultiDesitinationDropdown
               setIsMenuOpen={setIsMenuOpen}
-              Destination={Destination}
+              destinationGroups={destinationGroups}
             />
             <MultilevelDropDown />
-
             {data.map((item, idx) => (
               <Link
                 to={item.link}
@@ -143,7 +207,6 @@ export default function SideHamBurgerMenu({
                 <FaSearch className="text-base" />
               </button>
             </Link>
-
             <Link to={"/contactus"}>
               <button className="bg-med-green text-white px-4 h-9 rounded-md">
                 Contact Us
