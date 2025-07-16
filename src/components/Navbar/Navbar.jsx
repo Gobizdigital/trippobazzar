@@ -34,7 +34,7 @@ const Navbar = () => {
 
   // Fetch continent data from API
   const { data } = useFetch(
-    `https://trippo-bazzar-backend.vercel.app/api/continent/fields/query?fields=ContinentName,Countries`,
+    `https://trippo-bazzar-backend.vercel.app/api/continent/fields/query?fields=ContinentName,Countries&onlyIndiaStates=true`,
     false
   );
 
@@ -182,8 +182,6 @@ const Navbar = () => {
             )}
             <div className="flex flex-row whitespace-nowrap items-center justify-between gap-6">
               <div className="relative">
-              
-
                 {/* Compact Destinations Dropdown */}
                 <div className="flex flex-row whitespace-nowrap items-center justify-between gap-4">
                   <div className="relative">
@@ -326,8 +324,6 @@ const Navbar = () => {
                   ))}
                 </div>
               </div>
-
-             
             </div>
           </div>
 

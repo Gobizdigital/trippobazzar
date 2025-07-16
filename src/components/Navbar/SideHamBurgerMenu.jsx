@@ -31,7 +31,7 @@ export default function SideHamBurgerMenu({
 
   // Fetch continent data from API (same as Navbar)
   const { data: apiData } = useFetch(
-    `https://trippo-bazzar-backend.vercel.app/api/continent/fields/query?fields=ContinentName,Countries`,
+    `https://trippo-bazzar-backend.vercel.app/api/continent/fields/query?fields=ContinentName,Countries&onlyIndiaStates=true`,
     false
   );
 
